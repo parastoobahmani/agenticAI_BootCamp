@@ -36,6 +36,7 @@ _VERSION_PREFIX = r"(?:\s*(?:version|ver\.?))?\s*(?:==|:|=|is|-)?\s*v?"
 _VERSION = r"(\d+\.\d+(?:\.\d+)?(?:(?:a|b|rc)\d+)?)\b"
 _NOT_NEGATED = r"(?<!n't )(?<!not )(?<!never )"
 _HTML_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+_SENTENCE_END = re.compile(r"[.!?؟。](?=\s)|\n")
 
 
 def _near(first: str, second: str, distance: int = 60) -> str:
@@ -154,6 +155,11 @@ RULES: tuple[ExtractionRule, ...] = (
         + _near(r"(?:fail|error)", r"websocket", 40),
         "yes",
     ),
+    _rule(
+        "websocket_error_in_console",
+        r"\b(?:checked|looked at|opened) (?:the )?(?:browser(?:'s)? )?(?:dev ?tools|developer tools|console)",
+        status=FactStatus.PERFORMED_OUTCOME_UNKNOWN,
+    ),
     _rule("health_endpoint_ok", _near(r"_stcore/health|\bhealthz\b", r"(?:fail|error|404|502|503|timeout|refused)", 40), "no"),
     _rule("health_endpoint_ok", _near(r"_stcore/health|\bhealthz\b", r"\b(?:ok|200)\b", 40), "yes"),
     _rule(
@@ -183,6 +189,7 @@ RULES: tuple[ExtractionRule, ...] = (
     *_check_rules("cache_clear_resolves", r"(?:clear\w* (?:the |streamlit'?s? )?cache|cache clear)"),
     # --- free-text details
     _rule("error_message", r"^\s*((?:\w+\.)*\w*(?:Error|Exception)\b:[^\n]*)"),
+    _rule("error_message", r"(WebSocket connection to \S+ failed[^\n]*)"),
     _rule("code_snippet", r"```py(?:thon)?\b|^\s*import streamlit\b|^\s*from streamlit\b|^\s*st\.\w+\(", "present"),
 )
 
@@ -206,10 +213,11 @@ def reporter_segments(case: Case) -> list[Segment]:
 
 
 def _quote(text: str, match: re.Match[str]) -> str:
-    line_start = text.rfind("\n", 0, match.start()) + 1
-    line_end = text.find("\n", match.end())
-    line = text[line_start : line_end if line_end != -1 else len(text)].strip()
-    return line[:_MAX_QUOTE_LENGTH]
+    """The sentence (or line) containing the match, as evidence for the extracted fact."""
+    start = max((m.end() for m in _SENTENCE_END.finditer(text, 0, match.start())), default=0)
+    end_match = _SENTENCE_END.search(text, match.end())
+    end = end_match.start() + 1 if end_match else len(text)
+    return text[start:end].strip()[:_MAX_QUOTE_LENGTH]
 
 
 def observe(segment: Segment, rules: tuple[ExtractionRule, ...] = RULES) -> list[FactObservation]:

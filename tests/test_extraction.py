@@ -121,3 +121,19 @@ def test_maintainer_and_third_party_comments_are_ignored():
         ],
     )
     assert extract_facts(case) == []
+
+
+def test_quote_is_the_matching_sentence_only():
+    [fact] = observe(Segment("body", "My app is slow. Reinstalling didn't help. Any idea?"))
+    assert fact.origin.quote == "Reinstalling didn't help."
+
+
+def test_console_checked_without_result_is_marked_performed():
+    observations = observe(Segment("body", "I checked the browser console."))
+    [fact] = [item for item in observations if item.facet == "websocket_error_in_console"]
+    assert fact.status is FactStatus.PERFORMED_OUTCOME_UNKNOWN
+
+
+def test_pasted_websocket_error_is_kept_as_error_message():
+    text = "Console: WebSocket connection to wss://host/_stcore/stream failed"
+    assert _facts(text)["error_message"].startswith("WebSocket connection to wss://host/_stcore/stream failed")
