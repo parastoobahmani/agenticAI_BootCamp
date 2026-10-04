@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 
 from missing_info.config import AnalyzerConfig
 from missing_info.decision import decide, evidence_strength
@@ -30,14 +30,15 @@ _UNLISTED_WARNING_THRESHOLD = 0.3
 def analyze(
     data: AnalysisInput,
     config: AnalyzerConfig | None = None,
-    profiler: ExpectationProfiler | None = None,
+    profilers: Sequence[ExpectationProfiler] | None = None,
 ) -> NextStepReport:
+    """Analyze one case. ``profilers`` are tried in order (default: rule-based only)."""
     config = config or AnalyzerConfig()
-    profiler = profiler or RuleBasedProfiler()
+    profilers = profilers if profilers is not None else (RuleBasedProfiler(),)
     bundle = data.evidence_bundle
 
     facts = {fact.facet: fact for fact in extract_facts(data.case)}
-    profiled = [profile_hypothesis(item, bundle.evidence_for(item), profiler) for item in bundle.hypotheses]
+    profiled = [profile_hypothesis(item, bundle.evidence_for(item), profilers) for item in bundle.hypotheses]
 
     model = BeliefModel(
         {item.hypothesis.hypothesis_id: item.expectations for item in profiled},

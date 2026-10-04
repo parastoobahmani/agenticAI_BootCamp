@@ -54,7 +54,7 @@ def test_bundle_expectations_take_precedence_and_invalid_ones_are_dropped():
             "browser": Expectation(values=["netscape"]),
         },
     )
-    profiled = profile_hypothesis(hypothesis, [], RuleBasedProfiler())
+    profiled = profile_hypothesis(hypothesis, [], [RuleBasedProfiler()])
 
     assert profiled.expectations["reverse_proxy"].values == ["no"]
     assert "websocket_error_in_console" in profiled.expectations
@@ -65,6 +65,27 @@ def test_bundle_expectations_take_precedence_and_invalid_ones_are_dropped():
 
 
 def test_source_is_none_without_any_expectation():
-    profiled = profile_hypothesis(_hypothesis("Something unexpected happens"), [], RuleBasedProfiler())
+    profiled = profile_hypothesis(_hypothesis("Something unexpected happens"), [], [RuleBasedProfiler()])
     assert profiled.source == "none"
     assert profiled.expectations == {}
+
+
+class _FixedProfiler:
+    def __init__(self, name, expectations):
+        self.name = name
+        self._expectations = expectations
+
+    def profile(self, hypothesis, evidence):
+        return self._expectations
+
+
+def test_profilers_fill_only_open_facets_in_order():
+    first = _FixedProfiler("llm", {"reverse_proxy": Expectation(values=["no"])})
+    silent = _FixedProfiler("broken", {})
+    profiled = profile_hypothesis(
+        _hypothesis("WebSocket blocked by the proxy"), [], [first, silent, RuleBasedProfiler()]
+    )
+
+    assert profiled.expectations["reverse_proxy"].values == ["no"]
+    assert "websocket_error_in_console" in profiled.expectations
+    assert profiled.source == "llm+rules"

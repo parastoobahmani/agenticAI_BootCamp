@@ -5,8 +5,9 @@ different hypotheses predict different answers to it.
 
 Sources, in order of precedence:
 1. ``Hypothesis.expectations`` supplied by part 1 (``"bundle"``);
-2. a pluggable ``ExpectationProfiler`` for the remaining facets: the rule-based
-   profiler below (``"rules"``) or the LLM profiler in ``llm.py`` (``"llm"``).
+2. an ordered list of pluggable ``ExpectationProfiler``s, each filling only the
+   facets the previous ones left open, e.g. the LLM profiler in ``llm.py``
+   (``"llm"``) followed by the rule-based profiler below (``"rules"``).
 
 Expectations that do not fit the facet catalogue are dropped with a warning
 instead of failing the whole analysis.
@@ -15,7 +16,7 @@ instead of failing the whole analysis.
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Protocol
 
@@ -161,27 +162,29 @@ class ProfiledHypothesis:
 def profile_hypothesis(
     hypothesis: Hypothesis,
     evidence: list[Evidence],
-    profiler: ExpectationProfiler,
+    profilers: Sequence[ExpectationProfiler],
 ) -> ProfiledHypothesis:
     warnings: list[str] = []
     sources: list[str] = []
 
-    supplied = _valid_only(hypothesis.expectations or {}, f"hypothesis {hypothesis.hypothesis_id}", warnings)
-    if supplied:
+    expectations = _valid_only(hypothesis.expectations or {}, f"hypothesis {hypothesis.hypothesis_id}", warnings)
+    if expectations:
         sources.append("bundle")
 
-    inferred = _valid_only(
-        profiler.profile(hypothesis, evidence),
-        f"{profiler.name} profiler for {hypothesis.hypothesis_id}",
-        warnings,
-    )
-    inferred = {facet_id: item for facet_id, item in inferred.items() if facet_id not in supplied}
-    if inferred:
-        sources.append(profiler.name)
+    for profiler in profilers:
+        inferred = _valid_only(
+            profiler.profile(hypothesis, evidence),
+            f"{profiler.name} profiler for {hypothesis.hypothesis_id}",
+            warnings,
+        )
+        added = {facet_id: item for facet_id, item in inferred.items() if facet_id not in expectations}
+        if added:
+            sources.append(profiler.name)
+            expectations.update(added)
 
     return ProfiledHypothesis(
         hypothesis=hypothesis,
-        expectations={**supplied, **inferred},
+        expectations=expectations,
         source="+".join(sources) or "none",
         warnings=warnings,
     )
