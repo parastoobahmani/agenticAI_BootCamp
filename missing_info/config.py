@@ -17,10 +17,11 @@ class AnalyzerConfig:
     # silently promoting the least-bad one.
     unlisted_cause_prior: float = 0.20
 
-    # A hypothesis must reach this posterior to be proposed as the answer.
-    answer_threshold: float = 0.70
-    # ...and lead the runner-up by at least this much.
-    answer_margin: float = 0.25
+    # A hypothesis must reach this posterior to be proposed as the answer...
+    answer_threshold: float = 0.60
+    # ...and lead the runner-up (including the unlisted cause) by at least this much.
+    # Both defaults are starting points to be calibrated on the development cases.
+    answer_margin: float = 0.30
 
     # Probes whose expected information gain (bits) per unit of cost is below this
     # value are not worth asking.
