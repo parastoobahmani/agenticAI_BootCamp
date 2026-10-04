@@ -1,0 +1,124 @@
+{
+  "case": {
+    "case_id": "example-stuck-loading-turn3",
+    "title": "App stays on the loading screen when deployed on our server",
+    "body": "The app opens on my own machine, but on the server it stays on the loading screen (\"Please wait...\") forever. Reinstalling did not help.",
+    "author": "reporter",
+    "created_at": "2026-09-20T10:00:00Z",
+    "comments": [
+      {
+        "id": "c1",
+        "author": "support-bot",
+        "author_association": "NONE",
+        "body": "Is the app served through a reverse proxy or load balancer?"
+      },
+      {
+        "id": "c2",
+        "author": "reporter",
+        "author_association": "NONE",
+        "created_at": "2026-09-20T11:00:00Z",
+        "body": "Yes, nginx is in front of it."
+      },
+      {
+        "id": "c3",
+        "author": "reporter",
+        "author_association": "NONE",
+        "created_at": "2026-09-20T11:20:00Z",
+        "body": "The console says: WebSocket connection to wss://apps.example.com/_stcore/stream failed."
+      }
+    ]
+  },
+  "evidence_bundle": {
+    "evidence": [
+      {
+        "evidence_id": "doc:knowledge-base/deploy/remote-start#please-wait",
+        "source_type": "doc",
+        "title": "App is not loading when running remotely",
+        "url": "https://docs.streamlit.io/knowledge-base/deploy/remote-start",
+        "section": "Symptom: the app shows \"Please wait...\" forever",
+        "snippet": "If the page loads but stays on \"Please wait...\", the browser could not open the WebSocket connection to the Streamlit server. Proxies must be configured to support WebSockets.",
+        "source_version": "695e6ce2fb1b23afc6df66b40420ab0013ad72fd",
+        "relevance": 0.86,
+        "relation": "Same symptom (endless loading) and same setting (remote deployment).",
+        "claim_kind": "documented"
+      },
+      {
+        "evidence_id": "doc:develop/api-reference/configuration/config.toml#server.baseUrlPath",
+        "source_type": "doc",
+        "title": "config.toml",
+        "url": "https://docs.streamlit.io/develop/api-reference/configuration/config.toml",
+        "section": "[server] baseUrlPath",
+        "snippet": "The URL base path to serve the app from, e.g. when the app is served under a sub-path behind a proxy.",
+        "source_version": "695e6ce2fb1b23afc6df66b40420ab0013ad72fd",
+        "relevance": 0.55,
+        "relation": "Explains a configuration needed only when the app is served under a sub-path.",
+        "claim_kind": "documented"
+      },
+      {
+        "evidence_id": "doc:develop/api-reference/configuration/config.toml#server.enableXsrfProtection",
+        "source_type": "doc",
+        "title": "config.toml",
+        "url": "https://docs.streamlit.io/develop/api-reference/configuration/config.toml",
+        "section": "[server] enableCORS / enableXsrfProtection",
+        "snippet": "Enables support for Cross-Origin Resource Sharing (CORS) protection and Cross-site request forgery (XSRF) protection.",
+        "source_version": "695e6ce2fb1b23afc6df66b40420ab0013ad72fd",
+        "relevance": 0.42,
+        "relation": "Origin checks can reject the browser connection when the public URL differs from the server address.",
+        "claim_kind": "documented"
+      },
+      {
+        "evidence_id": "issue:similar-report-env",
+        "source_type": "issue",
+        "title": "(illustrative) App hangs on server after dependency upgrade",
+        "url": "https://github.com/streamlit/streamlit/issues",
+        "section": "issue body",
+        "snippet": "Another user fixed a hanging app by recreating the virtual environment.",
+        "relevance": 0.31,
+        "relation": "Similar symptom, different reporter; environment details unknown.",
+        "claim_kind": "reported_fact",
+        "author_association": "NONE"
+      }
+    ],
+    "hypotheses": [
+      {
+        "hypothesis_id": "h_proxy_websocket",
+        "statement": "A reverse proxy in front of the server does not forward WebSocket upgrade headers, so the frontend never connects to /_stcore/stream.",
+        "confidence": 0.5,
+        "evidence_ids": [
+          "doc:knowledge-base/deploy/remote-start#please-wait"
+        ]
+      },
+      {
+        "hypothesis_id": "h_subpath",
+        "statement": "The app is served under a sub-path without setting server.baseUrlPath, so frontend requests go to the wrong URL.",
+        "confidence": 0.25,
+        "evidence_ids": [
+          "doc:develop/api-reference/configuration/config.toml#server.baseUrlPath"
+        ]
+      },
+      {
+        "hypothesis_id": "h_cors_xsrf",
+        "statement": "CORS/XSRF protection rejects the browser connection because the public origin differs from the server address.",
+        "confidence": 0.2,
+        "evidence_ids": [
+          "doc:develop/api-reference/configuration/config.toml#server.enableXsrfProtection"
+        ]
+      },
+      {
+        "hypothesis_id": "h_broken_env",
+        "statement": "The server's Python environment is broken (dependency conflict), so the app never finishes starting.",
+        "confidence": 0.15,
+        "evidence_ids": [
+          "issue:similar-report-env"
+        ],
+        "expectations": {
+          "health_endpoint_ok": {
+            "values": [
+              "no"
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
