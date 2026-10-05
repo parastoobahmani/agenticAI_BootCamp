@@ -1,0 +1,17 @@
+[
+  {
+    "case_id": "10001",
+    "title": "App stuck on loading screen on our server",
+    "body": "Locally the app opens fine. On our server it stays on the loading screen forever. Reinstalling did not help. We run Streamlit 1.30.0 on Python 3.11 behind nginx."
+  },
+  {
+    "case_id": "10002",
+    "title": "DuplicateWidgetID when I add a second slider",
+    "body": "I get a DuplicateWidgetID error after adding another slider. Streamlit 1.35.0, Windows, running locally."
+  },
+  {
+    "case_id": "10003",
+    "title": "Blank page on Streamlit Cloud",
+    "body": "Works on my laptop, blank page on Streamlit Cloud. No version information."
+  }
+]
