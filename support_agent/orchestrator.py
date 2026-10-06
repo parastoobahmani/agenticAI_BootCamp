@@ -4,6 +4,7 @@ import re
 from dataclasses import dataclass, field
 
 from .evidence import EvidenceStore
+from .approval import ApprovalError, HumanApprovalManager
 from .interceptor import InterceptorError, TicketInterceptor
 from .memory import CaseMemory, CaseNotFoundError, MemoryError_
 from .models import CaseState
@@ -63,7 +64,8 @@ class Orchestrator:
         self.storage = storage
         self.interceptor = interceptor
         self.evidence = evidence or EvidenceStore()
-        self.memory = CaseMemory(storage, secret=secret)
+        self.memory = CaseMemory(storage)
+        self.approval = HumanApprovalManager(self.memory, secret=secret)
         self.max_steps = max_steps
         self.max_tool_calls = max_tool_calls
         self.tool_calls = 0
@@ -123,17 +125,10 @@ class Orchestrator:
         return {"proposal_id": proposal.proposal_id, "status": proposal.status}
 
     def _tool_apply_action(self, case_id: str, proposal_id: str, approval_token: str) -> dict:
-        args = {"case_id": case_id, "proposal_id": proposal_id}
-        if self.memory.has_action(case_id, "apply_action", args):
-            return {"executed": False, "duplicate": True, "proposal_id": proposal_id}
-        self.memory.validate_approval(case_id, proposal_id, approval_token)
-        warnings = self.memory.check_validity(case_id, proposal_id)
-        if warnings:
-            raise ToolError("proposal_invalidated", "; ".join(warnings))
-        proposal = self.memory.proposal(case_id, proposal_id)
-        result = self._dispatch_action(case_id, proposal)
-        self.memory.record_action(case_id, "apply_action", args, True, result)
-        return {"executed": True, "duplicate": False, "proposal_id": proposal_id, "result": result}
+        try:
+            return self.approval.execute(case_id, proposal_id, approval_token, self._dispatch_action)
+        except ApprovalError as error:
+            raise ToolError(error.code, str(error)) from error
 
     def _dispatch_action(self, case_id: str, proposal) -> dict:
         number = case_id
@@ -248,20 +243,29 @@ class Orchestrator:
     # -- human review --------------------------------------------------------
     def approve(self, case_id: str, proposal_id: str, decided_by: str = "maintainer") -> dict:
         self._step("approve")
-        token = self.memory.approval_token(case_id, proposal_id)
         try:
-            self.memory.decide_proposal(case_id, proposal_id, "approved", decided_by=decided_by)
-        except (MemoryError_, CaseNotFoundError) as error:
-            return {"ok": False, "error": "approval_failed", "message": str(error)}
-        return {"ok": True, "proposal_id": proposal_id, "status": "approved", "approval_token": token}
+            return self.approval.approve(case_id, proposal_id, decided_by)
+        except ApprovalError as error:
+            return {"ok": False, "error": error.code, "message": str(error)}
+
+    def edit(self, case_id: str, proposal_id: str, action: str, payload: dict,
+             decided_by: str = "maintainer") -> dict:
+        self._step("edit")
+        try:
+            return self.approval.edit(case_id, proposal_id, action, payload, decided_by)
+        except ApprovalError as error:
+            return {"ok": False, "error": error.code, "message": str(error)}
+        except MemoryError_ as error:
+            return {"ok": False, "error": "edit_failed", "message": str(error)}
 
     def reject(self, case_id: str, proposal_id: str, decided_by: str = "maintainer") -> dict:
         self._step("reject")
         try:
-            self.memory.decide_proposal(case_id, proposal_id, "rejected", decided_by=decided_by)
-        except (MemoryError_, CaseNotFoundError) as error:
+            return self.approval.reject(case_id, proposal_id, decided_by)
+        except ApprovalError as error:
+            return {"ok": False, "error": error.code, "message": str(error)}
+        except MemoryError_ as error:
             return {"ok": False, "error": "rejection_failed", "message": str(error)}
-        return {"ok": True, "proposal_id": proposal_id, "status": "rejected"}
 
     def execute(self, case_id: str, proposal_id: str, approval_token: str) -> dict:
         self._step("execute")

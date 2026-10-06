@@ -47,6 +47,12 @@ def main(argv=None) -> int:
     reject_cmd.add_argument("case_id")
     reject_cmd.add_argument("proposal_id")
 
+    edit_cmd = sub.add_parser("edit")
+    edit_cmd.add_argument("case_id")
+    edit_cmd.add_argument("proposal_id")
+    edit_cmd.add_argument("action", choices=("comment", "labels", "state"))
+    edit_cmd.add_argument("payload_json", help="JSON object, e.g. {\"body\":\"edited reply\"}")
+
     execute_cmd = sub.add_parser("execute")
     execute_cmd.add_argument("case_id")
     execute_cmd.add_argument("proposal_id")
@@ -81,6 +87,13 @@ def main(argv=None) -> int:
         show(app.approve(args.case_id, args.proposal_id))
     elif args.command == "reject":
         show(app.reject(args.case_id, args.proposal_id))
+    elif args.command == "edit":
+        try:
+            payload = json.loads(args.payload_json)
+        except json.JSONDecodeError as exc:
+            show({"ok": False, "error": "bad_json", "message": str(exc)})
+        else:
+            show(app.edit(args.case_id, args.proposal_id, args.action, payload))
     elif args.command == "execute":
         show(app.execute(args.case_id, args.proposal_id, args.token))
     elif args.command == "events":

@@ -95,18 +95,24 @@ def case_changed(app: Orchestrator) -> None:
 
 
 def wrong_token(app: Orchestrator) -> None:
-    section("Scenario 6: a token from a different proposal is refused")
+    section("Scenario 6: a token from a different case/proposal is refused")
     app.open_case("30006", title="Slow reruns")
     decision = app.handle_user_message(
         "30006", "Streamlit 1.35.0 on Linux, running locally, my reruns are slow"
     )
-    other = app.memory.create_proposal("30006", "labels", {"labels": ["performance"]}, "manual")
-    other_id = other.proposals[-1].proposal_id
     approval = app.approve("30006", decision.proposal_id)
+
+    # Create an independently approved proposal in another case. Its token
+    # must never authorize the first case.
+    app.open_case("30007", title="Another case")
+    other_decision = app.handle_user_message(
+        "30007", "Streamlit 1.35.0 on Linux, running locally, another problem"
+    )
+    other_approval = app.approve("30007", other_decision.proposal_id)
+
     print("approved:", decision.proposal_id, approval["ok"])
-    stale_token = app.memory.approval_token("30006", other_id)
-    print("execute with the other proposal's token:",
-          app.execute("30006", decision.proposal_id, stale_token))
+    print("execute with another case's token:",
+          app.execute("30006", decision.proposal_id, other_approval["approval_token"]))
     print("execute with no token:",
           app.execute("30006", decision.proposal_id, ""))
     ticket = app.interceptor.get("30006")
