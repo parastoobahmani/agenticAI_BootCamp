@@ -1,0 +1,451 @@
+{
+  "$defs": {
+    "Decision": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/DecisionType"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "hypothesis_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hypothesis Id"
+        }
+      },
+      "required": [
+        "type",
+        "rationale"
+      ],
+      "title": "Decision",
+      "type": "object"
+    },
+    "DecisionType": {
+      "enum": [
+        "propose_answer",
+        "request_information",
+        "escalate"
+      ],
+      "title": "DecisionType",
+      "type": "string"
+    },
+    "EvidenceStrength": {
+      "enum": [
+        "strong",
+        "weak",
+        "none"
+      ],
+      "title": "EvidenceStrength",
+      "type": "string"
+    },
+    "Expectation": {
+      "additionalProperties": false,
+      "description": "What a hypothesis predicts about one facet: a set of values OR a version range.",
+      "properties": {
+        "values": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Values"
+        },
+        "version_spec": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version Spec"
+        }
+      },
+      "title": "Expectation",
+      "type": "object"
+    },
+    "FactObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "facet": {
+          "title": "Facet",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "status": {
+          "$ref": "#/$defs/FactStatus"
+        },
+        "origin": {
+          "$ref": "#/$defs/FactOrigin"
+        }
+      },
+      "required": [
+        "facet",
+        "value",
+        "status",
+        "origin"
+      ],
+      "title": "FactObservation",
+      "type": "object"
+    },
+    "FactOrigin": {
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "quote"
+      ],
+      "title": "FactOrigin",
+      "type": "object"
+    },
+    "FactStatus": {
+      "enum": [
+        "observed",
+        "performed_outcome_unknown"
+      ],
+      "title": "FactStatus",
+      "type": "string"
+    },
+    "KnownFact": {
+      "additionalProperties": false,
+      "properties": {
+        "facet": {
+          "title": "Facet",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "status": {
+          "$ref": "#/$defs/FactStatus"
+        },
+        "origin": {
+          "$ref": "#/$defs/FactOrigin"
+        },
+        "superseded": {
+          "items": {
+            "$ref": "#/$defs/FactObservation"
+          },
+          "title": "Superseded",
+          "type": "array"
+        }
+      },
+      "required": [
+        "facet",
+        "value",
+        "status",
+        "origin"
+      ],
+      "title": "KnownFact",
+      "type": "object"
+    },
+    "MissingFacet": {
+      "additionalProperties": false,
+      "properties": {
+        "facet": {
+          "title": "Facet",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "relevant_hypotheses": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Relevant Hypotheses",
+          "type": "array"
+        },
+        "expected_information_gain": {
+          "title": "Expected Information Gain",
+          "type": "number"
+        }
+      },
+      "required": [
+        "facet",
+        "description",
+        "relevant_hypotheses",
+        "expected_information_gain"
+      ],
+      "title": "MissingFacet",
+      "type": "object"
+    },
+    "Probe": {
+      "additionalProperties": false,
+      "properties": {
+        "facet": {
+          "title": "Facet",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/ProbeKind"
+        },
+        "basis": {
+          "$ref": "#/$defs/ProbeBasis"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "distinguishes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Distinguishes",
+          "type": "array"
+        },
+        "expected_information_gain": {
+          "title": "Expected Information Gain",
+          "type": "number"
+        },
+        "cost": {
+          "title": "Cost",
+          "type": "integer"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "facet",
+        "kind",
+        "basis",
+        "text",
+        "rationale",
+        "distinguishes",
+        "expected_information_gain",
+        "cost",
+        "score"
+      ],
+      "title": "Probe",
+      "type": "object"
+    },
+    "ProbeBasis": {
+      "enum": [
+        "information_gain",
+        "fallback"
+      ],
+      "title": "ProbeBasis",
+      "type": "string"
+    },
+    "ProbeKind": {
+      "enum": [
+        "question",
+        "check",
+        "follow_up"
+      ],
+      "title": "ProbeKind",
+      "type": "string"
+    },
+    "RankedHypothesis": {
+      "additionalProperties": false,
+      "properties": {
+        "hypothesis_id": {
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        },
+        "prior": {
+          "title": "Prior",
+          "type": "number"
+        },
+        "posterior": {
+          "title": "Posterior",
+          "type": "number"
+        },
+        "evidence_strength": {
+          "$ref": "#/$defs/EvidenceStrength"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "expectations": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Expectation"
+          },
+          "title": "Expectations",
+          "type": "object"
+        },
+        "expectation_source": {
+          "title": "Expectation Source",
+          "type": "string"
+        },
+        "consistent_facts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Consistent Facts",
+          "type": "array"
+        },
+        "conflicting_facts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conflicting Facts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "statement",
+        "prior",
+        "posterior",
+        "evidence_strength",
+        "evidence_ids",
+        "expectations",
+        "expectation_source",
+        "consistent_facts",
+        "conflicting_facts"
+      ],
+      "title": "RankedHypothesis",
+      "type": "object"
+    },
+    "SkippedProbe": {
+      "additionalProperties": false,
+      "properties": {
+        "facet": {
+          "title": "Facet",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "facet",
+        "reason"
+      ],
+      "title": "SkippedProbe",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "case_id": {
+      "title": "Case Id",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/Decision"
+    },
+    "known_facts": {
+      "items": {
+        "$ref": "#/$defs/KnownFact"
+      },
+      "title": "Known Facts",
+      "type": "array"
+    },
+    "missing_information": {
+      "items": {
+        "$ref": "#/$defs/MissingFacet"
+      },
+      "title": "Missing Information",
+      "type": "array"
+    },
+    "hypotheses": {
+      "items": {
+        "$ref": "#/$defs/RankedHypothesis"
+      },
+      "title": "Hypotheses",
+      "type": "array"
+    },
+    "next_steps": {
+      "items": {
+        "$ref": "#/$defs/Probe"
+      },
+      "title": "Next Steps",
+      "type": "array"
+    },
+    "skipped_probes": {
+      "items": {
+        "$ref": "#/$defs/SkippedProbe"
+      },
+      "title": "Skipped Probes",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "case_id",
+    "decision",
+    "known_facts",
+    "missing_information",
+    "hypotheses",
+    "next_steps",
+    "skipped_probes",
+    "limitations"
+  ],
+  "title": "NextStepReport",
+  "type": "object"
+}
