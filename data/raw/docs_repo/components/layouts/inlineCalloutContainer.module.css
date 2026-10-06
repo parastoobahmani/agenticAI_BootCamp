@@ -1,0 +1,15 @@
+.Container {
+  @apply mb-24;
+}
+
+.Container > section:last-child {
+  @apply border-none mb-8 pb-0;
+}
+
+.SingletonContainer {
+  @apply mt-6 mb-6;
+}
+
+.SingletonContainer > section:last-child {
+  @apply border-none mb-8 pb-0;
+}

@@ -1,0 +1,100 @@
+.SectionContainer {
+  @apply relative mt-8;
+}
+
+/* Styles to align the slider with the API reference grid above and below */
+.Container :global(.slick-slide) {
+  @apply px-2;
+}
+
+.Container :global(.slick-list) {
+  @apply -mx-2;
+}
+
+/* Hover styles for cards. Need to be done here to prevent the card overflow */
+.Container :global(.slick-slide) > div {
+  @apply transition-all duration-75 z-elevated;
+}
+
+.Container :global(.slick-slide) > div:hover {
+  transform: scale(1.05);
+}
+
+/* Title styles */
+.TitleContainer {
+  @apply flex items-center justify-between text-lg;
+}
+
+.Title {
+  @apply flex items-center relative z-dropdown;
+}
+
+.Text {
+  @apply mb-0;
+}
+
+/* Tooltip styles */
+.TooltipIcon {
+  @apply fill-gray-60 ml-2;
+}
+
+.TooltipIcon svg {
+  @apply transition ease-in-out duration-100 hover:opacity-80;
+
+  fill: inherit;
+}
+
+.Tooltip {
+  @apply p-3 bg-gray-90 absolute rounded-md transition delay-100 ease-in-out opacity-0 pointer-events-none w-64 z-dropdown;
+  bottom: 100%;
+}
+
+.TooltipArrow {
+  @apply h-3 w-3 p-0 absolute opacity-0 pointer-events-none -bottom-[2px] right-9 transition ease-in-out delay-100 bg-gray-90 z-dropdown;
+}
+
+.Open {
+  @apply opacity-100 pointer-events-auto;
+}
+
+.TooltipText {
+  @apply text-xs text-white m-0 leading-normal tracking-normal;
+}
+
+.TooltipText a {
+  @apply underline border-none leading-normal;
+}
+
+:global(.dark) .Tooltip,
+:global(.dark) .TooltipArrow {
+  @apply bg-gray-80;
+}
+
+/* Override default hover styles */
+.TooltipText a:hover {
+  @apply no-underline border-none;
+
+  opacity: 1 !important;
+}
+
+/* Slider arrow styles */
+.ArrowsContainer {
+  @apply flex list-none m-0 gap-2;
+}
+
+.ArrowsContainer li {
+  @apply flex p-0 m-0;
+}
+
+.ArrowsContainer li button {
+  @apply transition ease-in-out duration-100 hover:text-gray-50 text-gray-60 flex;
+}
+
+.ArrowsContainer li button i {
+  @apply w-4 text-base;
+}
+
+/* Hide the default arrows */
+.Container :global(.slick-arrow) {
+  display: none !important;
+}

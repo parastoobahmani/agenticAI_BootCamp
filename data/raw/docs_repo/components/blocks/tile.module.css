@@ -1,0 +1,96 @@
+.Container {
+  @apply rounded-md overflow-hidden flex justify-between flex-col cursor-pointer transform transition duration-100 ease-in-out hover:shadow-md hover:opacity-90;
+}
+
+.Container:hover {
+  transform: scale(1.01);
+}
+
+.Link {
+  @apply p-4;
+}
+
+.Title {
+  @apply m-0 font-bold text-lg;
+  @apply text-white !important;
+}
+
+.Text {
+  @apply text-sm tracking-tight text-white leading-normal !important;
+}
+
+.Icon {
+  @apply text-3xl mt-3 mb-3;
+  @apply text-white !important;
+}
+
+/* Size modifiers */
+.Full {
+  @apply col-span-full;
+}
+
+.Half {
+  @apply col-span-full sm:col-span-3;
+}
+
+.TwoThirds {
+  @apply col-span-full md:col-span-3 lg:col-span-4;
+}
+
+.Third {
+  @apply col-span-full md:col-span-3 lg:col-span-2;
+}
+
+/* Color modifiers */
+
+.RedBackground {
+  @apply bg-red-70;
+}
+
+.OrangeBackground {
+  @apply bg-orange-70;
+}
+
+.YellowBackground {
+  @apply bg-yellow-70;
+}
+
+.GreenBackground {
+  @apply bg-green-70;
+}
+
+.AcquaBackground {
+  @apply bg-acqua-70;
+}
+
+.LightBlueBackground {
+  @apply bg-lightBlue-70;
+}
+
+.DarkBlueBackground {
+  @apply bg-darkBlue-70;
+}
+
+.IndigoBackground {
+  @apply bg-indigo-70;
+}
+
+.TransparentBackground a {
+  @apply px-0;
+}
+
+.TransparentBackground a p {
+  @apply pr-4;
+}
+
+.TransparentBackground i,
+.TransparentBackground h4,
+.TransparentBackground p {
+  @apply text-gray-90 !important;
+}
+
+:global(.dark) .TransparentBackground i,
+:global(.dark) .TransparentBackground h4,
+:global(.dark) .TransparentBackground p {
+  @apply text-gray-40 !important;
+}

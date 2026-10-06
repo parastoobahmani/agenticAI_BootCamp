@@ -1,0 +1,49 @@
+.Wrapper {
+  @apply relative;
+}
+
+.Container {
+  @apply w-8 h-8 mb-0 rounded-md p-0 block cursor-pointer flex items-center justify-center hover:opacity-90 hover:shadow-sm;
+  @apply bg-gray-20 !important;
+}
+
+.Container:hover {
+  transform: scale(1.025);
+}
+
+:global(.dark) .Container {
+  @apply bg-gray-90 !important;
+}
+
+.Icon {
+  @apply absolute;
+  @apply text-gray-70 !important;
+}
+
+:global(.dark) .Icon {
+  @apply text-gray-40 !important;
+}
+
+.DarkIcon {
+  @apply opacity-0;
+}
+
+:global(.dark) .DarkIcon {
+  @apply opacity-100;
+}
+
+:global(.dark) .LightIcon {
+  @apply opacity-0;
+}
+
+.Tooltip {
+  @apply hidden absolute top-10 right-0 px-3 py-1 rounded-md bg-gray-20 z-dropdown whitespace-nowrap;
+}
+
+.Tooltip p {
+  @apply text-gray-70;
+}
+
+:global(.dark) .Tooltip {
+  @apply bg-gray-90;
+}

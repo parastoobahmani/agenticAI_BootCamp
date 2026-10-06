@@ -1,0 +1,149 @@
+.Container {
+  @apply mt-6;
+}
+
+.Container h4 {
+  @apply mb-4;
+}
+
+.HeaderContainer {
+  @apply mb-6;
+}
+
+.Title {
+  @apply mt-6 mb-2;
+}
+
+.CodeBlockContainer {
+  @apply mb-7 relative bg-gray-90 rounded-xl;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.Header {
+  @apply flex items-center
+    min-h-10 px-3
+    border-b border-gray-80
+    text-gray-50 text-xs font-medium tracking-wide;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.Language {
+  @apply uppercase tracking-wider leading-none;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.Filename {
+  @apply font-mono tracking-wider leading-none;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.CodeBlockContainer pre {
+  @apply p-6 text-white font-medium relative leading-relaxed;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.CodeBlockContainer pre,
+.CodeBlockContainer code {
+  @apply overflow-auto max-w-full whitespace-pre;
+}
+
+/* Keep in sync with components/blocks/autofunction.module.css */
+.CodeBlockContainer pre code {
+  @apply z-elevated relative;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.LineHighlight {
+  @apply bg-gray-80 opacity-30 z-base;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.Container :global(.toolbar) {
+  @apply absolute top-0 right-0
+    flex items-center justify-end
+    px-3 h-10
+    text-gray-80 text-xs font-medium tracking-wide;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.Container :global(.toolbar-item) {
+  @apply flex items-center justify-end;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.CodeBlockContainer button {
+  @apply flex flex-row gap-1
+    h-full
+    text-xs leading-none
+    text-gray-50 hover:text-white;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.CodeBlockContainer button span {
+  @apply flex items-center justify-start
+    tracking-wide font-medium;
+}
+
+/* Keep in sync with components/blocks/code.module.css */
+.CodeBlockContainer :global(.copy-to-clipboard-button) {
+  &::after {
+    @apply block text-gray-50 hover:text-white h-3 w-3 cursor-pointer;
+    content: "";
+    background-color: currentColor;
+    -webkit-mask-image: url("/clipboard.svg");
+    mask-image: url("/clipboard.svg");
+    mask-size: contain;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+  }
+
+  & span {
+    @apply text-white
+      opacity-0 translate-x-2 transition-transform
+      pointer-events-none;
+  }
+
+  &:hover span {
+    @apply opacity-100 translate-x-0;
+  }
+}
+
+.NoCopyButton :global(.copy-to-clipboard-button) {
+  @apply hidden;
+}
+
+/* Syntax highlighting is now handled globally via styles/syntax-highlighting.scss */
+
+/* Styles for deprecation notice in param */
+.DeprecatedContent {
+  @apply bg-orange-10 text-gray-90 px-2 py-1 rounded-xl text-sm mb-2 flex items-center relative;
+}
+
+.DeprecatedContent i {
+  @apply text-base text-orange-70 mr-2;
+}
+
+.DeprecatedContent p {
+  @apply ml-5;
+}
+
+.DeprecatedContent p tt {
+  @apply text-sm;
+}
+
+.DeprecatedIcon {
+  @apply absolute top-0 left-2;
+}
+
+:global(.dark) .DeprecatedContent {
+  @apply bg-orange-100/30;
+}
+
+.Keyword::after {
+  @apply block bg-gray-20 text-gray-80 text-opacity-100 text-2xs rounded-lg w-fit px-2 py-0;
+  content: "keyword-only";
+}
+
+:global(.dark) .Keyword::after {
+  @apply bg-gray-80 text-gray-30;
+}

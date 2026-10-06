@@ -1,0 +1,23 @@
+/* Styles for markdown tables */
+#content-container table:not(.full-width) {
+  @apply w-full border-collapse;
+}
+
+#content-container table:not(.full-width) tr th,
+#content-container table:not(.full-width) tr td {
+  @apply border-t border-t-gray-20 py-3 text-sm leading-loose tracking-normal text-gray-90 dark:text-gray-40;
+}
+
+#content-container table:not(.full-width) tr th tt,
+#content-container table:not(.full-width) tr td tt {
+  @apply text-sm;
+}
+
+#content-container table:not(.full-width) caption {
+  @apply text-left leading-relaxed tracking-tight pb-3 text-gray-90 dark:text-gray-40;
+}
+
+#content-container table:not(.full-width) tr th a,
+#content-container table:not(.full-width) tr td a {
+  @apply underline hover:no-underline;
+}

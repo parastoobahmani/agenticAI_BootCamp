@@ -1,0 +1,45 @@
+import "../styles/globals.css";
+import "../components/utilities/searchModal.css";
+import "../components/utilities/kapaModal.css";
+import "../styles/main.scss";
+import "../public/fonts/styles.css";
+
+// Loading indicator
+import Router from "next/router";
+import NProgress from "nprogress";
+
+import { useEffect } from "react";
+
+import { VersionContextProvider } from "../lib/next/VersionContext";
+import { ThemeContextProvider } from "../lib/next/ThemeContext";
+
+Router.events.on("routeChangeStart", () => NProgress.start());
+Router.events.on("routeChangeComplete", () => {
+  NProgress.done();
+  if (window.reloadOTBanner) {
+    window.reloadOTBanner();
+  }
+});
+Router.events.on("routeChangeError", () => NProgress.done());
+
+function StreamlitDocs({ Component, pageProps }) {
+  useEffect(() => {
+    if (navigator.platform.includes("Mac")) {
+      document.body.classList.add("mac");
+    }
+  }, []);
+
+  return (
+    <ThemeContextProvider>
+      <VersionContextProvider
+        versionFromSlug={pageProps.versionFromSlug}
+        platformFromSlug={pageProps.platformFromSlug}
+        currentItem={pageProps.currentItem}
+      >
+        <Component {...pageProps} />
+      </VersionContextProvider>
+    </ThemeContextProvider>
+  );
+}
+
+export default StreamlitDocs;

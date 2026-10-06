@@ -1,0 +1,7 @@
+.NextIcon {
+  @apply order-last;
+}
+
+.Text {
+  @apply mr-1 font-bold;
+}

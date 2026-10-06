@@ -1,0 +1,13 @@
+pandas
+plotly
+graphviz
+requests
+matplotlib
+numpy<2
+scipy
+altair>=5.0.0
+pydeck
+Faker
+openai
+vega_datasets
+streamlit>=1.56.0
