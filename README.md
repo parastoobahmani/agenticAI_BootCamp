@@ -238,13 +238,18 @@ bundle = bundle_from_synthesis(part1_result, SourceIndex.from_snapshot(Path("dat
 report = analyze(AnalysisInput(case=case, evidence_bundle=bundle))
 ```
 
-روی خروجی فعلی بخش ۱-۱، سیستم نسخهٔ 1.64.0، Python 3.11، Chrome و کد نمونه را از متن کاربر پیدا می‌کند و دوباره نمی‌پرسد. ولی چون claimهای بخش ۱-۱ تکه‌های خام chunk هستند و هیچ پیش‌بینی قابل‌آزمونی ندارند، تصمیم `escalate` است. پیشنهادهایی که هر دو طرف را بهتر می‌کنند:
+روی خروجی فعلی بخش ۱-۱، سیستم از متن و کد کاربر این‌ها را پیدا می‌کند و دوباره نمی‌پرسد: نسخهٔ 1.64.0، Python 3.11، Chrome، regression بودن («After upgrading to 1.64.0»)، استفاده از callback، و نبودن fragment، dialog، form، `st.rerun`، تعویض صفحه و key در کد.
 
-- **برای بخش ۱-۱:**
-  - claimها جملهٔ کامل باشند؛ الان بعضی از وسط کلمه شروع می‌شوند، مثل «et's move on…».
-  - چند شاهد مرتبط در قالب چند **علت** جمع‌بندی شوند.
-  - `url_or_path` واقعی در خروجی بیاید.
-- **برای این بخش:** دامنهٔ داده‌های تیم session state و ویجت‌هاست (برچسب‌های `feature:st.session_state` و `area:widgets`)، اما facetهای فعلی بیشتر استقرار و شبکه را پوشش می‌دهند. باید facetهای این دامنه اضافه شوند، مثل callback، `st.rerun`، چندصفحه‌ای بودن، key ویجت و regression.
+با این حال تصمیم `escalate` است، چون claimهای بخش ۱-۱ تکه‌های خام chunk هستند:
+- بیشترشان هیچ پیش‌بینی قابل‌آزمونی ندارند.
+- تنها سؤال مرتبط («فقط بعد از reload از بین می‌رود؟») به فرضیه‌ای با ۸٪ احتمال برمی‌گردد، و بهرهٔ اطلاعاتی‌اش (۰٫۰۳ بیت) زیر آستانه است.
+
+برای مقایسه، `examples/multiselect_selection_reset.json` همان دامنه را با فرضیه‌های جمع‌بندی‌شده نشان می‌دهد؛ شواهدش مستندات واقعی snapshot و issue #17210 هستند. آن‌جا سیستم سؤال هدفمند می‌پرسد و در نوبت دوم به پاسخ می‌رسد.
+
+پیشنهاد برای بخش ۱-۱:
+- claimها جملهٔ کامل باشند؛ الان بعضی از وسط کلمه شروع می‌شوند، مثل «et's move on…».
+- چند شاهد مرتبط در قالب چند **علت** جمع‌بندی شوند.
+- `url_or_path` واقعی در خروجی بیاید.
 
 ### فرضیاتی که دربارهٔ ورودی کرده‌ام
 
@@ -318,6 +323,19 @@ Facet یعنی یک «بُعد اطلاعاتی» که می‌تواند میا�
 - **attribute**: چیزی که کاربر می‌داند، مثل نسخهٔ Streamlit، محل استقرار، وجود reverse proxy یا sub-path، و این‌که مشکل روی سیستم خودش هم پیش می‌آید یا نه.
 - **check**: کاری که کاربر باید انجام دهد، مثل نگاه کردن به خطای WebSocket در کنسول مرورگر، `curl` روی `/_stcore/health`، امتحان مرورگر دیگر، ارتقا، نصب مجدد یا پاک کردن cache.
 
+facetها دو گروه‌اند:
+
+| گروه | facetها |
+|---|---|
+| محیط و استقرار | `streamlit_version`، `python_version`، `operating_system`، `browser`، `deployment_target`، `reverse_proxy`، `served_under_subpath`، `reproduces_locally`، `websocket_error_in_console`، `health_endpoint_ok`، `reproduces_in_other_browser`، `upgrade_resolves`، `reinstall_resolves`، `cache_clear_resolves` |
+| session state و ویجت‌ها (دامنهٔ داده‌های تیم) | `regression`، `lost_after_page_reload`، `widget_has_key`، `options_change_between_reruns`، `uses_callback`، `multipage_app`، `inside_fragment`، `inside_dialog`، `inside_form`، `calls_st_rerun` |
+| متن آزاد (فقط برای fallback) | `error_message`، `code_snippet` |
+
+facetهای گروه دوم بر اساس صفحهٔ «Widget behavior» و «Session State» مستندات انتخاب شده‌اند:
+- ویجت بدون `key` با تغییر label، options یا default هویت جدید می‌گیرد و reset می‌شود. key-based identity از v1.55.0 کامل شده است.
+- state ویجتی که در یک اجرا رندر نشود پاک می‌شود.
+- هر تب مرورگر یا هر reload یک session جدید است.
+
 هر facet متن دقیق پرسش، نوع مقدار (category، version یا text) و **هزینه** (زحمت کاربر از ۱ تا ۳) دارد.
 
 ### ۲. استخراج آنچه معلوم است (`extraction.py`)
@@ -328,6 +346,8 @@ Facet یعنی یک «بُعد اطلاعاتی» که می‌تواند میا�
 - هر واقعیت جملهٔ منبعش را به‌عنوان `origin.quote` نگه می‌دارد، پس قابل بررسی است.
 - **اصلاح کاربر**: در طول گفت‌وگو جملهٔ جدیدتر برنده است و جملهٔ قبلی در `superseded` و `limitations` ثبت می‌شود.
 - **کارهای انجام‌شده**: «Reinstalling didn't help» به `reinstall_resolves=no` تبدیل می‌شود و این بررسی دیگر پیشنهاد نمی‌شود. اگر نتیجه گفته نشده باشد («I checked the console»)، وضعیت `performed_outcome_unknown` می‌گیرد و فقط نتیجه پرسیده می‌شود (`follow_up`).
+- **کد کاربر هم شاهد است**: اگر چیزی در کد Streamlit‌ای که کاربر فرستاده نباشد (`on_click=`، `st.fragment`، `st.dialog`، `st.form`، `st.rerun`، تعویض صفحه یا `key=` روی ویجت)، مقدارش `no` ثبت می‌شود. این فقط وقتی است که هیچ‌جای گفت‌وگو صریحاً چیزی درباره‌اش گفته نشده باشد.
+- چک‌باکس‌های تیک‌نخوردهٔ قالب issue (مثل `- [ ] Yes, this used to work…`) چیزی را ادعا نمی‌کنند و نادیده گرفته می‌شوند.
 
 ### ۳. تبدیل فرضیه به پیش‌بینی (`profiling.py`)
 
@@ -336,7 +356,11 @@ Facet یعنی یک «بُعد اطلاعاتی» که می‌تواند میا�
 1. `expectations` که بخش ۱-۱ داده
 2. پروفایلرهای قابل‌تعویض به ترتیب: `LLMProfiler` (اختیاری) و بعد `RuleBasedProfiler`
 
-`RuleBasedProfiler` خانواده‌های رایج خطا را پوشش می‌دهد: proxy/WebSocket، CORS/XSRF، sub-path، در دسترس نبودن سرور، مشکل خاص مرورگر، محیط خراب، cache، محدودیت منابع و سیستم‌عامل. از عبارت‌های «introduced in X / fixed in Y» یا از `fixed_in_version` شواهد، بازهٔ نسخه هم می‌سازد (مثلاً `streamlit_version <1.33.0` و `upgrade_resolves=yes`). expectationهای نامعتبر با هشدار حذف می‌شوند و تحلیل نمی‌شکند.
+`RuleBasedProfiler` خانواده‌های رایج خطا را پوشش می‌دهد:
+- **استقرار و محیط:** proxy/WebSocket، CORS/XSRF، sub-path، در دسترس نبودن سرور، مشکل خاص مرورگر، محیط خراب، cache، محدودیت منابع و سیستم‌عامل
+- **session state و ویجت‌ها:** reset به‌خاطر هویت ویجت بدون key، session جدید با reload، پاک شدن state ویجت رندرنشده، تعویض صفحه، callback، fragment، dialog، form، `st.rerun`، regression و «رفتار مستند / باگ نیست»
+
+ از عبارت‌های «introduced in X / fixed in Y» یا از `fixed_in_version` شواهد، بازهٔ نسخه هم می‌سازد (مثلاً `streamlit_version <1.33.0` و `upgrade_resolves=yes`). expectationهای نامعتبر با هشدار حذف می‌شوند و تحلیل نمی‌شکند.
 
 ### ۴. مدل باور و بهرهٔ اطلاعاتی (`scoring.py`)
 
@@ -369,6 +393,13 @@ Facet یعنی یک «بُعد اطلاعاتی» که می‌تواند میا�
 | ۳ | «WebSocket connection to …/_stcore/stream failed» | `propose_answer` → `h_proxy_websocket` |
 | — | «هیچ reverse proxy‌ای نیست» | فرضیهٔ proxy عقب می‌افتد و سؤال‌ها به sub-path و health check می‌روند |
 | — | بخش ۱-۱ چیزی پیدا نکرده | `escalate` + درخواست متن خطا و محل استقرار (نسخه را چون گفته شده نمی‌پرسد) |
+
+### رفتار روی مثال دامنهٔ session state (`examples/multiselect_selection_reset*.json`)
+
+| نوبت | آنچه کاربر گفته | تصمیم سیستم |
+|---|---|---|
+| ۱ | «با کلیک روی هر دکمه، انتخاب‌های multiselect پاک می‌شود» + کد بدون `key` + نسخهٔ 1.52.0 | فرضیهٔ «پاک شدن state ویجت keyدار» را تضعیف می‌کند، چون کد key ندارد. بعد می‌پرسد: «فقط بعد از reload از بین می‌رود؟» و «options بین اجراها عوض می‌شوند؟» |
+| ۲ | «reload نیست؛ options از یک set می‌آید و ترتیبش عوض می‌شود» | `propose_answer` → `h_widget_identity` با احتمال ۰٫۸۵ و پشتوانهٔ مستندات |
 
 ---
 
@@ -454,11 +485,12 @@ adapter خروجی فعلی شما (`evidence_synthesis_result.json`) در `miss
 .venv/bin/pytest -q
 ```
 
-۱۲۱ آزمون واحد و سرتاسری این موارد را پوشش می‌دهند:
+۱۴۹ آزمون واحد و سرتاسری این موارد را پوشش می‌دهند:
 
 - قرارداد داده‌ها و اعتبارسنجی
 - قواعد استخراج: موارد مثبت، موارد «نباید حدس بزند»، مثال فارسی و انگلیسی صورت پروژه، اصلاح کاربر، نادیده گرفتن نظر نگه‌دارنده
-- پروفایلینگ و بازهٔ نسخه
+- استخراج از کد کاربر و facetهای session state و ویجت
+- پروفایلینگ (شامل خانواده‌های session state و ویجت) و بازهٔ نسخه
 - ریاضیات باور و EIG
 - سناریوهای چندنوبتی
 - LLM با کلاینت ساختگی (fake) و cache
@@ -513,6 +545,10 @@ tests/            آزمون‌ها
 15. adapter و دستور `from-part1` برای خروجی بخش ۱-۱
 16. نمونهٔ ورودی بخش ۱-۱، و تولید دوبارهٔ schemaها و گزارش‌ها
 17. به‌روزرسانی README برای اتصال به بخش ۱-۱
+18. facetهای session state و ویجت، و استخراج از کد کاربر
+19. قواعد پروفایلینگ برای فرضیه‌های session state و ویجت
+20. مثال دوبخشی multiselect در دامنهٔ تیم
+21. به‌روزرسانی README برای دامنهٔ session state
 
 ---
 
@@ -526,5 +562,6 @@ tests/            آزمون‌ها
 - قواعد regex پوشش کامل ندارند. هر چه پیدا نشود نامعلوم می‌ماند؛ نتیجه‌اش احتمالاً یک سؤال اضافه است، نه یک نتیجهٔ غلط. پوشش فارسی فقط در حد مثال صورت پروژه است.
 - فرض استقلال مشاهدات در به‌روزرسانی بیزی ساده‌سازی است، مثلاً `reverse_proxy` و `websocket_error_in_console` به هم وابسته‌اند.
 - آستانه‌ها فعلاً دستی‌اند. کالیبراسیون یا روش‌های Conformal برای تصمیم میان پاسخ، پرسش و ارجاع یکی از مسیرهای بخش امتیازی است.
-- فهرست facetها روی مشکلات اجرا و استقرار، نسخه، مرورگر و cache متمرکز است و برای دامنهٔ نهایی تیم باید گسترش پیدا کند.
+- facetها دو حوزه را پوشش می‌دهند: استقرار و محیط، و session state و ویجت‌ها. حوزه‌های دیگر داده‌های تیم (مثل `st.dataframe`، `st.data_editor` و theming) هنوز facet اختصاصی ندارند.
+- نبودن یک قابلیت در کد کاربر به‌عنوان `no` ثبت می‌شود. اگر کد کاربر فقط بخشی از برنامه باشد، این برداشت ممکن است اشتباه باشد؛ ولی هر جملهٔ صریح کاربر بر آن غلبه می‌کند.
 - درگاه متیس به‌صورت واقعی تست نشده است (کلید در دسترس نبود). کلاینت استاندارد OpenAI است و `METIS_BASE_URL` قابل تنظیم است.
