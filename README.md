@@ -54,7 +54,7 @@
                                      └────────────────────────────────────────┘
 ```
 
-طبق صورت پروژه فرض شده بخش ۱-۱ انجام شده و خروجی‌اش با قالبی که در بخش [ورودی و فرضیات](#ورودی-و-فرضیات) آمده در دسترس است. در برنچ `finding_combining_evidence` هنوز کدی نبود، پس قالب ورودی را خودم تعریف کردم و برای هماهنگی، JSON Schema آن را در `schemas/` گذاشتم.
+ورودی این بخش قالب `AnalysisInput` است که در بخش [ورودی و فرضیات](#ورودی-و-فرضیات) آمده (JSON Schema آن در `schemas/`). خروجی واقعی بخش ۱-۱ (برنچ `finding_synthesizing_evidence`، فایل `evidence_synthesis_result.json`) قالب دیگری دارد و با یک adapter به همین قالب تبدیل می‌شود؛ جزئیات در [اتصال به خروجی بخش ۱-۱](#اتصال-به-خروجی-بخش-۱-۱).
 
 ---
 
@@ -192,9 +192,63 @@ export METIS_API_KEY=...   # هرگز در کد یا گیت قرار ندهید 
 | `evidence_ids` | list[str] | شواهد پشتیبان؛ باید در `evidence` وجود داشته باشند |
 | `expectations` | dict? (اختیاری) | پیش‌بینی‌های فرضیه، مثلاً `{"reverse_proxy": {"values": ["yes"]}, "streamlit_version": {"version_spec": "<1.33.0"}}` |
 
+### اتصال به خروجی بخش ۱-۱
+
+بخش ۱-۱ (برنچ `finding_synthesizing_evidence`) این فایل‌ها را تولید می‌کند:
+
+- داده‌ها در `data/raw`: `issues.jsonl`، `comments.jsonl`، `documentation.jsonl` و `release_notes.jsonl`
+- خروجی نهایی: `evidence_synthesis_result.json`
+
+خروجی نهایی مستقیماً با `AnalysisInput` سازگار نیست؛ اعتبارسنجی آن ۵۶ خطا می‌دهد. برای همین `missing_info/part1_adapter.py` آن را تبدیل می‌کند و هیچ‌کدام از دو طرف لازم نیست قالب اصلی‌شان را عوض کنند:
+
+| خروجی بخش ۱-۱ | ورودی این بخش | توضیح |
+|---|---|---|
+| — (فقط `report_summary`، ۳۰۰ کاراکتر) | `case` | پرونده جداگانه داده می‌شود: فایل `Case` یا شمارهٔ issue از `issues.jsonl` + `comments.jsonl` |
+| `evidence_used[]` | `evidence[]` | هر مورد یک `Evidence` |
+| `chunk_id` یا «(chunk …)» در `citation` | `evidence_id` | تکراری‌ها با `#index` یکتا می‌شوند |
+| `source_type`: `documentation` / `past_report` / `release_note` | `doc` / `issue` / `release_note` | |
+| `claim_type`: `documented_explanation` / `fact` / `hypothesis` | `documented` / `reported_fact` (issue) یا `documented` / `hypothesis` | |
+| `score` | `relevance` | به بازهٔ [0,1] محدود می‌شود |
+| `url` (در عمل عنوان chunk است) | `title` | URL واقعی، section و commit/نسخه از `data/raw` بازیابی می‌شود (`--data-dir`) |
+| release note که از fix یا bug حرف می‌زند | `fixed_in_version` = نسخهٔ همان release | |
+| هر claim بازیابی‌شده | یک `Hypothesis` با `confidence = score` | بخش ۱-۱ شواهد را در قالب چند علت جمع‌بندی نمی‌کند |
+| `conflicting_sources`، و `remaining_gaps` دربارهٔ منابع | `notes` → در `limitations` با پیشوند `Part 1:` | |
+| `remaining_gaps` دربارهٔ کاربر و `recommended_next_action` | نادیده گرفته می‌شوند | این بخش آن‌ها را از خودِ گفت‌وگو دوباره حساب می‌کند |
+
+کامنت‌های `comments.jsonl` فیلد `user_login` دارند (نه `user.login`) و ۵۰۴ مورد از ۱۷۸۱ کامنت مال botها هستند. `Case.from_github` هر دو قالب را می‌پذیرد، کامنت bot را حذف می‌کند و کامنت‌ها را به ترتیب زمانی می‌چیند. `issues.jsonl` نام گزارش‌دهنده را ندارد، پس همهٔ کامنت‌های غیرنگه‌دارنده به‌عنوان پیام کاربر خوانده می‌شوند.
+
+اجرا با گزارشی که بخش ۱-۱ برایش اجرا شده:
+
+```bash
+.venv/bin/missing-info from-part1 examples/part1/evidence_synthesis_result.json --case examples/part1/session_state_case.json --format markdown
+```
+
+اجرا با یک issue از snapshot بخش ۱-۱ (مسیر `data/raw` در checkout آن برنچ):
+
+```bash
+.venv/bin/missing-info from-part1 evidence_synthesis_result.json --issue 17265 --data-dir ../finding_synthesizing_evidence/data/raw
+```
+
+از پایتون:
+
+```python
+from missing_info.part1_adapter import SourceIndex, bundle_from_synthesis, case_from_snapshot
+
+bundle = bundle_from_synthesis(part1_result, SourceIndex.from_snapshot(Path("data/raw")))
+report = analyze(AnalysisInput(case=case, evidence_bundle=bundle))
+```
+
+روی خروجی فعلی بخش ۱-۱، سیستم نسخهٔ 1.64.0، Python 3.11، Chrome و کد نمونه را از متن کاربر پیدا می‌کند و دوباره نمی‌پرسد. ولی چون claimهای بخش ۱-۱ تکه‌های خام chunk هستند و هیچ پیش‌بینی قابل‌آزمونی ندارند، تصمیم `escalate` است. پیشنهادهایی که هر دو طرف را بهتر می‌کنند:
+
+- **برای بخش ۱-۱:**
+  - claimها جملهٔ کامل باشند؛ الان بعضی از وسط کلمه شروع می‌شوند، مثل «et's move on…».
+  - چند شاهد مرتبط در قالب چند **علت** جمع‌بندی شوند.
+  - `url_or_path` واقعی در خروجی بیاید.
+- **برای این بخش:** دامنهٔ داده‌های تیم session state و ویجت‌هاست (برچسب‌های `feature:st.session_state` و `area:widgets`)، اما facetهای فعلی بیشتر استقرار و شبکه را پوشش می‌دهند. باید facetهای این دامنه اضافه شوند، مثل callback، `st.rerun`، چندصفحه‌ای بودن، key ویجت و regression.
+
 ### فرضیاتی که دربارهٔ ورودی کرده‌ام
 
-1. بخش ۱-۱ علاوه بر شواهد، **فهرستی از فرضیه‌ها با امتیاز** هم می‌دهد. بازیابی چند متن شبیه بدون جمع‌بندی برای این بخش کافی نیست.
+1. قالب `AnalysisInput` فرض می‌کند بخش ۱-۱ علاوه بر شواهد، **فهرستی از فرضیه‌ها با امتیاز** هم می‌دهد. خروجی فعلی بخش ۱-۱ این را ندارد، پس adapter هر claim را یک فرضیه در نظر می‌گیرد (بالا را ببینید).
 2. `confidence`ها احتمال نرمال‌شده نیستند، فقط امتیازهای نسبی‌اند. این بخش آن‌ها را نرمال می‌کند و ۲۰٪ احتمال را برای «علتی که هیچ‌کدام از فرضیه‌ها نگفته‌اند» کنار می‌گذارد.
 3. `expectations` **اختیاری** است. اگر بخش ۱-۱ آن را ندهد، این بخش آن را با قواعد کلیدواژه‌ای یا (در صورت فعال بودن) با LLM از روی `statement` و شواهد استنتاج می‌کند. اگر داده شود، بر استنتاج اولویت دارد.
 4. پرونده فقط شامل اطلاعاتی است که **در لحظهٔ تحلیل** قابل مشاهده است. کنترل نشت داده و آشکارسازی تدریجی پاسخ‌های کاربر در ارزیابی بر عهدهٔ لایهٔ ارزیابی است.
@@ -349,7 +403,7 @@ report = analyze(data, profilers=[LLMProfiler(client), RuleBasedProfiler()])
 
 ### برای بخش ۱-۱
 
-اگر خروجی‌تان کمی متفاوت است، کافی است یک adapter کوچک بنویسید که آن را به `EvidenceBundle` تبدیل کند. اعتبارسنجی pydantic ارجاع‌های شکسته و شناسه‌های تکراری را همان‌جا گزارش می‌کند. هر چه `expectations` دقیق‌تری بدهید، سؤال‌ها هدفمندتر می‌شوند.
+adapter خروجی فعلی شما (`evidence_synthesis_result.json`) در `missing_info/part1_adapter.py` است ([اتصال به خروجی بخش ۱-۱](#اتصال-به-خروجی-بخش-۱-۱)). اگر قالب خروجی‌تان عوض شد، فقط همین فایل باید به‌روز شود. هر چه فرضیه‌ها جمع‌بندی‌شده‌تر باشند و `expectations` دقیق‌تری داشته باشند، سؤال‌ها هدفمندتر می‌شوند.
 
 ### برای بخش ۱-۳
 
@@ -400,7 +454,7 @@ report = analyze(data, profilers=[LLMProfiler(client), RuleBasedProfiler()])
 .venv/bin/pytest -q
 ```
 
-۱۰۷ آزمون واحد و سرتاسری این موارد را پوشش می‌دهند:
+۱۲۱ آزمون واحد و سرتاسری این موارد را پوشش می‌دهند:
 
 - قرارداد داده‌ها و اعتبارسنجی
 - قواعد استخراج: موارد مثبت، موارد «نباید حدس بزند»، مثال فارسی و انگلیسی صورت پروژه، اصلاح کاربر، نادیده گرفتن نظر نگه‌دارنده
@@ -408,6 +462,7 @@ report = analyze(data, profilers=[LLMProfiler(client), RuleBasedProfiler()])
 - ریاضیات باور و EIG
 - سناریوهای چندنوبتی
 - LLM با کلاینت ساختگی (fake) و cache
+- adapter بخش ۱-۱، روی خروجی واقعی آن و یک snapshot کوچک
 - CLI
 
 **هیچ آزمونی به شبکه یا کلید API نیاز ندارد.**
@@ -430,9 +485,10 @@ missing_info/
   pipeline.py     analyze(): اتصال همهٔ مراحل
   render.py       گزارش Markdown
   llm.py          پروفایلر LLM اختیاری (متیس)، سقف بودجه و cache ضبط/بازپخش
+  part1_adapter.py تبدیل خروجی بخش ۱-۱ (evidence_synthesis_result.json و data/raw) به ورودی این بخش
   cli.py          رابط خط فرمان missing-info
 schemas/          JSON Schema ورودی و خروجی (تولیدشده)
-examples/         ورودی‌های نمونه + outputs/ (گزارش‌های تولیدشده)
+examples/         ورودی‌های نمونه، part1/ (خروجی واقعی بخش ۱-۱) و outputs/ (گزارش‌های تولیدشده)
 tests/            آزمون‌ها
 ```
 
@@ -451,7 +507,12 @@ tests/            آزمون‌ها
 9. پروفایلر LLM اختیاری با سقف بودجه و cache
 10. CLI و گزارش Markdown
 11. ورودی‌های نمونه، گزارش‌های تولیدشده و JSON Schema
-12. همین README
+12. README
+13. پذیرش قالب snapshot بخش ۱-۱ (`user_login`، حذف bot) و انتقال یادداشت‌های بخش ۱-۱
+14. رفع دو مشکلی که دادهٔ واقعی نشان داد
+15. adapter و دستور `from-part1` برای خروجی بخش ۱-۱
+16. نمونهٔ ورودی بخش ۱-۱، و تولید دوبارهٔ schemaها و گزارش‌ها
+17. به‌روزرسانی README برای اتصال به بخش ۱-۱
 
 ---
 
