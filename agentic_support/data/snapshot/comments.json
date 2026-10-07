@@ -1,0 +1,506 @@
+[
+  {
+    "id": 5931429040,
+    "body": "Hello, I'd like to work on this issue. \n\nI've reproduced the bug where programmatically passing an empty selection (`{\"rows\": [], \"columns\": [], \"cells\": []}`) updates the backend session state but fails to clear the active selection in the frontend UI. \n\nI'm planning to investigate the state reconciliation in the dataframe frontend component (`frontend/lib/src/components/widgets/DataFrame/`) to see if empty arrays are being evaluated as falsy or skipped during state updates.\n\nCould you please assign this issue to me?",
+    "created_at": "2026-10-01T12:26:45Z",
+    "updated_at": "2026-10-01T12:26:45Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17195#issuecomment-5931429040",
+    "author_association": "NONE",
+    "issue_number": 17195
+  },
+  {
+    "id": 5931828012,
+    "body": "This also affects repeated **non-empty** assignments, which may help narrow the investigation.\n\nWith the unmodified Streamlit 1.64.0 wheel in Chrome on macOS, using the example above and keeping `key=\"data\"` unchanged:\n\n| Sequence | Python `event.selection.rows` | Visible selected row |\n| --- | --- | --- |\n| Select a row, then click “Select no row” for the first time | `[]` | None |\n| Select another row, then click “Select no row” again | `[]` | Previous row remains checked |\n| Click “Select the first row” | `[0]` | First row |\n| Select the second row in the grid, then click “Select the first row” again | `[0]` | Second row remains checked |\n\nThe first clear does remove the checkbox/highlight, so this is not simply empty arrays being ignored by the grid.\n\nIn [DataFrame.tsx at 1.64.0](https://github.com/streamlit/streamlit/blob/1.64.0/frontend/lib/src/components/widgets/DataFrame/DataFrame.tsx#L661-L692), `processedSelectionStateRef` retains the last programmatic JSON string. The early return for an absent one-shot `selectionState` does not clear that ref. This appears consistent with both repeated-value failures: the same later command is skipped before parsing/applying it.\n\nA regression check should include both `clear → user selects → clear` and `[0] → user selects [1] → [0]`, asserting the grid's selected row as well as the Python output. I haven't validated a source fix.",
+    "created_at": "2026-10-01T12:50:01Z",
+    "updated_at": "2026-10-01T12:50:01Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17195#issuecomment-5931828012",
+    "author_association": "NONE",
+    "issue_number": 17195
+  },
+  {
+    "id": 5925114375,
+    "body": "Hi! I'd like to work on this issue. I've traced the behavior to the order-sensitive options and index-based default values used when computing the widget ID in multiselect.py.\n\nI plan to add a regression test using AppTest to verify that a user's selection is preserved when the options are reordered, and then update the widget ID inputs so that option ordering does not cause the widget identity to change.",
+    "created_at": "2026-10-01T05:05:11Z",
+    "updated_at": "2026-10-01T05:05:11Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17210#issuecomment-5925114375",
+    "author_association": "NONE",
+    "issue_number": 17210
+  },
+  {
+    "id": 5925873423,
+    "body": "Hi! I've completed the fix for this issue.\n\nThe change makes the multiselect widget identity independent of the order of its options while preserving the displayed option order.\n\nI've also added a regression test covering selection preservation when the options are reordered.\n\nTests:\n- 122 passed in element_tree_test.py\n- Ruff checks passed\n- git diff --check passed\n\nThe branch is ready for review:\nhttps://github.com/tanveer128423/streamlit/compare/develop...fix/multiselect-option-order",
+    "created_at": "2026-10-01T06:18:12Z",
+    "updated_at": "2026-10-01T06:18:12Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17210#issuecomment-5925873423",
+    "author_association": "NONE",
+    "issue_number": 17210
+  },
+  {
+    "id": 5936901268,
+    "body": "Hi, thank you very much reg the fix, could you please confirm what is the procedure to go about this? Would they merge the branch you made, or should you/I open a pull request?",
+    "created_at": "2026-10-01T17:32:29Z",
+    "updated_at": "2026-10-01T17:32:29Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17210#issuecomment-5936901268",
+    "author_association": "NONE",
+    "issue_number": 17210
+  },
+  {
+    "id": 5813824510,
+    "body": "I think this is more of an enhancement, but looking into bumping the supported version.",
+    "created_at": "2026-09-24T12:12:04Z",
+    "updated_at": "2026-09-24T12:12:04Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17097#issuecomment-5813824510",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17097
+  },
+  {
+    "id": 5520851654,
+    "body": "The triage comment prompted me to re-cut the data by **creation month** instead of year, and that changes the picture in a way that seems worth having on the record: the elevated `RUNTIME_ERROR` rate is a **bounded window, and it does not line up with either candidate cause suggested above.**\n\n`RUNTIME_ERROR` share of Streamlit Spaces, by month created:\n\n| Created | n | RUNTIME_ERROR | BUILD_ERROR |\n|---|---|---|---|\n| 2025-08 | 1,757 | 13.9% | 5.7% |\n| 2025-09 | 1,905 | 14.3% | 5.0% |\n| 2025-10 | 1,570 | 11.5% | 4.5% |\n| **2025-11** | 1,791 | **30.9%** | 6.8% |\n| 2025-12 | 1,744 | 35.8% | 4.9% |\n| 2026-01 | 2,128 | 45.3% | 4.4% |\n| **2026-02** | 2,003 | **48.8%** | 3.6% |\n| 2026-03 | 2,307 | 46.4% | 5.8% |\n| 2026-04 | 3,797 | 40.4% | 3.4% |\n| 2026-05 | 3,175 | 24.9% | 3.4% |\n| 2026-06 | 2,787 | 8.6% | 3.5% |\n| 2026-07 | 1,065 | 3.2% | 1.7% |\n\nThe window opens between **October and November 2025** (11.5% → 30.9%), peaks in **Jan–Feb 2026** at ~48%, and is back to baseline by June 2026.\n\n**Against the two suggested causes:**\n- The 1.57 Tornado→Starlette cutover (May 2026) is *five months after* the window opens, and by May 2026 the rate is already falling.\n- The Starlette 1.4.0 `GZipResponder` crash (Aug 2026, #16341) is *after* the window closes.\n\nNeither timing fits. Whatever this was appears to have started around Nov 2025 and been resolved around May–June 2026.\n\n**The caveat that cuts the other way, stated plainly:** this is a single snapshot (28 Aug 2026) bucketed by creation date, so the falling tail is confounded — Spaces created in June–August 2026 are only weeks old and may simply not have had time to break. I would not read the decline as recovery on this evidence alone.\n\n**The rise, however, is not an age artifact, and that is the load-bearing part.** Spaces created 2025-06 to 2025-10 are *older* than those created 2026-01 to 2026-04, yet break at 8.6–14.3% against 40–49%. Breakage otherwise rises monotonically with age across every SDK in this dataset, so an older cohort failing three to four times *less* runs against the trend rather than with it.\n\n**One thing the triage comment got exactly right** — I can confirm the SDK deprecation from the volume data. Streamlit Space creation drops from **7,317 in April 2025 to 1,783 in May 2025**, a 4x fall in one month, matching the 2025-04-30 date. `BUILD_ERROR` also falls off a cliff shortly after (31.4% in April 2025 → 5.0% by June), consistent with the Docker-template migration removing a class of install failure.\n\nHappy to supply the affected Space IDs — I have ~5,600 Streamlit Spaces in `RUNTIME_ERROR` created in 2026, and can filter to the Nov 2025 – Apr 2026 window if that is the useful cut. Say which format helps and I will post it.\n\nFull data (1.46M rows, one per Space): https://huggingface.co/datasets/Ashsinha1/hf-spaces-census",
+    "created_at": "2026-09-03T05:15:01Z",
+    "updated_at": "2026-09-03T05:15:01Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16770#issuecomment-5520851654",
+    "author_association": "NONE",
+    "issue_number": 16770
+  },
+  {
+    "id": 5533473086,
+    "body": "**Correction: this is not a Streamlit problem, and I filed it in the wrong place.**\n\nI pulled `runtime.errorMessage` from the Spaces API for samples inside and outside the window. The failures are not application crashes — they are Hugging Face scheduler failures.\n\n| Error class | 2026-01/02 (n=300) | 2025-09/10 (n=295) |\n|---|---|---|\n| `Scheduling failure: unable to schedule` | **90.0%** | 42.0% |\n| Launch timed out (30 min) | 6.3% | 18.6% |\n| **App-level crash** (traceback / exit code) | **2.7%** | 27.5% |\n\nOdds ratio 12.4 for the scheduling class. I re-ran it independently on a fresh sample with a different seed (n=60 per group) and got 80.0% vs 28.3% — same direction, same magnitude.\n\n**Decomposing the census by cohort settles it.** Multiplying each cohort's RUNTIME_ERROR rate by the sampled share of each error class:\n\n| Cohort | RUNTIME_ERROR | sched-fail % of cohort | **non-sched RE % of cohort** |\n|---|---|---|---|\n| 2025-09/10 | 13.0% | 5.5% | **7.6%** |\n| 2025-11/12 | 33.4% | 28.1% | **5.3%** |\n| 2026-01/02 | 47.0% | 42.3% | **4.7%** |\n| 2026-04 | 40.4% | 37.7% | **2.7%** |\n| 2026-06 | 8.6% | 1.5% | **7.1%** |\n\nThe right-hand column is the point. **Non-scheduling runtime errors are flat-to-declining across the entire window.** Every point of the rise and the whole return to baseline is scheduling failure. App-level crashes — the only class Streamlit code could produce — are *lower* inside the window (1.4% of cohort) than outside it (2.8%).\n\nSupporting: RUNTIME_ERROR displaces SLEEPING almost exactly. `(RE + SLEEPING) / n` holds at 88–92% for every month from 2025-06 to 2026-06 while RE's share of that pair swings 12.6% → 53.1% → 9.7%. These are Spaces that would have been asleep, failing at wake — not apps crashing at startup. `gcTimeout` is 48h for 100% of both groups, so it isn't a sleep-policy difference.\n\n**Your triage was right to reject both proposed causes.** Neither the Tornado→Starlette cutover nor the Starlette 1.4.0 crash fits, and now it's clear why: no Streamlit-side change could produce this, because Streamlit's code is not what's failing.\n\n**One thing I can't explain, stated as open:** why the rate is Streamlit-specific. In the same months, 42.3% of the streamlit cohort hit scheduling failures against 3.6% of gradio — 12x, same platform, same period. So *something* about which Spaces fail to schedule correlates with the SDK even though the failure isn't in Streamlit. I have an untested hypothesis (streamlit skews toward classroom cohorts — 26 of 300 sampled READMEs share one project title, and affected Spaces are 78.7% never-modified-after-day-one vs 63.3% for healthy ones) which would make it a population difference in account tier rather than anything technical. I would not assert that without testing it.\n\nI'm refiling this with Hugging Face, where the scheduler lives. **Please close this** — sorry for the misdirected report, and thanks for the triage that pushed me to look at the actual error strings.\n\nMethod and data: https://github.com/ashishsinha1602/dataset-integrity-audit",
+    "created_at": "2026-09-03T23:30:51Z",
+    "updated_at": "2026-09-03T23:30:51Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16770#issuecomment-5533473086",
+    "author_association": "NONE",
+    "issue_number": 16770
+  },
+  {
+    "id": 5538807987,
+    "body": "@ashishsinha1602 Thanks for this analysis! We also did a quick check on our internal error data, and it had been declining significantly over the last couple of months. We also have some internal metrics on this related to hugginface deployed apps, there are higher error rates, but it doesn't look like errors that are specifically related to Streamlit",
+    "created_at": "2026-09-04T09:57:08Z",
+    "updated_at": "2026-09-04T09:57:08Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16770#issuecomment-5538807987",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16770
+  },
+  {
+    "id": 5713440624,
+    "body": "Related aspect: you can configure the stale period via `runner.cacheBackgroundRefreshTTLMultiplier` across the entire app, but not per cache function.",
+    "created_at": "2026-09-17T11:15:36Z",
+    "updated_at": "2026-09-17T11:15:36Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17009#issuecomment-5713440624",
+    "author_association": "COLLABORATOR",
+    "issue_number": 17009
+  },
+  {
+    "id": 5257962628,
+    "body": "One more deployment shape that the shared slot affects, found while reviewing #16476.\n\nA reverse proxy that forwards without `proxy_set_header Host $host` gives Streamlit a `Host` value such as `127.0.0.1:8501`, while the browser still sends the real page origin in `Origin`. Streamlit compares `Origin` against the `Host` header, so it treats that handshake as cross-origin even though the browser considers it same-origin.\n\nA plain app still connects there, because its page can read the XSRF cookie and fill the token slot. An app that uses `useExternalAuthToken` cannot, because the host auth token occupies the slot the XSRF token needs. After #16476 that handshake is rejected with code `1008` rather than connecting anonymously.\n\nTwo ways to fix it, both inside the scope of this issue:\n\n1. Carry the host auth token and the XSRF token in separate `Sec-WebSocket-Protocol` entries, which fixes the identity gap and this rejection together.\n2. Accept `browser.serverAddress` as an additional same-origin signal, so a proxy that hides the public host does not turn same-origin traffic into cross-origin traffic. That is operator-configured, so it does not trust `X-Forwarded-Host`.",
+    "created_at": "2026-08-11T19:39:43Z",
+    "updated_at": "2026-08-11T19:39:43Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16477#issuecomment-5257962628",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16477
+  },
+  {
+    "id": 5833427873,
+    "body": "Closing this, still evaluating the issue.",
+    "created_at": "2026-09-25T13:44:09Z",
+    "updated_at": "2026-09-25T13:44:09Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17119#issuecomment-5833427873",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17119
+  },
+  {
+    "id": 5784804558,
+    "body": "Additional version check: this is also reproducible in the latest official release, Streamlit 1.64.0. The 1.64.0 tag and the current `develop` branch both still call `normalizeKey(event.key)` in the `keydown` and `keyup` handlers without validating that `event.key` is a string.",
+    "created_at": "2026-09-22T21:54:01Z",
+    "updated_at": "2026-09-22T21:54:01Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17082#issuecomment-5784804558",
+    "author_association": "NONE",
+    "issue_number": 17082
+  },
+  {
+    "id": 5784854348,
+    "body": "I investigated this further and prepared the minimal fix plus regression coverage in a fork branch:\n\nhttps://github.com/streamlit/streamlit/compare/develop...acsarthur3333:streamlit:fix-global-hotkeys-missing-key\n\nThe patch adds a string guard for event.key in both keydown and keyup handlers and a Vitest case that dispatches keyless events, verifies no exception is thrown, and verifies neither shortcut callback runs.\n\nThe branch is based on the current develop head. A PR could not be created through the connected OAuth application because the streamlit organization restricts third-party OAuth app write access, but the comparison is ready for review or cherry-picking.",
+    "created_at": "2026-09-22T21:57:48Z",
+    "updated_at": "2026-09-22T21:57:48Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17082#issuecomment-5784854348",
+    "author_association": "NONE",
+    "issue_number": 17082
+  },
+  {
+    "id": 5796020248,
+    "body": "I was able to reproduce this issue here: https://issues.streamlit.app/?issue=gh-17082",
+    "created_at": "2026-09-23T13:47:45Z",
+    "updated_at": "2026-09-23T13:47:54Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17082#issuecomment-5796020248",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17082
+  },
+  {
+    "id": 5665319612,
+    "body": "We recently rolled out a fix in 1.63 to prevent the clear cache dialog from opening when `cmd` / `ctrl` is involved: https://github.com/streamlit/streamlit/pull/16615 Its only supposed to open when `c` is pressed, but no other key. Can you check with 1.63 if this is still bothering you",
+    "created_at": "2026-09-14T14:10:11Z",
+    "updated_at": "2026-09-14T17:15:23Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16954#issuecomment-5665319612",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16954
+  },
+  {
+    "id": 5239723407,
+    "body": "We shipped the `server.allowedHosts` config option in 1.61: https://github.com/streamlit/streamlit/pull/16147 Does this solve your need?",
+    "created_at": "2026-08-10T11:50:26Z",
+    "updated_at": "2026-08-10T11:50:26Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16448#issuecomment-5239723407",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16448
+  },
+  {
+    "id": 5316010448,
+    "body": "> We shipped the `server.allowedHosts` config option in 1.61: [#16147](https://github.com/streamlit/streamlit/pull/16147) Does this solve your need?\n\nThanks for the suggestion. I tried this configuration but still the app is allowing other unauthorized URLs. So not fixed.",
+    "created_at": "2026-08-17T12:26:04Z",
+    "updated_at": "2026-08-17T12:26:04Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16448#issuecomment-5316010448",
+    "author_association": "NONE",
+    "issue_number": 16448
+  },
+  {
+    "id": 5813932452,
+    "body": "I was able to reproduce this here: https://issues.streamlit.app/?issue=gh-17112",
+    "created_at": "2026-09-24T12:19:03Z",
+    "updated_at": "2026-09-24T12:19:03Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17112#issuecomment-5813932452",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17112
+  },
+  {
+    "id": 5814415028,
+    "body": "Thanks for the report @JerYme \n\nThis is the same bug as #17011. The fix is already on develop in #17039 ([Preserve dialogs across parent fragment reruns](https://github.com/streamlit/streamlit/pull/17039)). We re-ran this issue’s repro against current develop after that merge: Increment updates Count as expected.\n\nIt will ship in the next release after 1.65 (next week). Until then, a workaround is to open the dialog from the parent fragment body (e.g. a session-state flag) rather than from on_click, so the dialog fragment is re-registered on the parent rerun.\n\nFor example:\n\n```\n@st.fragment\ndef counter_dialog():\n    @st.dialog(\"Counter\", width=\"small\")\n    def _open_dialog():\n        if \"count\" not in st.session_state:\n            st.session_state.count = 0\n        st.metric(\"Count\", st.session_state.count)\n        if st.button(\"Increment\", type=\"primary\"):\n            st.session_state.count += 1\n            st.rerun(scope=\"fragment\")\n    # Open from the fragment body, not on_click.\n    if st.button(\"Open Counter\"):\n        st.session_state.show_counter = True\n    if st.session_state.get(\"show_counter\"):\n        _open_dialog()\ncounter_dialog()\n```\n\nThis workaround is included in the repro app as well: https://issues.streamlit.app/?issue=gh-17112",
+    "created_at": "2026-09-24T12:47:53Z",
+    "updated_at": "2026-09-24T12:48:44Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17112#issuecomment-5814415028",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17112
+  },
+  {
+    "id": 5775176799,
+    "body": "@guyvaks I made a repro app for this here, but have not been able to reproduce https://issues.streamlit.app/?issue=gh-17074\nIs there something else in your app that might be interacting with this?",
+    "created_at": "2026-09-22T10:50:53Z",
+    "updated_at": "2026-09-22T10:50:53Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17074#issuecomment-5775176799",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17074
+  },
+  {
+    "id": 5791452501,
+    "body": "This would be a genuinely useful fix/addition for the project.",
+    "created_at": "2026-09-23T08:17:46Z",
+    "updated_at": "2026-09-23T08:17:46Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17074#issuecomment-5791452501",
+    "author_association": "NONE",
+    "issue_number": 17074
+  },
+  {
+    "id": 5936092396,
+    "body": "Thanks for the detailed report — the CSS you extracted was genuinely useful in narrowing this down. I spent some time trying to reproduce it in real Safari and wasn't able to, so I want to share exactly what I tried in case it helps us find the difference between our setups.\n\n**What I tested:** Streamlit 1.64.0 (your reported version) in a clean venv, your snippet verbatim, with `primaryColor = \"#4F46E5\"` set so the selected style matches the indigo in your CSS. Real Safari 26.6.2 on macOS 26.7 — not Playwright's WebKit, since your report rules that out. Three loads: a first-ever visit to the URL, a warm reload, and one on a separate origin so every asset was refetched cold. On all three, the three `default=None` pills rendered plain: no `data-selected` attribute, `aria-pressed=\"false\"`, and a neutral `rgba(49,51,63,0.2)` border rather than the indigo one.\n\n**Why I trust that negative result:** a \"nothing found\" outcome is only as good as the detector, so the same page also had a second pills widget with `default=[\"Ctrl A\"]` as a control. That button reported `data-selected` present with `background-color: rgba(79,70,229,0.1); border-color: rgb(79,70,229); color: rgb(79,70,229)` — exactly the CSS you quoted. So the check does see the attribute and the indigo styling when they're really there; the `default=None` pills simply didn't have either. I also sampled every animation frame from before React first rendered through several seconds after, specifically to catch a transient flash on first paint, and there were zero frames where an unselected pill carried the attribute.\n\n**On the attribute-timing theory:** I don't think this one can be it, unfortunately. In the shipped bundle react-aria emits the attribute as `data-selected={isSelected || undefined}`, and React removes rather than sets an attribute whose value is `undefined`. So `data-selected=\"\"` or `data-selected=\"false\"` never exists on an unselected button in any engine — there's no attribute present for `[data-selected]` to match, and no window for Safari to remove it late. Related: the compiled rule on the page is class-scoped (`.st-emotion-cache-XXXX[data-selected]:not([data-disabled])`) rather than the bare `[data-selected]` selector, though that's secondary to the attribute never being there.\n\nSince you're clearly seeing it, I suspect something in your app that the minimal snippet doesn't have. Two things would help a lot:\n\n- Your exact Safari version, and whether it was macOS or iOS. I could only test 26.6.2 on macOS, and I don't have an iOS device to check.\n- Whether the app has any custom CSS, a theme beyond `primaryColor`, or custom components. This follows on from the question above — anything injecting styles that match `.stButtonGroup button` could paint the pills without any `data-selected` involved.\n\nIf you can still reproduce it, running this in Safari's console on the affected page would tell us which half of the problem it is:\n\n```js\ndocument.querySelectorAll('[data-testid=stButtonGroup] button').forEach(b =>\n  console.log(b.textContent.trim(), '| data-selected:', b.hasAttribute('data-selected'), '| border:', getComputedStyle(b).borderColor))\n```\n\nIf `data-selected` comes back `true` on options you haven't clicked, it's a state bug and I'd want your Safari version to chase it. If it's `false` but the border is still indigo, then something other than that rule is doing the painting, and whatever custom CSS is in the app is the place to look.",
+    "created_at": "2026-10-01T16:45:45Z",
+    "updated_at": "2026-10-01T16:45:45Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17074#issuecomment-5936092396",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17074
+  },
+  {
+    "id": 5191236920,
+    "body": "Our team is also experiencing this issue! Thank you @sr2595 for raising this issue!",
+    "created_at": "2026-08-05T11:38:02Z",
+    "updated_at": "2026-08-05T11:38:21Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5191236920",
+    "author_association": "NONE",
+    "issue_number": 16341
+  },
+  {
+    "id": 5191547300,
+    "body": "I run into the same issue. It can be fixed by constraining starlette with :\n\n```\n\"starlette<1.4.0\",\n```",
+    "created_at": "2026-08-05T12:10:58Z",
+    "updated_at": "2026-08-05T12:10:58Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5191547300",
+    "author_association": "NONE",
+    "issue_number": 16341
+  },
+  {
+    "id": 5191608874,
+    "body": "plus 1 on the above, using \"starlette<1.4.0\" (or starlette==1.3.1 ) resolved the issue immediately",
+    "created_at": "2026-08-05T12:17:27Z",
+    "updated_at": "2026-08-05T12:17:39Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5191608874",
+    "author_association": "NONE",
+    "issue_number": 16341
+  },
+  {
+    "id": 5191743674,
+    "body": "> plus 1 on the above, using \"starlette<1.4.0\" (or starlette==1.3.1 ) resolved the issue immediately\n\nThanks! That fixed it immediately. Adding starlette<1.4.0 to requirements.txt solved the deployment issue. Really appreciate the help!",
+    "created_at": "2026-08-05T12:31:29Z",
+    "updated_at": "2026-08-05T12:31:29Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5191743674",
+    "author_association": "NONE",
+    "issue_number": 16341
+  },
+  {
+    "id": 5191988466,
+    "body": "I encountered the same issue, and pinning Streamlit to version 1.56.0 (streamlit==1.56.0) resolved it for me. Hopefully, an upstream fix will be released in a future update.",
+    "created_at": "2026-08-05T12:55:30Z",
+    "updated_at": "2026-08-05T12:55:30Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5191988466",
+    "author_association": "NONE",
+    "issue_number": 16341
+  },
+  {
+    "id": 5192002060,
+    "body": "## Update\n\nThe Starlette 1.4.0 update breaks Streamlit :( I have reported this [here](https://github.com/Kludex/starlette/issues/3414), and we are working on a fix + patch for Streamlit. This will likely be released today. The current suggested workaround is to pin `starlette<1.4.0` in your requirements.",
+    "created_at": "2026-08-05T12:56:46Z",
+    "updated_at": "2026-08-05T13:00:43Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5192002060",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16341
+  },
+  {
+    "id": 5192015075,
+    "body": "Thanks for the report! We are also working on pinning the dependency automatically on CC to <1.4 until a patch is out.",
+    "created_at": "2026-08-05T12:57:58Z",
+    "updated_at": "2026-08-05T12:57:58Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5192015075",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16341
+  },
+  {
+    "id": 5193518470,
+    "body": "## Update\n\nWe released a patch (1.61.1) that should resolve the issue. Please make sure to update to the latest Streamlit version",
+    "created_at": "2026-08-05T15:05:59Z",
+    "updated_at": "2026-08-05T15:05:59Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5193518470",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16341
+  },
+  {
+    "id": 5193836919,
+    "body": "## Update\n\nStarlette also released a patch (1.4.1) that resolves the issue for older Streamlit versions. Closing this since I believe we did everything that can be done here to mitigate this issue.",
+    "created_at": "2026-08-05T15:32:48Z",
+    "updated_at": "2026-08-05T15:32:48Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16341#issuecomment-5193836919",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16341
+  },
+  {
+    "id": 4991116049,
+    "body": "@sallib Thanks for reporting this issue. This looks like an intended change by `websockets` so there might be a valid reason to exclude non-ASCII header. It would be good if you report this to the https://github.com/python-websockets/websockets repo as well to get more clarity on why this was done.",
+    "created_at": "2026-07-16T11:07:23Z",
+    "updated_at": "2026-07-16T11:07:23Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-4991116049",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16030
+  },
+  {
+    "id": 4994122921,
+    "body": "We are seeing the same symptom, but the immediate exception is in **uvicorn**, not in websockets itself.\n\n**Environment where we reproduced it:**\n- Streamlit 1.58.0 / 1.59.2\n- uvicorn 0.51.0\n- websockets 16.1\n- Python 3.10 / 3.14\n- Reverse proxy: nginx + Authentik, forwarding user display-name headers (e.g. `X-authentik-name: Céline`)\n\n**Traceback:**\n```\n  File \".../uvicorn/protocols/websockets/websockets_sansio_impl.py\", line 196, in <listcomp>\n    (key.encode(\"ascii\"), value.encode(\"ascii\", errors=\"surrogateescape\"))\nUnicodeEncodeError: 'ascii' codec can't encode characters in position 4-5: ordinal not in range(128)\n```\n\n**What's happening:**\n- `websockets` 16.x decodes incoming HTTP header values as ISO-8859-1 (latin-1). A byte like `0xE9` therefore becomes the character `é` (U+00E9) by the time uvicorn sees it.\n- `uvicorn 0.51.0` then tries to build the ASGI `headers` list with `value.encode(\"ascii\", errors=\"surrogateescape\")`.\n- For a real non-ASCII character such as `é` (U+00E9) this is impossible, so the WebSocket handshake aborts.\n\n**Note on the workaround `websockets<16.1`:** pinning websockets may avoid websockets-side validation, but it did **not** fix the above `UnicodeEncodeError` for us, because the crash is in uvicorn's re-encoding of the header value.\n\n**Manual workaround:**\nIn `uvicorn/protocols/websockets/websockets_sansio_impl.py`, in `handle_connect`, change the header listcomp so values are encoded back with `latin-1` (which preserves the original bytes, because websockets decoded them with latin-1):\n\n```python\n(key.encode(\"ascii\"), value.encode(\"latin-1\"))\n```\n\n**Suggested fix:**\nUvicorn should encode WebSocket header values with `latin-1` (or at least preserve the ISO-8859-1 decoded bytes) when building the ASGI `scope` in `websockets_sansio_impl.py`.",
+    "created_at": "2026-07-16T16:15:09Z",
+    "updated_at": "2026-07-16T16:15:09Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-4994122921",
+    "author_association": "NONE",
+    "issue_number": 16030
+  },
+  {
+    "id": 4997082874,
+    "body": "I think this issue can be closed in favor of https://github.com/Kludex/uvicorn/issues/3035, unless you want to keep it open until resolved in uvicorn.",
+    "created_at": "2026-07-16T22:12:31Z",
+    "updated_at": "2026-07-16T22:12:31Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-4997082874",
+    "author_association": "NONE",
+    "issue_number": 16030
+  },
+  {
+    "id": 4997130194,
+    "body": "Can you take care of filing the bug against Authelia? They should really not send non-ASCII headers.",
+    "created_at": "2026-07-16T22:19:18Z",
+    "updated_at": "2026-07-16T22:19:18Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-4997130194",
+    "author_association": "NONE",
+    "issue_number": 16030
+  },
+  {
+    "id": 4999915477,
+    "body": "i created this issue: https://github.com/goauthentik/authentik/issues/24156",
+    "created_at": "2026-07-17T06:57:22Z",
+    "updated_at": "2026-07-17T06:57:22Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-4999915477",
+    "author_association": "NONE",
+    "issue_number": 16030
+  },
+  {
+    "id": 5005738833,
+    "body": "### ✅ Confirmed — reproduced end-to-end\n\nReproduced on a clean environment. A fresh `pip install streamlit==1.58.0` silently resolves to the broken combination:\n\n- `streamlit==1.58.0`, `uvicorn==0.51.0`, `websockets==16.1`\n\nStreamlit 1.58 selects uvicorn's `websockets-sansio` protocol (uvicorn ≥ 0.44.0), so this is the affected path.\n\n**Repro:** raw WebSocket handshake to `/_stcore/stream` simulating a forward-auth proxy injecting a display-name header:\n\n| Header value | Result |\n|---|---|\n| `X-Authentik-Name: Celine` (ASCII) | `101 Switching Protocols` ✅ |\n| `X-Authentik-Name: Céline` (raw byte `0xE9`) | connection dropped, **no response** ❌ |\n\nServer traceback matches @chassotce's report exactly:\n\n```\nFile \".../uvicorn/protocols/websockets/websockets_sansio_impl.py\", line 196, in handle_connect\n    (key.encode(\"ascii\"), value.encode(\"ascii\", errors=\"surrogateescape\"))\nUnicodeEncodeError: 'ascii' codec can't encode character '\\xe9' in position 1: ordinal not in range(128)\n```\n\n### Root cause (the precise regression)\n\nThe changelog phrase *\"Blocked non-ASCII values in Headers\"* is a little misleading for this case — websockets 16.1's header-value regex `[\\x09\\x20-\\x7e\\x80-\\xff]*` still **allows** high bytes, so `0xE9` passes through. The actual break is a change in how the value is **decoded**:\n\n- **websockets 16.0** — `http11.py`: `value = raw_value.decode(\"ascii\", \"surrogateescape\")` → `é` becomes surrogate `U+DCE9`, which uvicorn's `value.encode(\"ascii\", errors=\"surrogateescape\")` round-trips cleanly back to `0xE9`. ✅\n- **websockets 16.1** — `http11.py`: `value = raw_value.decode(\"iso-8859-1\")` → `é` becomes the real char `U+00E9`, which uvicorn's surrogateescape re-encode **cannot** encode → `UnicodeEncodeError` → handshake aborts. ❌\n\n(16.1's `parse_headers` docstring still claims *\"Non-ASCII characters are represented with surrogate escapes,\"* which no longer matches its own code — worth flagging upstream.)\n\n### Two corrections/notes for triage\n\n1. **Dependency constraint.** The current constraint (both `develop` and 1.58.0) is `websockets>=12.0.0` with **no upper bound** — not `<17`. So 16.1 (and anything newer) is fully permitted, and fresh installs pull it.\n2. **Workaround discrepancy resolved.** The reporter says pinning `websockets<16.1` fixes it; @chassotce says it didn't. In this exact stack (streamlit 1.58.0 / uvicorn 0.51.0), **`websockets==16.0` makes the non-ASCII handshake succeed** (101, no crash) — so the pin *does* work here. @chassotce's result was likely a different websockets/uvicorn combination (Authentik + Python 3.10/3.14).\n\n### Possible Streamlit-side mitigations\n\n- Add an upper bound / exclude the broken range in `lib/pyproject.toml` (e.g. `websockets>=12.0.0,!=16.1` or a tested cap), and/or\n- Track the upstream fix — this is fundamentally a websockets 16.1 ↔ uvicorn incompatibility (uvicorn should re-encode with `latin-1` to preserve the ISO-8859-1 bytes websockets now produces).",
+    "created_at": "2026-07-17T17:22:34Z",
+    "updated_at": "2026-07-17T17:22:34Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-5005738833",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 16030
+  },
+  {
+    "id": 5005956865,
+    "body": "> The changelog phrase \"Blocked non-ASCII values in Headers\" \n\nIt referred to setting values in headers for outgoing HTTP messages, not parsing values in incoming messages. I plan to clarify the changelog.",
+    "created_at": "2026-07-17T17:50:13Z",
+    "updated_at": "2026-07-17T17:50:13Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-5005956865",
+    "author_association": "NONE",
+    "issue_number": 16030
+  },
+  {
+    "id": 5007886863,
+    "body": "As a stopgap measure, I just released websockets 16.1.1 which undoes the problematic change in 16.1.\n\nThe change will happen in websockets 17.0, where it's properly documented as a backwards incompatible change, and I'll work with the maintainer of uvicorn to fix the problem by then.",
+    "created_at": "2026-07-17T22:01:51Z",
+    "updated_at": "2026-07-17T22:01:51Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-5007886863",
+    "author_association": "NONE",
+    "issue_number": 16030
+  },
+  {
+    "id": 5010602072,
+    "body": "@aaugustin, thanks for taking a look and doing a quick patch! With that patch, I'm going to close this issue here and will keep track of the [upstream uvicorn issue](https://github.com/Kludex/uvicorn/issues/3035).",
+    "created_at": "2026-07-18T08:34:23Z",
+    "updated_at": "2026-07-18T08:36:17Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16030#issuecomment-5010602072",
+    "author_association": "COLLABORATOR",
+    "issue_number": 16030
+  },
+  {
+    "id": 5788938484,
+    "body": "Fork / working prototype:\n\nhttps://github.com/Isllanrx/streamlit/tree/feature/cache-data-cow",
+    "created_at": "2026-09-23T04:15:24Z",
+    "updated_at": "2026-09-23T04:15:24Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5788938484",
+    "author_association": "NONE",
+    "issue_number": 17084
+  },
+  {
+    "id": 5795857392,
+    "body": "@Isllanrx thanks for filing this request -- curious, do you have an app where you are using Streamlit and running into this limitation? Anything you can add about your use case would be helpful 🙏",
+    "created_at": "2026-09-23T13:37:08Z",
+    "updated_at": "2026-09-23T13:37:08Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5795857392",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17084
+  },
+  {
+    "id": 5796232575,
+    "body": "@sfc-gh-lwilby-1  @mayagbarnes  Yes. I’m currently using Streamlit in a production application at my company, and this is the exact problem that motivated me to work on this proposal.\n\nThe application uses SQL Server 2017 through pyodbc and processes relatively large datasets with st.cache_data. Because each cache hit can involve deserialization and additional memory allocation, memory usage can increase significantly under concurrent sessions. In our Kubernetes environment, this has repeatedly caused pods to exceed their memory limits and get OOM-killed.\n\nI built this prototype based on that real-world workload. With copy=\"cow\", repeated reads can reuse the cached object’s underlying data while still isolating mutations between callers, which resulted in a significant reduction in memory allocation in my benchmarks.\n\nSo this proposal came directly from a production issue I’m dealing with rather than from a purely theoretical optimization.",
+    "created_at": "2026-09-23T14:01:14Z",
+    "updated_at": "2026-09-23T14:18:30Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5796232575",
+    "author_association": "NONE",
+    "issue_number": 17084
+  },
+  {
+    "id": 5796372126,
+    "body": "@sfc-gh-lwilby-1  To give you more concrete context, this proposal came directly from a production workload where we were hitting this limitation in practice.\n\n### 1. Production Architecture & The Memory Bottleneck\n\nWe run an enterprise indicators and metrics application on Kubernetes, with pods limited to **2 vCPU and 4 GB of RAM**. The application reads data from **SQL Server 2017 via `pyodbc`**, as well as a hybrid historical data lake containing hundreds of monthly Parquet files.\n\nUnder concurrent usage, the default `st.cache_data` behavior became a significant memory bottleneck. On cache hits, cached values are deserialized for each caller, so multiple concurrent sessions reading the same large DataFrame can result in multiple in-memory copies of essentially the same data.\n\nWith approximately **10–50 concurrent users**, some of our cached DataFrames were in the **15–70 MB** range uncompressed. Under load, process RSS could grow to approximately **3.0–3.9 GB**, eventually causing Kubernetes to terminate the pod with **OOMKilled (exit 137)**.\n\n### 2. The Rust Experiment\n\nBefore working on `copy=\"cow\"`, I also built a native Rust component (`indicadores_core`) using **PyO3**, `pyo3-arrow`, and Arrow/Parquet to optimize the cold path for historical data ingestion and filtering.\n\nThe Rust implementation produced meaningful improvements:\n\n- **30–40% lower CPU time** for ingestion under Linux\n- **1.4×–1.6× higher throughput** under concurrent load\n\nHowever, the stress tests revealed that improving the ingestion path did not solve the main memory problem. Once the data crossed into Python, Streamlit could still create multiple copies of the same DataFrame across concurrent callers.\n\nThat led to an important finding:\n\n> Optimizing data ingestion can reduce CPU cost and cold-path latency, but it does not address the per-caller memory duplication on `st.cache_data` cache hits.\n\n### 3. The Copy-on-Write Approach\n\nThe next step was to introduce a process-level shared cache for the hot path and return shallow copies backed by **Pandas 3 Copy-on-Write** semantics.\n\nFor DataFrames, the implementation uses `copy(deep=False)` while also creating defensive copies of the index and columns so that metadata mutations do not leak between callers.\n\nWe then stress-tested the approach in a Linux container matching our Kubernetes limits (`2 CPUs`, `4 GB RAM`) with **50 concurrent sessions** against production-like workloads.\n\n| Mode | Peak RSS | p95 Latency | Throughput | Pod Status |\n| --- | ---: | ---: | ---: | --- |\n| Standard deserialize/copy | 2.67–3.92 GB | 3.3–5.8 s | 10.6–17.4 req/s | OOMKilled |\n| Native Rust reader only | 3.02–3.79 GB | 2.6–4.1 s | 16.0–27.0 req/s | OOMKilled |\n| CoW shared cache | **251–303 MB** | **134–221 ms** | **622–977 req/s** | **Stable, 0 OOMs** |\n\nThe most significant result was memory usage: peak RSS dropped from approximately **3.9 GB to ~270 MB**, which eliminated the OOMKills in this workload.\n\nWe also verified mutation isolation: callers could modify their returned DataFrames independently without modifying the cached baseline or affecting other callers.\n\n### 4. Why This Led to `copy=\"cow\"`\n\nThis exposed a gap between the two existing cache models:\n\n- `st.cache_resource` allows objects to be shared, but callers operate on the same object and mutations are therefore shared.\n- `st.cache_data` provides caller isolation, but achieves that isolation through serialization/deserialization and independent copies.\n\nFor large analytical datasets, there is a useful middle ground:\n\n**shared underlying data + isolated caller-visible objects + copy-on-write on mutation.**\n\nThat is what `copy=\"cow\"` is intended to provide as an **opt-in** mode, while keeping the existing `st.cache_data` behavior unchanged by default.\n\nThe prototype was built specifically from this production use case, and the reduction in memory allocation is the main reason I believe this behavior could be useful in Streamlit itself.",
+    "created_at": "2026-09-23T14:10:06Z",
+    "updated_at": "2026-09-23T14:10:06Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5796372126",
+    "author_association": "NONE",
+    "issue_number": 17084
+  },
+  {
+    "id": 5796534802,
+    "body": "@Isllanrx thanks for this additional context -- we are working on various performance related improvements currently. I will take a look at how this fits in as well.",
+    "created_at": "2026-09-23T14:19:42Z",
+    "updated_at": "2026-09-23T14:19:42Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5796534802",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17084
+  },
+  {
+    "id": 5796648865,
+    "body": "@Isllanrx \nReally like this approach! The idea of combining the isolation guarantees of st.cache_data with copy-on-write semantics is really interesting, especially for large DataFrames and concurrent workloads.\n\nThe production results make the proposal even more compelling — reducing peak memory from ~3.9 GB to ~270 MB while maintaining mutation isolation is a huge improvement. I also really like that this is opt-in, so existing applications can keep the current behavior without any changes.\n\nGreat work on the prototype and especially on the stress testing\n\n@sfc-gh-lwilby-1  @mayagbarnes",
+    "created_at": "2026-09-23T14:26:43Z",
+    "updated_at": "2026-09-23T14:26:43Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5796648865",
+    "author_association": "NONE",
+    "issue_number": 17084
+  },
+  {
+    "id": 5797316830,
+    "body": "@sfc-gh-lwilby-1  @mayagbarnes @Isllanrx \n\nI found this solution really interesting, especially because it addresses a very specific limitation of `st.cache_data` without changing the existing behavior for users who don't need it.\n\nThe idea of combining shared underlying data with copy-on-write semantics seems like a useful middle ground between `st.cache_data` and `st.cache_resource`. You can keep the isolation between callers while avoiding the cost of creating multiple full copies of large DataFrames on every cache hit.\n\nWhat I found particularly interesting was the production context. The fact that this came from a real workload where concurrent sessions could push a 4 GB Kubernetes pod toward OOM conditions makes the problem much more concrete. The stress-test results are also quite compelling, especially the reduction in peak RSS from several gigabytes to a few hundred megabytes while still maintaining mutation isolation.\n\nI also think it's valuable that the prototype wasn't focused only on benchmark latency, but also tested concurrent mutations, nested structures, cache eviction, `.clear()`, and large DataFrames. Those are exactly the areas where a copy-on-write implementation could potentially introduce subtle isolation issues.\n\nOverall, I think `copy=\"cow\"` is a very interesting approach for large analytical workloads. It seems to address a real gap between the current cache models while keeping the existing behavior as the default. Great work on the prototype and on documenting the production use case and stress testing!",
+    "created_at": "2026-09-23T15:06:09Z",
+    "updated_at": "2026-09-23T15:06:09Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5797316830",
+    "author_association": "NONE",
+    "issue_number": 17084
+  },
+  {
+    "id": 5798498867,
+    "body": "Thank you for the feedback. I hope you’ll be able to implement this in the future. I’m happy to help if needed. @lukasmasuch @sfc-gh-lwilby-1 @mayagbarnes",
+    "created_at": "2026-09-23T16:21:04Z",
+    "updated_at": "2026-09-23T16:21:04Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5798498867",
+    "author_association": "NONE",
+    "issue_number": 17084
+  },
+  {
+    "id": 5800149960,
+    "body": "@Isllanrx @MarceloPassM @tonyzinh I agree this sounds like a good extension to consider for `st.cache_data` -- but I am also wondering what is going on with these responses? This all looks very agentic to me. It's totally fine to use agents to add comments and issues, but if you could give me some more info on whether you know each other or somehow have agents monitoring issues for certain themes to comment, I would be interested!",
+    "created_at": "2026-09-23T18:00:28Z",
+    "updated_at": "2026-09-23T18:00:28Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5800149960",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17084
+  },
+  {
+    "id": 5800648716,
+    "body": "@sfc-gh-lwilby-1 the three of us work for the same company kkkkkkkk, which is why we reported it. Sorry if my English sounds a little weird, I’m using GPT to help translate it properly",
+    "created_at": "2026-09-23T18:34:10Z",
+    "updated_at": "2026-09-23T18:34:10Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5800648716",
+    "author_association": "NONE",
+    "issue_number": 17084
+  },
+  {
+    "id": 5800757065,
+    "body": "@Isllanrx no problem with the messages -- everything is very clear, just looks like it is using agents (which is completely fine), I was just curious because you seem to be in different locations/companies and I was wondering if we were getting some kind of agent monitoring of issues. \n\nThanks again for the request!",
+    "created_at": "2026-09-23T18:41:20Z",
+    "updated_at": "2026-09-23T18:41:20Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17084#issuecomment-5800757065",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 17084
+  },
+  {
+    "id": 5619072760,
+    "body": "Thanks @icemastr I was able to reproduce this with the app here: https://issues.streamlit.app/?issue=gh-16909",
+    "created_at": "2026-09-10T12:59:59Z",
+    "updated_at": "2026-09-10T12:59:59Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/16909#issuecomment-5619072760",
+    "author_association": "CONTRIBUTOR",
+    "issue_number": 16909
+  },
+  {
+    "id": 5733869606,
+    "body": "Two follow-ups from reproducing this more closely. Both measured on 1.63.0 and 1.64.0.\n\n**The error is not sticky.** The first `get_config_options()` call raises, but it has already stored the parsed options, so a *second* call succeeds — and reports the port that supposedly does not work:\n\n```python\nimport streamlit.config as config\nconfig.get_config_options()              # RuntimeError: server.port does not work ...\nconfig.get_config_options()              # ok\nprint(config.get_option(\"server.port\"))  # 9999\n```\n\nWhether anyone sees this at all therefore depends on whether something parsed configuration first, which may be why a report of it looks intermittent from the outside.\n\n**Under `AppTest` the message never reaches the caller.** With AppTest as the first thing to parse, the `RuntimeError` is raised inside `ScriptRunner.scriptThread`, so it exists only as a thread traceback on stderr, and `at.run()` surfaces something else entirely. I hit both of these across runs (1.64.0), apparently depending on timing:\n\n- `KeyError: 'st.session_state has no key \"$$STREAMLIT_INTERNAL_KEY_SCRIPT_RUN_WITHOUT_ERRORS\"'`\n- `RuntimeError: AppTest script run timed out after 15(s)`\n\nControl: a dev-mode install with *no* port configured runs AppTest normally (`at.exception` empty, output rendered), so it is the combination rather than dev mode by itself.\n\nThat combination is my practical case for warning and ignoring rather than raising: a test suite or a startup path that goes through AppTest gets an error naming neither the port nor the config file, so the one actionable sentence is nowhere in what the caller sees.",
+    "created_at": "2026-09-18T17:40:45Z",
+    "updated_at": "2026-09-18T17:40:45Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17031#issuecomment-5733869606",
+    "author_association": "NONE",
+    "issue_number": 17031
+  },
+  {
+    "id": 5852365908,
+    "body": "Hi, I'd like to work on this. I'm planning to implement the 'warn and ignore' approach suggested above and improve the error message.",
+    "created_at": "2026-09-27T03:41:25Z",
+    "updated_at": "2026-09-27T03:41:25Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17031#issuecomment-5852365908",
+    "author_association": "NONE",
+    "issue_number": 17031
+  },
+  {
+    "id": 5853523064,
+    "body": "After reading the code, I see two distinct cases that may need different handling:\n\n**Case 1:   Normal users misidentified as dev mode** (e.g. `pip install --target`): The `RuntimeError` is a false positive: their port setting would actually work correctly, but the error fires anyway due to the path-based heuristic.\n\n**Case 2:   Actual Streamlit developers**: The `RuntimeError` is intentional, but it doesn't actually prevent the problem. The port value is stored in `_config_options` before `_check_conflicts()` raises, so a second call to `get_config_options()` succeeds with the wrong port set, and the app breaks later when WebSocket can't connect.\n\n**Proposed fixes:**\n\n- **Option A:  Change `raise` to `warning`:** Helps Case 1 users with actionable guidance. But for Case 2, the warning may be missed and the app continues running before failing silently, harder to debug than a `RuntimeError` at startup.\n\n- **Option B:  Tighten the `developmentMode` heuristic:** Check for `frontend/` or `package.json` in the Streamlit source tree, which only exist in a true source checkout:\n\n```python\nstreamlit_dir = os.path.dirname(os.path.dirname(__file__))\nis_true_dev = (\n    os.path.isdir(os.path.join(streamlit_dir, \"frontend\"))\n    or os.path.isfile(os.path.join(streamlit_dir, \"package.json\"))\n)\n```\n\nThis fixes Case 1 without changing behavior for Case 2.\n\nA combination of both may also make sense. Happy to implement whichever direction you prefer.",
+    "created_at": "2026-09-27T06:49:43Z",
+    "updated_at": "2026-09-27T06:49:43Z",
+    "html_url": "https://github.com/streamlit/streamlit/issues/17031#issuecomment-5853523064",
+    "author_association": "NONE",
+    "issue_number": 17031
+  }
+]

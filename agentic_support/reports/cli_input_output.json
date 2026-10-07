@@ -1,0 +1,90 @@
+[
+  {
+    "title": "۱. ایجاد پروندهٔ نمایشی",
+    "args": [
+      "init-demo"
+    ],
+    "human_input": null,
+    "output": "{\n  \"id\": \"demo\",\n  \"title\": \"Streamlit app stuck loading behind nginx\",\n  \"body\": \"Designed demo: the page keeps loading after deployment. The cause is unknown.\",\n  \"facts\": {},\n  \"checks\": [],\n  \"history\": [],\n  \"sources\": [],\n  \"unknowns\": [],\n  \"summary\": {},\n  \"comments\": [],\n  \"state\": \"open\",\n  \"labels\": [],\n  \"revision\": 0,\n  \"turn\": 0\n}\n"
+  },
+  {
+    "title": "۲. انتخاب ابزارها و توقف برای تأیید",
+    "args": [
+      "--demo",
+      "run",
+      "demo"
+    ],
+    "human_input": null,
+    "output": "MODE: DEMO - fake model, NO API\n[TOOL] read_case\n[TOOL] search_docs\n[TOOL] draft_reply\n[TOOL] apply_change\n{\n  \"waiting_for_human\": [\n    {\n      \"case_id\": \"demo\",\n      \"proposal_id\": 1,\n      \"revision\": 0,\n      \"hash\": \"fc518810baea82fe37d07bd51ed86ae7b87cde30740c1668684cac8c08479d89\",\n      \"payload\": {\n        \"comment\": \"نسخهٔ Streamlit محیطی که خطا دارد چیست؟\\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است.\"\n      },\n      \"choices\": [\n        \"approve\",\n        \"edit\",\n        \"reject\"\n      ]\n    }\n  ],\n  \"published\": false\n}\n{\n  \"api_totals_all_live_runs\": {\n    \"attempts\": 0,\n    \"successful_responses\": 0,\n    \"input_tokens\": 0,\n    \"output_tokens\": 0,\n    \"accounted_usd\": 0\n  }\n}\n"
+  },
+  {
+    "title": "۳. ویرایش انسانی؛ هنوز منتشر نشده",
+    "args": [
+      "--demo",
+      "review",
+      "demo"
+    ],
+    "human_input": "edit\n{\"comment\": \"لطفاً نسخهٔ Streamlit محیط دارای خطا را ارسال کنید؛ مقایسهٔ نسخه‌ها به آن وابسته است.\"}\n",
+    "output": "MODE: DEMO - fake model, NO API\n{\n  \"waiting_for_human\": [\n    {\n      \"case_id\": \"demo\",\n      \"proposal_id\": 1,\n      \"revision\": 0,\n      \"hash\": \"fc518810baea82fe37d07bd51ed86ae7b87cde30740c1668684cac8c08479d89\",\n      \"payload\": {\n        \"comment\": \"نسخهٔ Streamlit محیطی که خطا دارد چیست؟\\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است.\"\n      },\n      \"choices\": [\n        \"approve\",\n        \"edit\",\n        \"reject\"\n      ]\n    }\n  ]\n}\napprove / edit / reject: New payload JSON (not approved yet): [TOOL] read_case\n[TOOL] search_docs\n[TOOL] draft_reply\n[TOOL] apply_change\n{\n  \"waiting_for_human\": [\n    {\n      \"case_id\": \"demo\",\n      \"proposal_id\": 2,\n      \"revision\": 0,\n      \"hash\": \"ddd6d54d1d3809d19b0dd551bad8dd195ad76e7c553005a12530af91de0928f8\",\n      \"payload\": {\n        \"comment\": \"لطفاً نسخهٔ Streamlit محیط دارای خطا را ارسال کنید؛ مقایسهٔ نسخه‌ها به آن وابسته است.\"\n      },\n      \"choices\": [\n        \"approve\",\n        \"edit\",\n        \"reject\"\n      ]\n    }\n  ],\n  \"published\": false\n}\n{\n  \"api_totals_all_live_runs\": {\n    \"attempts\": 0,\n    \"successful_responses\": 0,\n    \"input_tokens\": 0,\n    \"output_tokens\": 0,\n    \"accounted_usd\": 0\n  }\n}\n"
+  },
+  {
+    "title": "۴. تأیید متن ویرایش‌شده و ثبت یک نظر",
+    "args": [
+      "--demo",
+      "review",
+      "demo"
+    ],
+    "human_input": "approve\n",
+    "output": "MODE: DEMO - fake model, NO API\n{\n  \"waiting_for_human\": [\n    {\n      \"case_id\": \"demo\",\n      \"proposal_id\": 2,\n      \"revision\": 0,\n      \"hash\": \"ddd6d54d1d3809d19b0dd551bad8dd195ad76e7c553005a12530af91de0928f8\",\n      \"payload\": {\n        \"comment\": \"لطفاً نسخهٔ Streamlit محیط دارای خطا را ارسال کنید؛ مقایسهٔ نسخه‌ها به آن وابسته است.\"\n      },\n      \"choices\": [\n        \"approve\",\n        \"edit\",\n        \"reject\"\n      ]\n    }\n  ]\n}\napprove / edit / reject: [TOOL] read_case\n[TOOL] search_docs\n[TOOL] draft_reply\n[TOOL] apply_change\nDEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"demo\", \"proposal_id\": 2, \"state\": \"open\", \"comment_count\": 1}\n{\n  \"api_totals_all_live_runs\": {\n    \"attempts\": 0,\n    \"successful_responses\": 0,\n    \"input_tokens\": 0,\n    \"output_tokens\": 0,\n    \"accounted_usd\": 0\n  }\n}\n"
+  },
+  {
+    "title": "۵. پاسخ کاربر در نوبت بعد",
+    "args": [
+      "update",
+      "demo",
+      "--message",
+      "نسخهٔ محیط خطادار 1.50.0 است.",
+      "--facts",
+      "{\"streamlit_version\": \"1.50.0\"}"
+    ],
+    "human_input": null,
+    "output": "{\n  \"body\": \"Designed demo: the page keeps loading after deployment. The cause is unknown.\",\n  \"checks\": [],\n  \"comments\": [\n    {\n      \"body\": \"لطفاً نسخهٔ Streamlit محیط دارای خطا را ارسال کنید؛ مقایسهٔ نسخه‌ها به آن وابسته است.\",\n      \"proposal_id\": 2\n    }\n  ],\n  \"facts\": {\n    \"streamlit_version\": \"1.50.0\"\n  },\n  \"history\": [\n    {\n      \"message\": \"نسخهٔ محیط خطادار 1.50.0 است.\",\n      \"facts\": {\n        \"streamlit_version\": \"1.50.0\"\n      },\n      \"check\": null\n    }\n  ],\n  \"id\": \"demo\",\n  \"labels\": [],\n  \"revision\": 2,\n  \"sources\": [\n    {\n      \"chunk_id\": \"doc:remote-start:0:0\",\n      \"commit\": \"695e6ce2fb1b23afc6df66b40420ab0013ad72fd\",\n      \"id\": \"doc:remote-start:0\",\n      \"kind\": \"docs\",\n      \"score\": 0.1332,\n      \"section\": \"App is not loading when running remotely\",\n      \"text\": \"# App is not loading when running remotely Below are a few common errors that occur when users spin up their own solution to host a Streamlit app remotely. To learn about a deceptively simple way to host Streamlit apps that avoids all the issues below, check out [Streamlit Community Cloud](https://streamlit.io/cloud).\",\n      \"title\": \"remote-start\",\n      \"url\": \"https://github.com/streamlit/docs/blob/695e6ce2fb1b23afc6df66b40420ab0013ad72fd/content/kb/deployments/remote-start.md\",\n      \"version\": null\n    },\n    {\n      \"chunk_id\": \"issue:10341:300\",\n      \"created_at\": \"2025-02-04T22:11:57Z\",\n      \"id\": \"issue:10341\",\n      \"issue_number\": 10341,\n      \"kind\": \"issue\",\n      \"score\": 0.1295,\n      \"section\": \"Report body\",\n      \"text\": \"version. ### Debug info - Streamlit version: Streamlit, version 1.41.1 - Python version: Python 3.11.11 - Operating System: Ubuntu 24.04.1 LTS - Browser: Google Chrome 132.0.6834.159 ### Additional Information _No response_\",\n      \"title\": \"Nginx Rewrite Interferes with Streamlit WebSocket Calls\",\n      \"updated_at\": \"2025-04-01T18:44:30Z\",\n      \"url\": \"https://github.com/streamlit/streamlit/issues/10341\",\n      \"version\": null\n    },\n    {\n      \"chunk_id\": \"issue:15859:0\",\n      \"created_at\": \"2026-07-07T04:35:11Z\",\n      \"id\": \"issue:15859\",\n      \"issue_number\": 15859,\n      \"kind\": \"issue\",\n      \"score\": 0.1065,\n      \"section\": \"Report body\",\n      \"text\": \"### Checklist - [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues. - [x] I added a very descriptive title to this issue. - [x] I have provided sufficient information below to help reproduce this issue. ### Summary The st.date_input calendar popover renders behind the modal surface of st.dialog in 1.59.0, so the calendar is visible but not clickable. This is a regression — the same code worked correctly in 1.57.0 (calendar floated above the dialog). ### Reproducible Code Example ```Python import streamlit as st @st.dialog(\\\"Add Payment\\\") def add_payment(): c_amount, c_due = st.columns(2) c_amount.number_input(\\\"Amount\\\") c_due.date_input(\\\"Due Date\\\") # calendar opens *behind* the dialog if st.button(\\\"Open dialog\\\"): add_payment() ``` ### Steps To Reproduce 1. Run the app above with Streamlit 1.59.0. 2. Click Open dialog. 3. Inside the dialog, click the Due Date field to open the calendar. 4. The calendar popover appears partly/entirely behind the dialog's modal surface and cannot be clicked. ### Expected Behavior The calendar popover renders above the dialog (as it did in 1.57.0) and dates are selectable. ### Current Behavior The calendar popover is stacked below\",\n      \"title\": \"st.date_input calendar renders behind st.dialog overlay (regression in 1.59.0)\",\n      \"updated_at\": \"2026-07-08T11:48:42Z\",\n      \"url\": \"https://github.com/streamlit/streamlit/issues/15859\",\n      \"version\": null\n    },\n    {\n      \"chunk_id\": \"issue:7856:450\",\n      \"created_at\": \"2023-12-19T12:39:40Z\",\n      \"id\": \"issue:7856\",\n      \"issue_number\": 7856,\n      \"kind\": \"issue\",\n      \"score\": 0.0993,\n      \"section\": \"Report body\",\n      \"text\": \"Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36\\\" ``` It seems that the /_stcore/stream endpoint has been permanently removed. Is this the case in streamlit version 1.29.0? What is the new endpoint? ### Reproducible Code Example It should not be the _stcore/stream endpoint removed by streamlit, because there are related requests in the source code ```js /** * The path of the server's websocket endpoint. */ const WEBSOCKET_STREAM_PATH = \\\"_stcore/stream\\\" ``` Testing the _stcore/stream endpoint, nginx doesn't seem to turn it into a ws request <img width=\\\"1731\\\" alt=\\\"image\\\" src=\\\"https://github.com/streamlit/streamlit/assets/7719138/75b334eb-1327-47b0-beb4-2b614754ed7a\\\"> ### Steps To Reproduce _No response_ ### Expected Behavior _No response_ ### Current Behavior _No response_ ### Is this a regression? - [ ] Yes, this used to work in a previous version. ### Debug info - Streamlit version: 1.29.0 - Python version: 3.10 - Operating System: ubuntu - Browser: chrome ### Additional Information _No response_\",\n      \"title\": \"Streamlit and nginx main.ca9076db.js:2 WebSocket connection to 'ws://xxx:8080/_stcore/stream' failed\",\n      \"updated_at\": \"2024-08-15T20:51:20Z\",\n      \"url\": \"https://github.com/streamlit/streamlit/issues/7856\",\n      \"version\": null\n    }\n  ],\n  \"state\": \"open\",\n  \"summary\": {},\n  \"title\": \"Streamlit app stuck loading behind nginx\",\n  \"turn\": 1,\n  \"unknowns\": []\n}\n"
+  },
+  {
+    "title": "۶. سؤال بعدی با توجه به پاسخ قبلی",
+    "args": [
+      "--demo",
+      "run",
+      "demo"
+    ],
+    "human_input": null,
+    "output": "MODE: DEMO - fake model, NO API\n[TOOL] read_case\n[TOOL] search_docs\n[TOOL] draft_reply\n[TOOL] apply_change\n{\n  \"waiting_for_human\": [\n    {\n      \"case_id\": \"demo\",\n      \"proposal_id\": 3,\n      \"revision\": 2,\n      \"hash\": \"cd314fd3125ef82af0098a48bc41169d322ba0c554bcbaf9c473bf97d5760024\",\n      \"payload\": {\n        \"comment\": \"همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند.\"\n      },\n      \"choices\": [\n        \"approve\",\n        \"edit\",\n        \"reject\"\n      ]\n    }\n  ],\n  \"published\": false\n}\n{\n  \"api_totals_all_live_runs\": {\n    \"attempts\": 0,\n    \"successful_responses\": 0,\n    \"input_tokens\": 0,\n    \"output_tokens\": 0,\n    \"accounted_usd\": 0\n  }\n}\n"
+  },
+  {
+    "title": "۷. رد پیشنهاد دوم؛ نظر دیگری ثبت نمی‌شود",
+    "args": [
+      "--demo",
+      "review",
+      "demo"
+    ],
+    "human_input": "reject\n",
+    "output": "MODE: DEMO - fake model, NO API\n{\n  \"waiting_for_human\": [\n    {\n      \"case_id\": \"demo\",\n      \"proposal_id\": 3,\n      \"revision\": 2,\n      \"hash\": \"cd314fd3125ef82af0098a48bc41169d322ba0c554bcbaf9c473bf97d5760024\",\n      \"payload\": {\n        \"comment\": \"همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند.\"\n      },\n      \"choices\": [\n        \"approve\",\n        \"edit\",\n        \"reject\"\n      ]\n    }\n  ]\n}\napprove / edit / reject: [TOOL] read_case\n[TOOL] search_docs\n[TOOL] draft_reply\n[TOOL] apply_change\nDEMO: نتیجهٔ ابزار ثبت شد: {\"status\": \"rejected\", \"applied\": false}\n{\n  \"api_totals_all_live_runs\": {\n    \"attempts\": 0,\n    \"successful_responses\": 0,\n    \"input_tokens\": 0,\n    \"output_tokens\": 0,\n    \"accounted_usd\": 0\n  }\n}\n"
+  },
+  {
+    "title": "۸. مشاهدهٔ رخدادهای ثبت‌شده",
+    "args": [
+      "audit",
+      "demo"
+    ],
+    "human_input": null,
+    "output": "[\n  {\n    \"id\": 1,\n    \"case_id\": \"demo\",\n    \"event\": \"created\",\n    \"detail\": \"{}\",\n    \"at\": \"2026-10-07 15:33:35\"\n  },\n  {\n    \"id\": 2,\n    \"case_id\": \"demo\",\n    \"event\": \"proposed\",\n    \"detail\": \"{\\\"proposal_id\\\": 1}\",\n    \"at\": \"2026-10-07 15:33:36\"\n  },\n  {\n    \"id\": 3,\n    \"case_id\": \"demo\",\n    \"event\": \"proposed\",\n    \"detail\": \"{\\\"proposal_id\\\": 2}\",\n    \"at\": \"2026-10-07 15:33:38\"\n  },\n  {\n    \"id\": 4,\n    \"case_id\": \"demo\",\n    \"event\": \"human_approved\",\n    \"detail\": \"{\\\"proposal_id\\\": 2}\",\n    \"at\": \"2026-10-07 15:33:39\"\n  },\n  {\n    \"id\": 5,\n    \"case_id\": \"demo\",\n    \"event\": \"executed\",\n    \"detail\": \"{\\\"applied\\\": true, \\\"case_id\\\": \\\"demo\\\", \\\"comment_count\\\": 1, \\\"proposal_id\\\": 2, \\\"state\\\": \\\"open\\\"}\",\n    \"at\": \"2026-10-07 15:33:39\"\n  },\n  {\n    \"id\": 6,\n    \"case_id\": \"demo\",\n    \"event\": \"updated\",\n    \"detail\": \"{\\\"fields\\\": [\\\"streamlit_version\\\"], \\\"turn\\\": 1}\",\n    \"at\": \"2026-10-07 15:33:40\"\n  },\n  {\n    \"id\": 7,\n    \"case_id\": \"demo\",\n    \"event\": \"proposed\",\n    \"detail\": \"{\\\"proposal_id\\\": 3}\",\n    \"at\": \"2026-10-07 15:33:41\"\n  },\n  {\n    \"id\": 8,\n    \"case_id\": \"demo\",\n    \"event\": \"human_rejected\",\n    \"detail\": \"{\\\"proposal_id\\\": 3}\",\n    \"at\": \"2026-10-07 15:33:42\"\n  }\n]\n"
+  },
+  {
+    "title": "۹. مشاهدهٔ تعداد درخواست واقعی API",
+    "args": [
+      "cost"
+    ],
+    "human_input": null,
+    "output": "{\n  \"attempts\": 0,\n  \"successful_responses\": 0,\n  \"input_tokens\": 0,\n  \"output_tokens\": 0,\n  \"accounted_usd\": 0\n}\n"
+  }
+]

@@ -1,0 +1,419 @@
+{
+  "E01": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Check the installed version and empty-selection behavior on the provided minimal example; do not claim a fix.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E02": {
+    "category": "answerable",
+    "acceptable_decisions": [
+      "explain",
+      "check"
+    ],
+    "relevant_source_ids": [
+      "doc:widget-behavior:9",
+      "doc:api-multiselect:0"
+    ],
+    "relevance_reason": "Widget identity/options/key behavior directly relates to resetting selections.",
+    "defensible_next_step": "Explain widget identity/key behavior with sources and acknowledge the current-version difference; existing sorted-options/key observations are user evidence.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E03": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:caching:1"
+    ],
+    "relevance_reason": "The basic cache-key/argument mechanism contextualizes the collision report; it does not verify that collision.",
+    "defensible_next_step": "Escalate the distinct-arguments cache-key collision with its reproduction and affected version; do not equate it with ordinary stale-cache behavior.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E04": {
+    "category": "ambiguous",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Ask for one failing Space with a concrete runtime log and environment before treating population statistics as a product bug.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E05": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:widget-behavior:9",
+      "doc:api-selectbox:0"
+    ],
+    "relevance_reason": "Widget identity and selectbox formatting/key parameter definitions contextualize the reported reset.",
+    "defensible_next_step": "Compare format_func/key identity behavior and version; reproduce the dynamic-label reset without asserting a resolved version.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E06": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Escalate the accessibility report with the exact DOM/audit evidence; avoid inventing WCAG conclusions from unrelated widget docs.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E07": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:caching:1"
+    ],
+    "relevance_reason": "The documented function-code/argument cache mechanism contextualizes cross-page cache contamination.",
+    "defensible_next_step": "Compare the two-page cache example and installed version; escalate function-source hashing if confirmed.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E08": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Check exact installed dependency versions and attach the startup traceback; minimal app failure is already reported.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E09": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:widget-behavior:11",
+      "doc:widget-behavior:15"
+    ],
+    "relevance_reason": "Widget removal and cleanup are relevant to hiding/remounting; new persist_state behavior remains uncertain.",
+    "defensible_next_step": "Compare hidden/remounted widget state and lifecycle documentation; preserve the version-specific uncertainty.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E10": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Escalate the browser key-event reproduction and traceback; do not run supplied JavaScript automatically.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E11": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:caching:10"
+    ],
+    "relevance_reason": "Custom hashing documentation is relevant background to hash collision analysis; no fix is asserted.",
+    "defensible_next_step": "Escalate with the collision examples and affected version; custom hashing is background, not proof of a security fix.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E12": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Inspect the actual resolved websockets version and relevant sanitized header characteristics; no speculative fixed release.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E13": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:session-state:6"
+    ],
+    "relevance_reason": "Callback order is behavioral context for a lost callback; nested fragments require further investigation.",
+    "defensible_next_step": "Escalate the nested callback regression with versions and the supplied fragment/dialog reproduction.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E14": {
+    "category": "ambiguous",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Ask for exact Safari/macOS or iOS versions and observed-versus-returned values; respect the already reported Chromium comparison.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E15": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:caching:3"
+    ],
+    "relevance_reason": "Serialization/copy behavior directly contextualizes the reported PicklingError.",
+    "defensible_next_step": "Inspect module reload/class identity and version together with the existing reproduction; generic serialization requirements alone do not explain an intermittent bug.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E16": {
+    "category": "ambiguous",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Ask for the mounted FastAPI/uvicorn configuration and a minimal CookieManager example because they are missing.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E17": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Ask whether installation is editable/source/target and inspect developmentMode before treating server.port as a network failure.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E18": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Escalate the scroll/input behavior using the supplied viewport and minimal app; version is already provided.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E19": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Check the reported Python 3.14 annotation behavior and exact Streamlit version; attach the provided minimal example.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E20": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:remote-start:2"
+    ],
+    "relevance_reason": "WebSocket connectivity is a relevant diagnostic source for a remotely hanging minimal app.",
+    "defensible_next_step": "Ask for sanitized proxy configuration/handshake status and compare direct pod versus proxied access; the small app is already supplied.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E21": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Escalate with the queue-lifecycle evidence; do not pretend generic session-state docs verify the heartbeat implementation.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E22": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Compare typed .01, typed 0.01 and pasted .01 using the provided reproduction; the distinction is already reported.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E23": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:caching:9"
+    ],
+    "relevance_reason": "Ignored input parameters explain why arguments deserve inspection in a connection-cache key; actual implementation still needs checking.",
+    "defensible_next_step": "Request a minimal two-connection example because code and reproduction are absent; inspect effective connection settings without revealing credentials.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E24": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Inspect the resolved Tornado and Streamlit versions and the actual timeout observation; keep reported configuration distinct from verified runtime behavior.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E25": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Escalate the timed fragment/dialog reproduction with version and event sequence; do not ask to recreate the already supplied app.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E26": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Compare multiselect/selectbox Enter behavior and stated old/new versions; preserve the regression evidence.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E27": {
+    "category": "needs_escalation",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:caching:1"
+    ],
+    "relevance_reason": "Input-dependent caching is the expected behavior being contrasted with the parameterized SQL report.",
+    "defensible_next_step": "Check parameter-dependent query caching against the provided SQL example; do not claim a patch or a fixed version.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E28": {
+    "category": "ambiguous",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [
+      "doc:remote-start:2"
+    ],
+    "relevance_reason": "Connectivity troubleshooting is relevant to the reported WebSocket error, without proving a cause.",
+    "defensible_next_step": "Request timestamp/log context for the once-only failure; versions/OS/browser are already supplied and must not be asked again.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E29": {
+    "category": "ambiguous",
+    "acceptable_decisions": [
+      "ask",
+      "check",
+      "escalate"
+    ],
+    "relevant_source_ids": [],
+    "relevance_reason": "No gold retrieval source supplied: a verified diagnosis needs more than general concept documentation.",
+    "defensible_next_step": "Ask for minimal DataFrame/schema and browser/network observations; non-ASCII data is a reported clue, not an established cause.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  },
+  "E30": {
+    "category": "answerable",
+    "acceptable_decisions": [
+      "explain",
+      "check"
+    ],
+    "relevant_source_ids": [
+      "doc:api-number_input:0"
+    ],
+    "relevance_reason": "value=None, step defaults and return type are directly documented in the pinned API docstring.",
+    "defensible_next_step": "Explain the documented value/step/type behavior with a pinned API citation, and qualify applicability to the installed version.",
+    "annotator": "Implementation author; documentary context labels, independent of retrieval outputs; human course-team review recommended.",
+    "root_cause_ground_truth": null
+  }
+}

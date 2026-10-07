@@ -1,0 +1,745 @@
+[
+  {
+    "id": "E01",
+    "family": "17195",
+    "split": "dev",
+    "issue_number": 17195,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17195",
+    "title": "Programmatically set selections fail for empty selection",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nThe example in https://docs.streamlit.io/develop/api-reference/data/st.dataframe titled: \"Example 2: Programmatically set selections\" does not work if we try with empty selections.\n\n### Reproducible Code Example\n\n```Python\nimport pandas as pd\nimport streamlit as st\nfrom numpy.random import default_rng as rng\n\ndf = pd.DataFrame(rng(0).standard_normal((12, 5)), columns=[\"a\", \"b\", \"c\", \"d\", \"e\"])\n\nif st.button(\"Select the first row\"):\n    st.session_state[\"data\"] = {\"selection\": {\"rows\": [0], \"columns\": [], \"cells\": []}}\nif st.button(\"Select no row\"):\n    st.session_state[\"data\"] = {\"selection\": {\"rows\": [], \"columns\": [], \"cells\": []}}\n\nevent = st.dataframe(\n    df,\n    key=\"data\",\n    on_select=\"rerun\",\n    selection_mode=[\"single-row\"],\n)\n\nst.code(event.selection)\n```\n\n### Steps To Reproduce\n\n1. Run the code\n2. Select a row\n3. Click on the button \"Select the first row\", it works as expected\n4. Select a row again\n5. Click on the button \"Select no row\", the dataframe selection state is empty but the table keeps the previous selection.\n\n### Expected Behavior\n\nThe row selection should match the dataframe selection state and be empty.\n\n### Current Behavior\n\nThe dataframe selection state is empty but the table keeps the previous selection and is not empty.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.63.0\n- Python version: 3.12\n- Operating System: WSL Docker\n- Browser: Edge\n\n\n### Additional Information\n\nI remember it worked in Streamlit version 1.57.0 but I am not sure, I may be mistaken.",
+    "topic": "session",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:session-state",
+      "doc:widget-behavior"
+    ],
+    "acceptable_next_steps": [
+      "Check the installed version and empty-selection behavior on the provided minimal example; do not claim a fix."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Check the installed version and empty-selection behavior on the provided minimal example; do not claim a fix."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E02",
+    "family": "17210",
+    "split": "dev",
+    "issue_number": 17210,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17210",
+    "title": "st.multiselect without key drops the user's selection when options come in a different order on rerun",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nIf `st.multiselect` has no `key` and its `options` list comes back in a different order on the next run, every selection the user makes is thrown away. The widget briefly shows the new chip, then flickers back to the default. Passing `sorted(options)` makes it work, and so does setting any `key`.\n\nThe order of options is often unstable in real apps: `list(set(...))`, `df[col].unique()` after a filter, SQL queries without `ORDER BY`, dict/set unions, and \"move selected to top\" patterns.\n\nSimilar reports were closed as expected behavior (#5995, #8496). #11277 fixed the case where `key` is set. The keyless case still resets, even though multiselect doesn't need it to.\n\n### Reproducible Code Example\n\n```Python\nimport random\nimport streamlit as st\n\nopts = [\"apple\", \"banana\", \"cherry\", \"date\", \"elderberry\"]\nrandom.shuffle(opts)  # stands in for list(set(...)), an unordered query, etc.\n\nsel = st.multiselect(\"Fruits\", opts)  # works with sorted(opts) or key=\"fruits\"\nst.write(sel)\n```\n\n### Steps To Reproduce\n\n1. Run the app.\n2. Pick any option in the multiselect.\n\n### Expected Behavior\n\nThe option stays selected, because the set of options didn't change and only their order did.\n\n### Current Behavior\n\nThe chip appears for a moment and then disappears. `sel` is `[]`. Measured with `AppTest` on 1.64.0:\n\n| options | key | value after select | value after next rerun |\n|---|---|---|---|\n| sorted | no | `['banana']` | `['banana']` |\n| sorted | yes | `['banana']` | `['banana']` |\n| shuffled | no | `[]` | `[]` |\n| shuffled | yes | `['banana']` | `['banana']` |\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n\nField | Value\n-- | --\nStreamlit version | 1.64.0\nPython version | 3.12\nOperating System | Linux\nBrowser | Chrome\n\n\n\n### Additional Information\n\n### Why this happens\n\nIn `lib/streamlit/elements/widgets/multiselect.py`, when there is no `key`, the widget ID is a hash of the widget parameters, including the **ordered** list of formatted options and the **indices** of the defaults:\n\n```python\nelement_id = compute_and_register_element_id(\n    widget_name,\n    user_key=key,\n    key_as_main_identity={\"max_selections\", \"accept_new_options\"},\n    ...\n    options=formatted_options,   # order-sensitive\n    default=default_values,      # indices into options, also order-sensitive\n    ...\n)\n```\n\nWith a new order, the ID changes on every run. When the user clicks, the frontend sends the value under the old ID. The rerun registers a widget with a new ID and no stored state, so it falls back to `default`. The frontend then mounts a new component with that ID, which is the flicker.\n\nFor multiselect, including the order isn't needed. The value travels as a list of **formatted option strings** (`string_array_value`), not indices. `MultiSelectSerde.deserialize` maps strings back with `formatted_options.index(v)`, and `validate_and_sync_multiselect_value_with_options` already handles options that change. The same selection means the same thing in any order.\n\n### Proposed fix\n\nHash the options without regard to order, and hash defaults by value rather than by index:\n\n```diff\n             dg=self.dg,\n             label=label,\n-            options=formatted_options,\n-            default=default_values,\n+            # Values are stored as formatted strings rather than indices, so the\n+            # order of options doesn't change their meaning. Hash options\n+            # order-insensitively so reordering them doesn't reset the widget.\n+            options=sorted(formatted_options),\n+            default=[formatted_options[i] for i in default_values],\n             help=help,\n             max_selections=max_selections,\n```\n\n`proto.options` and `proto.default` are unchanged, so the display order still follows what the user passed. Only the identity hash changes. With this patch applied to 1.64.0, all four rows in the table above keep the selection, including with `default=[...]` set.\n\nNotes:\n- Existing keyless multiselects get new IDs once after upgrading. That's the same one-time reset any ID-scheme change causes.\n- `selectbox`, `pills`, and `segmented_control` probably need the same change wherever they send values as strings. I haven't checked those.",
+    "topic": "widget",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:widget-behavior",
+      "doc:forms"
+    ],
+    "acceptable_next_steps": [
+      "Explain widget identity/key behavior with sources and acknowledge the current-version difference; existing sorted-options/key observations are user evidence."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Explain widget identity/key behavior with sources and acknowledge the current-version difference; existing sorted-options/key observations are user evidence."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E03",
+    "family": "16559",
+    "split": "dev",
+    "issue_number": 16559,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16559",
+    "title": "@st.cache_data: distinct arguments can collide on one cache key",
+    "body": "### Summary\n\n`@st.cache_data` (and `@st.cache_resource`) can return one call's cached result for a **different** set of arguments. The per-call cache key is built by folding each argument name and value into a single hasher in sequence, with no marker between fields, so the boundaries between arguments are not part of the key. As a result, two distinct argument tuples can encode to the same bytes and collide on one cache entry, producing a silent false cache hit.\n\n### Reproducible Code Example\n\n```python\nimport streamlit as st\n\n\n@st.cache_data\ndef load(doc, org=\"\"):\n    # This line only prints on a real cache miss (a real computation).\n    st.write(f\"computing for doc={doc!r}, org={org!r}\")\n    return f\"{doc}|{org}\"\n\n\n# First call: computes and caches under some key.\nst.write(load(\"doc1\", \"acme\"))\n\n# Different arguments, but they hash to the SAME key as the call above,\n# so this returns the first call's cached value instead of computing its own.\nst.write(load(\"doc1str:orgstr:acme\"))\n```\n\n### Steps To Reproduce\n\n1. Run the app above.\n2. Note that only the first `load(...)` prints its `computing for ...` line.\n3. The second call, `load(\"doc1str:orgstr:acme\")`, prints no `computing` line and returns `\"doc1|acme\"` (the first call's result) instead of `\"doc1str:orgstr:acme|\"`.\n\n### Expected Behavior\n\nTwo calls with different arguments should never share a cache entry. `load(\"doc1\", \"acme\")` and `load(\"doc1str:orgstr:acme\")` are different calls and should each compute and cache their own result.\n\n### Current Behavior\n\nBoth calls map to the same value key, so the second call is a false cache hit and returns the first call's value. The cause is in `_make_value_key` in `lib/streamlit/runtime/caching/cache_utils.py`: each argument name and value is folded into the args hasher back to back with nothing encoding where one field ends and the next begins, so `(\"doc\", \"doc1\", \"org\", \"acme\")` and `(\"doc\", \"doc1str:orgstr:acme\")` produce the same digest. Concretely, the encoded fields concatenate to the same byte string:\n\n```\n\"str:doc\" + \"str:doc1\" + \"str:org\" + \"str:acme\"\n== \"str:doc\" + \"str:doc1str:orgstr:acme\"\n```\n\nThe key derivation is therefore non-injective: distinct argument tuples can produce identical keys.\n\n### Fix direction\n\nMake the key derivation injective by length-prefixing each field before folding it into the value-key hasher, so the boundary between an argument's name and value, and between successive arguments, is part of the key. Identical calls still produce the same key; distinct calls no longer collide. Because the key format changes, persisted (`persist=\"disk\"`) and in-memory caches take a one-time miss and recompute on the first call after upgrade.\n\n### Debug info\n\n- Streamlit version: develop (reproduced against the current `lib/streamlit/runtime/caching/cache_utils.py`)\n- Python version: 3.10-3.14\n- Operating System: any\n- Browser: n/a (backend logic)",
+    "topic": "cache",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:caching"
+    ],
+    "acceptable_next_steps": [
+      "Escalate the distinct-arguments cache-key collision with its reproduction and affected version; do not equate it with ordinary stale-cache behavior."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Escalate the distinct-arguments cache-key collision with its reproduction and affected version; do not equate it with ordinary stale-cache behavior."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E04",
+    "family": "16770",
+    "split": "dev",
+    "issue_number": 16770,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16770",
+    "title": "Runtime errors in Streamlit apps on HF Spaces rose 12.4% → 31.7% for the 2026 cohort while other SDKs fell",
+    "body": "Not a reproducible bug report — a signal from population data that may point at one, and I can't tell from the outside whether the cause is Streamlit or the Hugging Face runtime image.\n\nI enumerated the complete public Hugging Face Spaces catalogue (1,458,692 Spaces) using the `runtime.stage` field HF exposes, and split permanent failures by SDK and creation year.\n\n**`BUILD_ERROR` is falling for every SDK — that part looks healthy.** But `RUNTIME_ERROR` diverges sharply for Streamlit in the 2026 cohort:\n\n| SDK | 2024 | 2025 | 2026 |\n|---|---|---|---|\n| **streamlit** | 18.1% | **12.4%** | **31.7%** |\n| gradio | 47.1% | 27.0% | 20.8% |\n| docker | 31.6% | 19.5% | 20.5% |\n\nGradio and Docker fell or stayed flat over the same period. Streamlit's rate went from 12.4% to 31.7%.\n\nThe failure mode also inverted. Among broken Streamlit Spaces created in 2025: 7,991 `BUILD_ERROR` vs 4,582 `RUNTIME_ERROR`. In 2026: **653 `BUILD_ERROR` vs 5,614 `RUNTIME_ERROR`.** Builds started succeeding and apps started crashing instead.\n\n**Checks I ran before posting, because the obvious explanations would each invalidate this:**\n\n- *Bulk uploaders?* No. The top-10 authors account for 2.3% of the 2026 Streamlit cohort, and excluding them entirely moves the rate from 36.6% to 37.1%. It is spread across 12,432 distinct authors.\n- *Just young Spaces still settling?* Newer cohorts are consistently *less* broken across every SDK, so a worse young cohort runs against the trend rather than with it. Separately, 300 error-state Spaces re-queried individually with retries were 300/300 still broken with none recovered, so these are not transient.\n- *An age artifact?* Age-standardising Streamlit to Gradio's creation-year distribution moves it 43.50% → 41.16%, so the cohort effect here isn't age composition.\n\n**What I can't determine from outside:** whether this is a Streamlit change, a change in the Streamlit runtime image HF builds, or an interaction between the two. HF controls the Space container, so it may not be yours at all — I've filed the general Spaces census with them separately at huggingface/hub-docs#2743.\n\nIf it is useful, I can produce the list of affected Space IDs so someone can look at actual tracebacks, which is the thing this analysis can't reach.\n\nData (1.46M rows, one row per Space): https://huggingface.co/datasets/Ashsinha1/hf-spaces-census\nMethod and code: https://github.com/ashishsinha1602/dataset-integrity-audit",
+    "topic": "websocket",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:remote-start",
+      "doc:resource-limits"
+    ],
+    "acceptable_next_steps": [
+      "Ask for one failing Space with a concrete runtime log and environment before treating population statistics as a product bug."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Ask for one failing Space with a concrete runtime log and environment before treating population statistics as a product bug."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E05",
+    "family": "17175",
+    "split": "dev",
+    "issue_number": 17175,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17175",
+    "title": "selectbox clears on rerun if format_func returns new value, even with the same options.",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nStreamlit selectbox gets re-created when formatted labels change, discarding user output. \n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\nimport time\n\nif \"start_time\" not in st.session_state:\n  st.session_state[\"start_time\"] = time.time()\n\nstart_time = st.session_state[\"start_time\"]\n\noption = st.selectbox(\n  label=\"Single-select Option\",\n  options=[\"A\", \"B\", \"C\"],\n  format_func=lambda option: f\"{option}: {int(time.time()-start_time)} seconds ago\",\n  key=\"option\",\n  index=None\n)\n\nst.write(\"Single-select Option:\", option)\n\noption2 = st.multiselect(\n  label=\"Multi-select Options\",\n  options=[\"D\", \"E\", \"F\"],\n  format_func=lambda option: f\"{option}: {int(time.time()-start_time)} seconds ago\",\n  key=\"option2\",\n)\n\nst.write(\"Multi-select Options:\", option2)\n```\n\n### Steps To Reproduce\n\n1. In Single-select Option, Select \"A\"\n2. In Multi-select Options, Select \"D\"\n3. In Multi-select Options, Select \"E\"\n4. In Multi-select Options, Select \"F\"\n5. Wait 1 second\n6. Click out of the multi select option dropdown\n\n### Expected Behavior\n\nIt should have option A selected for 'Single-select Option', and options D, E and F selected for 'Multi-select Options'\n\n### Current Behavior\n\nSingle-select option and multi-select options have nothing selected.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.63\n- Python version: Python 3.14.7\n- Operating System: Ubuntu 26.4\n- Browser: Firefox 156.0.1 \n\n\n### Additional Information\n\nProposed solution 1: Do not clear the selectbox if the selected options still exist.\n\nProposed solution 2: Update the selectbox and multiselect documentation with a warning about this. Currently the documentation for format_func says: \"This has no impact on the return value of the command.\" which I would say is incorrect in this case.\n\nThis issue seems closely related to issues #11277 and #11268. They seemed to be closed for being fixed in 1.54.1.dev20260204, though I am still seeing this unexpected behavior in 1.63.\n\nThank you so much for your work on streamlit. It is very amazing!",
+    "topic": "session",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:session-state",
+      "doc:widget-behavior"
+    ],
+    "acceptable_next_steps": [
+      "Compare format_func/key identity behavior and version; reproduce the dynamic-label reset without asserting a resolved version."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Compare format_func/key identity behavior and version; reproduce the dynamic-label reset without asserting a resolved version."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E06",
+    "family": "17126",
+    "split": "dev",
+    "issue_number": 17126,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17126",
+    "title": "`aria-expanded` on elements with no role: sidebar `<section>` and `st.date_input` field fail axe `aria-allowed-attr` (WCAG 4.1.2)",
+    "body": "### Checklist\n- [x] I have searched the existing issues for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\nEvery page of an app with a sidebar fails axe-core's `aria-allowed-attr` rule (impact: critical, WCAG 2.0 A,\nSC 4.1.2 Name, Role, Value), and so does every `st.date_input`. In both cases `aria-expanded` is set on an\nelement whose role does not support it:\n\n1. The sidebar is rendered as a plain `<section>` with no accessible name, so it has no landmark role that\n   supports `aria-expanded`. `frontend/app/src/components/Sidebar/Sidebar.tsx` (1.64.0, line ~265):\n   `aria-expanded={!isCollapsed}` on the `Resizable` rendered as `StyledSidebar`.\n2. The date input's field is a `<div>` with no role carrying `aria-haspopup=\"dialog\"` and `aria-expanded`.\n   `frontend/lib/src/components/widgets/DateInput/SingleDateInput.tsx` (1.64.0, line ~553); the same pattern\n   is in `RangeDateInput.tsx`.\n\nAssistive technology ignores (or mis-announces) state on an element it cannot map to a role, so the\nexpanded/collapsed state is not conveyed, and automated audits (axe, Lighthouse) report a critical failure\nthat app authors cannot fix from Python.\n\n### Reproducible Code Example\n```python\nimport datetime\nimport pandas as pd\nimport streamlit as st\n\nst.sidebar.write(\"Sidebar content\")\nst.date_input(\"Start date\", datetime.date(2026, 1, 1))\nst.dataframe(pd.DataFrame({\"a\": [1, 2, 3], \"b\": [\"x\", \"y\", \"z\"]}))\n```\n\n### Steps To Reproduce\n1. `streamlit run app.py`\n2. Run axe-core 4.13 (e.g. `@axe-core/playwright` with tags `wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa`)\n   against the page, at 1280px or 390px wide.\n\n### Expected Behavior\nNo `aria-allowed-attr` violations.\n\n### Current Behavior\n```\naria-allowed-attr (critical, wcag2a, wcag412) — 2 nodes\n<section class=\"stSidebar st-emotion-cache-1kss9tm e16xr0mu0\" data-testid=\"stSidebar\" aria-expanded=\"true\" style=\"position: relative; ...\">\n  ARIA attribute is not allowed: aria-expanded=\"true\"\n<div aria-keyshortcuts=\"Alt+ArrowDown\" aria-haspopup=\"dialog\" aria-expanded=\"false\" data-testid=\"stDateInputField\" class=\"st-emotion-cache-11mhraf ekyilc22\">\n  ARIA attribute is not allowed: aria-expanded=\"false\"\n```\n(At 390px the sidebar starts collapsed and the same node reports `aria-expanded=\"false\"`.)\n\n### Suggested fix\n- **Sidebar:** put the state on the control, not the region. Remove `aria-expanded` from the `<section>`;\n  set `aria-expanded` + `aria-controls=\"<sidebar id>\"` on the collapse/expand buttons\n  (`stSidebarCollapseButton` / `stExpandSidebarButton`), which already carry `aria-label`s since #14563.\n  Optionally give the section an accessible name (`aria-label=\"Sidebar\"`) so it becomes a `region` landmark.\n- **Date input:** follow the React Aria DatePicker pattern the widget is now built on: the field is\n  `role=\"group\"` (labelled by the widget label) and the popup state lives on the element that opens the\n  calendar. Either move `aria-haspopup` / `aria-expanded` / `aria-controls` / `aria-keyshortcuts` to a\n  calendar toggle `<button>`, or, if the whole field must stay the trigger, give it a role that supports\n  them. (It contains spinbuttons, so `role=\"button\"` would nest interactive content; a separate button is\n  the clean option.)\n\n### Is this a regression?\n- [ ] Yes, this used to work in a previous version.\n- [x] No — sidebar has had it for several releases; the date input form arrived with the non-BaseWeb\n  DateInput (#16460, 1.62).\n\n### Debug info\n- Streamlit version: 1.64.0 (latest)\n- Python version: 3.12\n- OS: Linux (CI, Chromium via Playwright) and Windows 11 (Chromium)\n- Browser: Chromium (Playwright bundled)\n- axe-core: 4.13.0\n\n### Additional Information\nFound by a WCAG 2.2 AA gate that runs axe on every page of several Streamlit apps at 390px and 1280px;\nthese are the only `aria-allowed-attr` findings left in those apps and none is reachable from app code.",
+    "topic": "widget",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:widget-behavior",
+      "doc:forms"
+    ],
+    "acceptable_next_steps": [
+      "Escalate the accessibility report with the exact DOM/audit evidence; avoid inventing WCAG conclusions from unrelated widget docs."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Escalate the accessibility report with the exact DOM/audit evidence; avoid inventing WCAG conclusions from unrelated widget docs."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E07",
+    "family": "14639",
+    "split": "dev",
+    "issue_number": 14639,
+    "source_url": "https://github.com/streamlit/streamlit/issues/14639",
+    "title": "st.cache_data shares cache across st.Page pages for same-named functions with different source code",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nst.cache_data functions with the same name but different source code in different page files (loaded via st.navigation + st.Page) share the same cache. This is because st.Page executes all pages via exec() with\n  __module__ == \"__main__\", and inspect.getsource() fails in that context. The fallback to func.__code__.co_code (bytecode) does not include string constants, so functions with identical structure but different inline strings (e.g., different SQL queries) produce the same cache key.\n\n### Reproducible Code Example\n\n```Python\n# main.py\nimport streamlit as st\n\nst.set_page_config(page_title=\"Cache Bug Demo\", layout=\"wide\")\npg = st.navigation(\n    {\n        \"Page A\": [st.Page(\"page_a.py\", title=\"Page A\")],\n        \"Page B\": [st.Page(\"page_b.py\", title=\"Page B\")],\n    }\n)\npg.run()\n# page_a.py\nimport streamlit as st\n\n\n@st.cache_data(ttl=3600)\ndef load_data():\n    return {\"source\": \"page_a\", \"columns\": [\"col_a1\", \"col_a2\"]}\n\n\ndata = load_data()\nst.write(\"Page A data:\", data)\nst.write(\"Expected source: page_a, Got:\", data[\"source\"])\n# page_b.py\nimport streamlit as st\n\n\n@st.cache_data(ttl=3600)\ndef load_data():\n    return {\"source\": \"page_b\", \"columns\": [\"col_b1\", \"col_b2\"]}\n\n\ndata = load_data()\nst.write(\"Page B data:\", data)\nst.write(\"Expected source: page_b, Got:\", data[\"source\"])\n```\n\n### Steps To Reproduce\n\n1. Create the three files above (main.py, page_a.py, page_b.py)\n2. Run streamlit run main.py\n3. Open Page A — displays source: page_a (correct)\n4. Navigate to Page B — displays source: page_a (wrong, should be page_b)\n5. Clear cache and open Page B first — displays source: page_b (correct)\n6. Navigate to Page A — displays source: page_b (wrong, should be page_a)\n\n### Expected Behavior\n\nEach page's load_data() should have an independent cache, since they are defined in different files with different source code. Navigating between pages should return each page's own data.\n\n### Current Behavior\n\nWhichever page is loaded first caches its result under the function key. When the other page calls its own load_data(), the cached result from the first page is returned, because both functions produce the same cache key.\n\nRoot cause: In streamlit/navigation/page.py, st.Page.run() executes page scripts as:\n\nmodule = types.ModuleType(\"__main__\")\nexec(code, module.__dict__)\n\nThis means func.__module__ is \"__main__\" for all pages. When inspect.getsource() fails in this exec() context, _make_function_key falls back to func.__code__.co_code, which does not include string constants — so\n  structurally identical functions with different inline values produce the same key.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.55.0\n- Python version: 3.14.3\n- Operating System: macOS Tahoe Docker Desktop `FROM ghcr.io/astral-sh/uv:python3.14-trixie-slim`\n- Browser: Google Chrome 146.0.7680.178\n\n\n### Additional Information\n\nRelated issue: https://github.com/streamlit/streamlit/issues/11157 (cache_data cannot detect difference in values of free variables). That issue covers a similar problem with closure variables, but the st.Page + exec() scenario is a distinct trigger.\n\nWorkaround: Give cached functions unique names per page (e.g., page_a_load_data, page_b_load_data).",
+    "topic": "cache",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:caching"
+    ],
+    "acceptable_next_steps": [
+      "Compare the two-page cache example and installed version; escalate function-source hashing if confirmed."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Compare the two-page cache example and installed version; escalate function-source hashing if confirmed."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E08",
+    "family": "16341",
+    "split": "dev",
+    "issue_number": 16341,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16341",
+    "title": "Community Cloud installs incompatible Streamlit/Starlette versions causing GZipResponder TypeError on startup",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nI'm unable to deploy any Streamlit application on Streamlit Community Cloud.\n\nThe issue is reproducible with a minimal application.\n\nRepository contents:\n\napp.py\n\nimport streamlit as st\n\nst.title(\"Hello\")\n\nrequirements.txt\n\nstreamlit\n\nThe application never starts. The error occurs before my code is executed.\n\nDeployment log shows:\n\nUsing Python 3.14.6 environment\n\nInstalled packages include:\n\n- streamlit==1.61.0\n- starlette==1.4.0\n- uvicorn==0.52.1\n\nThe server then fails health checks with:\n\nTypeError: GZipResponder.__init__() missing 1 required keyword-only argument: 'thread_minimum_size'\n\nStack trace points to:\n\nstreamlit/web/server/starlette/starlette_gzip_middleware.py\n\nThe same error happens:\n\n- with a completely minimal app\n- with a requirements.txt containing only \"streamlit\"\n- after changing the configured Python version\n- with multiple different applications\n\nSince the application code is never executed, this appears to be an incompatibility in the deployment environment rather than in the app itself.\n\nCould you please investigate why Community Cloud is installing this package combination?\n\n### Reproducible Code Example\n\n```Python\nUsing Python 3.14.6 environment\n\nstreamlit==1.61.0\nstarlette==1.4.0\nuvicorn==0.52.1\n\nTypeError: GZipResponder.__init__() missing 1 required keyword-only argument: 'thread_minimum_size'\n```\n\n### Steps To Reproduce\n\n_No response_\n\n### Expected Behavior\n\n_No response_\n\n### Current Behavior\n\n_No response_\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version:\n- Python version:\n- Operating System:\n- Browser:\n\n\n### Additional Information\n\n_No response_",
+    "topic": "websocket",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:remote-start",
+      "doc:resource-limits"
+    ],
+    "acceptable_next_steps": [
+      "Check exact installed dependency versions and attach the startup traceback; minimal app failure is already reported."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Check exact installed dependency versions and attach the startup traceback; minimal app failure is already reported."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E09",
+    "family": "17093",
+    "split": "dev",
+    "issue_number": 17119,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17119",
+    "title": "Keyed persist_state=None remount can reset the UI while st.session_state[key] still holds the previous value",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nA keyed `persist_state=None` widget that has already registered, is then hidden, then shown again can render the widget default while `st.session_state[key]` still holds the previous value on that remount run. A follow-up rerun overwrites session state with the default. Unmount should reset **both** the UI and `st.session_state[key]` in the same run (#3512).\n\nThis is a follow-up to #17106 / #17093. That PR syncs delayed first mount to a leftover pre-registration user key. This issue is the already-registered remount path: unmount cleanup has dropped widget-id state, but a leftover user-key entry can leave the two sides out of sync for one run.\n\n### Reproducible Code Example\n\n```python\nimport streamlit as st\n\nst.session_state.setdefault(\"input2\", \"input 2\")\nst.session_state.setdefault(\"input3\", \"input 3\")\n\nselect = st.selectbox(\"select delayed input\", [\"A\", \"B\"])\nif select == \"A\":\n    value = st.text_input(\"input 2\", key=\"input2\")\nelse:\n    value = st.text_input(\"input 3\", key=\"input3\")\n\nst.write(\"widget return:\", repr(value))\nst.write(\"session_state input2:\", repr(st.session_state.get(\"input2\")))\n```\n\n### Steps To Reproduce\n\n1. Load the app. Input 2 is shown on first load with `\"input 2\"`.\n2. Switch the selectbox to B.\n3. Optionally edit input 3 and press Enter.\n4. Switch back to A.\n5. Compare the input 2 field with the printed `st.session_state.get(\"input2\")` value, then press `r`.\n\n### Expected Behavior\n\nAfter the registered widget remounts, both the rendered input and `st.session_state[\"input2\"]` are the widget default (empty) on that same run. A follow-up rerun is not required to sync them.\n\nA user key written while the widget had **never** registered remains ordinary session state: delayed first mount (and leftover-key remount after edit/hide) should still adopt that stored value on both sides. `persist_state=\"session\"` / `\"page\"` (same page) should still remount the last edit.\n\n### Current Behavior\n\nAfter switching back to A (especially after editing the sibling input 3), the input 2 **field is empty** while `st.session_state.get(\"input2\")` still prints `\"input 2\"` for that run. A follow-up rerun clears the printed backend as well.\n\nWithout the sibling edit, A→B→A can keep UI and backend aligned at `\"input 2\"`. Either interpretation of leftover keys should keep UI and printed state in sync; the #3512 unmount rule for an already-registered `persist_state=None` widget is that both sides reset in the same run.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: current develop / #17106\n- Python version: 3.13\n- Operating System: macOS\n- Browser: Chromium (Playwright)\n\n### Additional Information\n\nFound during QA of https://github.com/streamlit/streamlit/pull/17106#issuecomment-5813147965.\n\nRelated:\n\n- #3512 — unmount should reset both the widget UI and the Python value in the same run\n- #17093 / #17106 — delayed first mount after a leftover pre-registration user key (out of scope here)\n- #12880 — identity-by-key (out of scope)",
+    "topic": "session",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:session-state",
+      "doc:widget-behavior"
+    ],
+    "acceptable_next_steps": [
+      "Compare hidden/remounted widget state and lifecycle documentation; preserve the version-specific uncertainty."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Compare hidden/remounted widget state and lifecycle documentation; preserve the version-specific uncertainty."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E10",
+    "family": "17082",
+    "split": "dev",
+    "issue_number": 17082,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17082",
+    "title": "GlobalHotkeys crashes on keydown/keyup events without a key",
+    "body": "### Checklist\n\n    - [x] I searched the existing issues and pull requests for this bug.\n    - [x] I reproduced this on Streamlit 1.63.0 and confirmed the same unguarded code is present on the current develop branch.\n\n    ### Summary\n\n    The global shortcut handler assumes every dispatched keydown/keyup event has a string key. Browser integrations, test harnesses, embedded hosts, or extensions can dispatch an Event without the KeyboardEvent key field. In that case, GlobalHotkeys calls toLowerCase on undefined and throws an uncaught TypeError.\n\n    ### Minimal reproduction\n\n    Run any Streamlit app, open the browser console after the app loads, and execute:\n\n    ~~~js\n    document.dispatchEvent(new Event(\"keydown\"))\n    document.dispatchEvent(new Event(\"keyup\"))\n    ~~~\n\n    The first event reaches GlobalHotkeys.handleKeyDown and calls normalizeKey(event.key). The second reaches handleKeyUp and does the same. Because Event has no key property, normalizeKey receives undefined and key.toLowerCase() throws.\n\n    A plain DOM Event is intentional here: event listeners can receive synthetic events from browser hosts and integrations despite the TypeScript annotation. The handler should be defensive at this external boundary.\n\n    ### Current implementation\n\n    In frontend/app/src/components/GlobalHotkeys/GlobalHotkeys.tsx:\n\n    ~~~ts\n    function normalizeKey(key: string): string {\n    return key === \"Escape\" || key === \"Esc\" ? \"esc\" : key.toLowerCase()\n    }\n\n    const handleKeyDown = (event: KeyboardEvent): void => {\n    const normalizedKey = normalizeKey(event.key)\n    // ...\n    }\n\n    const handleKeyUp = (event: KeyboardEvent): void => {\n    const normalizedKey = normalizeKey(event.key)\n    // ...\n    }\n    ~~~\n\n    ### Expected behavior\n\n    Malformed or non-keyboard keydown/keyup events without a string key should be ignored without throwing. Normal keyboard shortcuts should continue to work.\n\n    ### Suggested fix\n\n    Guard both handlers before normalization, for example:\n\n    ~~~ts\n    if (typeof event.key !== \"string\") {\n    return\n    }\n    ~~~\n\n    Alternatively, make normalizeKey accept unknown and return undefined for invalid values, with callers returning early.\n\n    ### Regression test\n\n    Add cases in GlobalHotkeys.test.tsx that dispatch keydown and keyup events without key and assert that no exception is thrown and no shortcut callback runs.\n\n    ### Environment\n\n    - Streamlit: 1.63.0\n    - Also present on the current develop branch as of 2026-09-22\n    - Browser: Chromium",
+    "topic": "widget",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:widget-behavior",
+      "doc:forms"
+    ],
+    "acceptable_next_steps": [
+      "Escalate the browser key-event reproduction and traceback; do not run supplied JavaScript automatically."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Escalate the browser key-event reproduction and traceback; do not run supplied JavaScript automatically."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E11",
+    "family": "14622",
+    "split": "dev",
+    "issue_number": 14622,
+    "source_url": "https://github.com/streamlit/streamlit/issues/14622",
+    "title": "bug: @st.cache_data hash collision via fixed sampling seed and PIL P-mode palette omission",
+    "body": "## Summary\n\nTwo distinct cache-key collision bugs exist in `lib/streamlit/runtime/caching/hashing.py` that can cause `@st.cache_data` and `@st.cache_resource` to return stale or wrong data without any error.\n\n---\n\n## Bug 1 — Deterministic sampling seed enables adversarial hash collisions\n\n**Affected code:** `_to_bytes()` in `hashing.py`, large-object sampling branches for Pandas Series/DataFrame, Polars Series/DataFrame, and NumPy arrays.\n\n**Root cause:** When a data structure exceeds the sampling threshold (`_PANDAS_ROWS_LARGE = 50_000` rows or `_NP_SIZE_LARGE = 500_000` elements), the code samples a smaller subset before hashing. The sampling seed is hardcoded:\n\n```python\n# Pandas\nseries_obj.sample(n=_PANDAS_SAMPLE_SIZE, random_state=0)\ndf_obj.sample(n=_PANDAS_SAMPLE_SIZE, random_state=0)\n\n# Polars\nobj.sample(n=_PANDAS_SAMPLE_SIZE, seed=0)\n\n# NumPy\nstate = np.random.RandomState(0)\nnp_obj = state.choice(flat, size=_NP_SAMPLE_SIZE)\n```\n\nBecause the seed is always `0`, the sampled row indices are globally fixed and known in advance. An adversary who knows which indices will be sampled can craft two structurally different inputs that produce the same hash by only modifying non-sampled positions.\n\n**Minimal reproduction (NumPy):**\n\n```python\nimport numpy as np, hashlib\nfrom streamlit.runtime.caching.hashing import update_hash\nfrom streamlit.runtime.caching.cache_type import CacheType\n\n_NP_SIZE_LARGE  = 500_000\n_NP_SAMPLE_SIZE = 100_000\n\ndef get_hash(obj):\n    h = hashlib.md5(usedforsecurity=False)\n    update_hash(obj, h, CacheType.DATA)\n    return h.hexdigest()\n\ntotal = _NP_SIZE_LARGE + 10_000\narr_a = np.zeros(total, dtype=np.float64)\narr_b = arr_a.copy()\n\n# Compute which indices are NOT sampled (fixed because seed=0)\nsampled = np.random.RandomState(0).choice(np.arange(total), size=_NP_SAMPLE_SIZE)\nmask = np.ones(total, dtype=bool)\nmask[sampled] = False\narr_b[mask] = 255.0  # modify only non-sampled positions\n\nprint(get_hash(arr_a))  # same hash\nprint(get_hash(arr_b))  # same hash — COLLISION\n```\n\n**Minimal reproduction (Pandas):**\n\n```python\nimport pandas as pd, numpy as np, hashlib\nfrom streamlit.runtime.caching.hashing import update_hash\nfrom streamlit.runtime.caching.cache_type import CacheType\n\n_PANDAS_ROWS_LARGE  = 50_000\n_PANDAS_SAMPLE_SIZE = 10_000\n\ndef get_hash(obj):\n    h = hashlib.md5(usedforsecurity=False)\n    update_hash(obj, h, CacheType.DATA)\n    return h.hexdigest()\n\nn = _PANDAS_ROWS_LARGE + 5_000\ndf_a = pd.DataFrame({\"val\": np.zeros(n)})\ndf_b = df_a.copy()\n\nsampled = df_a.sample(n=_PANDAS_SAMPLE_SIZE, random_state=0).index\nall_idx = pd.Index(range(n))\nnon_sampled = all_idx.difference(sampled)\ndf_b.loc[non_sampled, \"val\"] = 99.0\n\nprint(get_hash(df_a))  # same hash\nprint(get_hash(df_b))  # same hash — COLLISION\n```\n\n**Impact:** `@st.cache_resource` is shared across all user sessions. An adversary who can send a request to the app can pre-compute a colliding payload and silently poison the cache, causing all subsequent users to receive the adversary's data instead of the real result — with no error raised.\n\n---\n\n## Bug 2 — PIL P-mode images: palette bytes omitted from hash\n\n**Affected code:** PIL `Image.Image` branch in `_to_bytes()`.\n\n**Root cause:** For palette-indexed (`mode=\"P\"`) PIL images, `tobytes()` returns only the palette index per pixel, not the actual color table. Two images with identical pixel indices but different color palettes produce identical hashes despite being visually distinct.\n\n```python\n# current code\nnp_array = np.frombuffer(pil_obj.tobytes(), dtype=\"uint8\")\nreturn self.to_bytes(np_array)\n```\n\n**Minimal reproduction:**\n\n```python\nfrom PIL import Image\nimport hashlib, numpy as np\nfrom streamlit.runtime.caching.hashing import update_hash\nfrom streamlit.runtime.caching.cache_type import CacheType\n\ndef get_hash(obj):\n    h = hashlib.md5(usedforsecurity=False)\n    update_hash(obj, h, CacheType.DATA)\n    return h.hexdigest()\n\nimg_a = Image.new(\"P\", (100, 100), 0)\nimg_b = Image.new(\"P\", (100, 100), 0)\n\npalette_a = [0] * 768\npalette_b = [0] * 768\npalette_a[0:3] = [0, 0, 0]    # index 0 → black\npalette_b[0:3] = [255, 0, 0]  # index 0 → red\n\nimg_a.putpalette(palette_a)\nimg_b.putpalette(palette_b)\n\nprint(get_hash(img_a))  # same hash\nprint(get_hash(img_b))  # same hash — COLLISION, despite different colors\n```\n\n**Impact:** Two visually different images (e.g., a legitimate chart vs. a manipulated one) share the same cache key. The first cached result is returned for all subsequent inputs regardless of actual image content.\n\n---\n\n## Proposed Fix\n\nA fix has been submitted as PR #14610. The approach:\n\n1. **Sampling seed**: Derive the seed from the data (hash of first row / first 64 elements) so that sampled indices are content-dependent. Falls back to `seed=0` for unhashable payloads to preserve the existing pickle fallback path.\n2. **PIL P-mode**: Prepend `getpalette()` bytes to `tobytes()` output before hashing.\n\n---\n\n## Environment\n\n- Streamlit version: all versions with large-object sampling (introduced with the sampling optimization)\n- Python: 3.10+\n- OS: Linux / macOS / Windows (platform-independent)",
+    "topic": "cache",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:caching"
+    ],
+    "acceptable_next_steps": [
+      "Escalate with the collision examples and affected version; custom hashing is background, not proof of a security fix."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Escalate with the collision examples and affected version; custom hashing is background, not proof of a security fix."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E12",
+    "family": "16030",
+    "split": "dev",
+    "issue_number": 16030,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16030",
+    "title": "Streamlit websockets 16.1 issue",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nStreamlit's pyproject.toml pins \"websockets>=12.0.0\". Version 16.1 of websockets (released July 9, 2026) introduced a change that blocks non-ASCII values in HTTP headers (see [changelog](https://websockets.readthedocs.io/en/stable/project/changelog.html#id2), \"Blocked non-ASCII values in Headers\").\n\nThis breaks the WebSocket handshake for setups where a reverse proxy / auth layer injects headers containing UTF-8 characters before the request reaches Streamlit — for example [Authelia](https://www.authelia.com/) forward-auth, which can inject a Remote-Name header containing the user's display name (e.g. accented characters, non-Latin scripts).\n\nSince Streamlit's dependency constraint allows websockets to resolve to 16.1+, installing/upgrading Streamlit in a fresh environment can silently pull in a version that breaks WebSocket connections for any deployment relying on non-ASCII header values, with no warning at install time\n\n### Reproducible Code Example\n\n```Python\n\n```\n\n### Steps To Reproduce\n\n1. Deploy Streamlit behind a reverse proxy (nginx/Traefik) with Authelia forward-auth, configured to forward Remote-Name, Remote-Email, etc. headers to the backend.\n2. Ensure a user's Authelia display name contains a non-ASCII character (e.g. \"François\", \"Müller\", \"田中\").\n3. Install/upgrade Streamlit in an environment where pip resolves websockets to >=16.1.\n4. Log in as that user and attempt to load the app.\n\n### Expected Behavior\n\nThe WebSocket connection (/_stcore/stream) should be established successfully, as it was with websockets<16.1.\n\n### Current Behavior\n\nThe WebSocket handshake fails because websockets 16.1 rejects the non-ASCII header value. The app gets stuck on \"Please wait...\" / the frontend logs a WebSocket connection failure, similar in symptom to issues like #8799.\n\n### Is this a regression?\n\n- [x] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.58\n- Python version: 3.12\n- Operating System: Debian\n- Browser: Chrome / Mozilla\n\n\n### Additional Information\n\nWorkaround: pinning websockets<16.1 restores normal behavior.\n\nPossible fixes on Streamlit's side:\n\n- Tighten the websockets dependency constraint (e.g. >=12.0.0,<16.1) until this is addressed, or\n\n- Percent-encode / sanitize header values Streamlit forwards or reads internally before they reach the websockets layer.",
+    "topic": "websocket",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:remote-start",
+      "doc:resource-limits"
+    ],
+    "acceptable_next_steps": [
+      "Inspect the actual resolved websockets version and relevant sanitized header characteristics; no speculative fixed release."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Inspect the actual resolved websockets version and relevant sanitized header characteristics; no speculative fixed release."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E13",
+    "family": "17112",
+    "split": "dev",
+    "issue_number": 17112,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17112",
+    "title": "st.button lost callback from a fragment > dialog > fragment",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nHello, since version 1.64 (previous was 1.59.2)\n\nSome buttons doesn't get rerun in a setup with multiple layers of fragment.\n\nfragment > dialog > fragment.\n\nIt was working on 1.59.2.\nIs it expected ? should I test with a fragment key ?\n\nThank you\n\n### Reproducible Code Example\n\n```Python\nimport sys\n\nimport streamlit as st\nfrom streamlit import runtime, session_state\nfrom streamlit.web import cli as stcli\n\n_COUNTER_KEY_SUFFIX = \"_counter_value\"\n\n\n@st.fragment\ndef _render_button_in_dialog(page_key: str) -> None:\n    \"\"\"Fragment: increment button rendered inside the dialog.\"\"\"\n    counter_key = f\"{page_key}{_COUNTER_KEY_SUFFIX}\"\n    st.metric(\"Count\", session_state[counter_key])\n    if st.button(\"➕ Increment\", key=f\"{page_key}_increment_btn\", type=\"primary\"):\n        session_state[counter_key] += 1\n        st.rerun(scope=\"fragment\")\n\n\n@st.fragment\ndef _render_button(page_key: str) -> None:\n    \"\"\"Fragment: open-dialog button.\"\"\"\n    counter_key = f\"{page_key}{_COUNTER_KEY_SUFFIX}\"\n\n    if counter_key not in session_state:\n        session_state[counter_key] = 0\n\n    @st.dialog(\"Counter\", width=\"small\")\n    def _open_dialog() -> None:\n        _render_button_in_dialog(page_key)\n\n    st.button(\"🔢 Open Counter\", key=f\"{page_key}_open_btn\", on_click=_open_dialog)\n\n\ndef launch(page_key: str = \"counter\") -> None:\n    _render_button(page_key)\n\n\nif __name__ == \"__main__\":\n    if runtime.exists():\n        st.set_page_config(layout=\"centered\", page_title=\"Counter Demo\", page_icon=\"🔢\")\n        launch(page_key=\"standalone\")\n    else:\n        sys.argv = [\"streamlit\", \"run\", sys.argv[0]]\n        sys.exit(stcli.main())\n```\n\n### Steps To Reproduce\n\n_No response_\n\n### Expected Behavior\n\nlabel should increment. rerun or callback triggered\n\n### Current Behavior\n\nno callback or rerun, button action is dropped.\n\n### Is this a regression?\n\n- [x] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.64\n- Python version: 3.11\n- Operating System: Windows\n- Browser: Chrome\n\n\n### Additional Information\n\n_No response_",
+    "topic": "session",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:session-state",
+      "doc:widget-behavior"
+    ],
+    "acceptable_next_steps": [
+      "Escalate the nested callback regression with versions and the supplied fragment/dialog reproduction."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Escalate the nested callback regression with versions and the supplied fragment/dialog reproduction."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E14",
+    "family": "17074",
+    "split": "dev",
+    "issue_number": 17074,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17074",
+    "title": "Pills/ToggleButtonGroup: all options render with \"selected\" style on fresh page load in Safari",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nOn fresh page load (before any user interaction), st.pills (multi-select mode) renders ALL options with the \"selected\" purple-outline style in Safari, even though no option is selected — the underlying server-side state (default=None) is correctly empty. The visual bug appears specifically in real Safari and does not reproduce in Chromium or Playwright's WebKit engine.\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\n\nselected = st.pills(\n    \"Filter\",\n    options=[\"Option A\", \"Option B\", \"Option C\"],\n    selection_mode=\"multi\",\n    default=None,\n)\nst.write(selected)\n```\n\n### Steps To Reproduce\n\n1. Open the app fresh in Safari (macOS or iOS) — a new tab/window, not a warm reload.\n2. Before clicking anything, observe the st.pills widget with selection_mode=\"multi\" and default=None.\n3. All options render with the \"selected\" purple-outline styling, even though nothing has been selected yet.\n4. The underlying state is correct (st.write(selected) shows an empty list) — this is a visual-only bug.\n5. Does NOT reproduce in Chromium or in Playwright's WebKit engine — only in real Safari.\n\n### Expected Behavior\n\nOn fresh load with default=None, all pill options should render in the plain/unselected style, matching the actual empty selection state.\n\n### Current Behavior\n\nAll pill options render in the \"selected\" style (purple outline/fill) on fresh page load in Safari, despite no option being selected and the server-side value correctly being an empty list.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.64.0\n- Python version: (from your requirements.txt / Railway build — Claude Code can confirm the exact version)\n- Browser: Safari (macOS) — reproduces on real Safari; does not reproduce in Chromium or Playwright's WebKit\n- OS: macOS\n\n### Additional Information\n\nExtracted the relevant CSS from the live page's compiled stylesheet:\n[data-selected]:not([data-disabled]) { background-color: rgba(79,70,229,0.1); border-color: rgb(79,70,229); color: rgb(79,70,229); }\n\nThis appears to be an attribute-presence selector issue: in Chromium/WebKit-via-Playwright, react-aria (the underlying ToggleButtonGroup implementation) correctly omits the data-selected attribute entirely on unselected buttons, so the selector doesn't match. It's possible real Safari's DOM/CSS engine handles react-aria's attribute timing differently on initial paint, causing data-selected to be briefly (or persistently) present on all buttons before Safari's own attribute-removal logic runs — worth investigating from the react-aria/Safari interaction side.",
+    "topic": "widget",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:widget-behavior",
+      "doc:forms"
+    ],
+    "acceptable_next_steps": [
+      "Ask for exact Safari/macOS or iOS versions and observed-versus-returned values; respect the already reported Chromium comparison."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Ask for exact Safari/macOS or iOS versions and observed-versus-returned values; respect the already reported Chromium comparison."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E15",
+    "family": "14593",
+    "split": "dev",
+    "issue_number": 14593,
+    "source_url": "https://github.com/streamlit/streamlit/issues/14593",
+    "title": "st.cache_data on class methods intermittently raises UnserializableReturnValueError",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nWhen `@st.cache_data` decorates a method that returns a custom class instance, `pickle.dumps()` intermittently fails with `PicklingError: Can't pickle <class 'X'>: it's not the same object as X`. This happens because Streamlit's `LocalSourcesWatcher` deletes watched modules from `sys.modules` on file changes, creating a class identity mismatch between the instance being pickled and the class found by pickle's resolution mechanism.\n\n### Reproducible Code Example\n\n```Python\n### `repro_model.py`\n\n\n\"\"\"Local module — simulates any user-defined class in a local .py file.\"\"\"\n\nclass MyResult:\n    def __init__(self, output: str = \"\", value: int = 0):\n        self.output = output\n        self.value = value\n\n\n### `repro_agent.py`\n\n\n\"\"\"\nHelper module imported once by repro.py.\nSimulates agents/__init__.py — only loaded once, holds a stale class reference\nafter sys.modules is invalidated by the file watcher.\n\"\"\"\nimport streamlit as st\nfrom repro_model import MyResult  # bound once at import time\n\n\n@st.cache_data(show_spinner=False)\ndef get_result(key: str) -> MyResult:\n    import time\n    time.sleep(0.1)\n    return MyResult(output=f\"result for {key}\", value=42)\n\n\n### `repro.py` — run with `streamlit run repro.py`\n\n\nimport streamlit as st\nimport sys\nimport importlib\nimport repro_agent  # imported once — simulates agents/__init__.py\n\n\nst.title(\"cache_data pickle race condition repro\")\n\nif st.button(\"1) Normal call (works)\"):\n    try:\n        result = repro_agent.get_result(\"test\")\n        st.success(f\"Got: {result.output}\")\n    except Exception as e:\n        st.error(f\"{type(e).__name__}: {e}\")\n\nif st.button(\"2) Simulate file-watcher then call (fails, and keeps failing)\"):\n    # This is exactly what LocalSourcesWatcher.on_path_changed does:\n    #   for wm in self._watched_modules.values():\n    #       del sys.modules[wm.module_name]\n    if \"repro_model\" in sys.modules:\n        del sys.modules[\"repro_model\"]\n\n    # Re-import creates a NEW class object in sys.modules\n    importlib.import_module(\"repro_model\")\n\n    # Clear cache so pickle.dumps is attempted again\n    repro_agent.get_result.clear()\n\n    try:\n        # repro_agent still uses the OLD MyResult class.\n        # pickle resolves sys.modules[\"repro_model\"].MyResult → NEW class.\n        # OLD is not NEW → PicklingError → UnserializableReturnValueError\n        result = repro_agent.get_result(\"test\")\n        st.success(f\"Got: {result.output}\")\n    except Exception as e:\n        st.error(f\"{type(e).__name__}: {e}\")\n```\n\n### Steps To Reproduce\n\n**Steps:**\n1. `streamlit run repro.py`\n2. Click **\"1) Normal call\"** — succeeds.\n3. Click **\"2) Simulate file-watcher\"** — fails with `UnserializableReturnValueError`.\n4. Click **\"1) Normal call\"** again — **also fails**, until Streamlit is restarted.\n\n\n\n### Expected Behavior\n\nStep 4 demonstrates persistence: `repro_agent` is never re-imported, so it keeps\nusing the old class, while `sys.modules` keeps the new one.\n\nNeither step 3 not step 4 should throw the `UnserializableReturnValueError`.\n\nExpected behavior : \n\n<img width=\"754\" height=\"342\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/bb585fc3-ad54-41e6-9a29-c9c7db77378c\" />\n\n### Current Behavior\n\n`UnserializableReturnValueError` is thrown\n\n<img width=\"772\" height=\"543\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/b2329db6-e1a3-4aa5-8ccd-e7c577389e73\" />\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- **Streamlit**: 1.55.0\n- **Python**: 3.13.7\n- **OS**: Windows 11 / Linux (Kubernetes)\n- Occurs more frequently in local dev (active filesystem) than in deployed containers\n\n### Additional Information\n\n> **Disclosure**: This bug report was written by an LLM (Claude) after a deep investigation into a production issue. The root cause analysis, reproduction script, and identified problematic code path are all LLM-generated\n\n## Suggested Fixes\n\n### Option A: Chain the original exception (low-effort, improves DX)\n\nIn `_handle_cache_miss`, chain the original exception so users can see the real error:\n\n```python\nraise UnserializableReturnValueError(\n    return_value=computed_value, func=self._info.func\n) from ex  # <-- add \"from ex\"\n```\n\n### Option B: Guard `write_result` against stale class references\n\nBefore calling `pickle.dumps()` in `DataCache.write_result`, re-import the module and verify class identity:\n\n```python\nimport importlib\ncls = type(value)\nmod = sys.modules.get(cls.__module__)\nif mod is not None:\n    current_cls = getattr(mod, cls.__qualname__, None)\n    if current_cls is not None and current_cls is not cls:\n        # Module was reloaded — update the instance's class to the current one\n        value.__class__ = current_cls\n```\n\n### Option C: Don't delete modules from `sys.modules` preemptively\n\nInstead of deleting all watched modules on every file change, only invalidate the module that actually changed. Or defer the deletion to the start of the next script run rather than doing it immediately from the watcher thread.\n\n## Workaround\n\nReturn only pickle-safe primitives (dicts, strings, numbers) from `@st.cache_data` functions, and reconstruct custom objects outside the cache boundary:\n\n```python\n@st.cache_data(show_spinner=False)\ndef _cached_call(key: str) -> dict:\n    result = do_expensive_work(key)\n    return result.__dict__  # dict is always pickle-safe\n\ndef get_result(key: str) -> MyResult:\n    return MyResult(**_cached_call(key))\n```",
+    "topic": "cache",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:caching"
+    ],
+    "acceptable_next_steps": [
+      "Inspect module reload/class identity and version together with the existing reproduction; generic serialization requirements alone do not explain an intermittent bug."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Inspect module reload/class identity and version together with the existing reproduction; generic serialization requirements alone do not explain an intermittent bug."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E16",
+    "family": "15380",
+    "split": "test",
+    "issue_number": 15380,
+    "source_url": "https://github.com/streamlit/streamlit/issues/15380",
+    "title": "extra_streamlit_components.CookieManager failing to load when running under uvicorn",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nThis happens when Fast Api is Mounted along with streamlit using uvicorn\n\n### Reproducible Code Example\n\n```Python\n\n```\n\n### Steps To Reproduce\n\n_No response_\n\n### Expected Behavior\n\n_No response_\n\n### Current Behavior\n\n_No response_\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version:\n- Python version:\n- Operating System:\n- Browser:\n\n\n### Additional Information\n\n_No response_",
+    "topic": "websocket",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:remote-start",
+      "doc:resource-limits"
+    ],
+    "acceptable_next_steps": [
+      "Ask for the mounted FastAPI/uvicorn configuration and a minimal CookieManager example because they are missing."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Ask for the mounted FastAPI/uvicorn configuration and a minimal CookieManager example because they are missing."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E17",
+    "family": "17031",
+    "split": "test",
+    "issue_number": 17031,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17031",
+    "title": "A config that sets server.port raises at config parse and blocks startup on a dev-mode (non-site-packages) install",
+    "body": "### Summary\n\nSetting `server.port` raises out of config parsing and blocks startup when Streamlit considers itself a development install, and the message does not say how to proceed.\n\n`streamlit/config.py` defines `global.developmentMode` as true whenever the package is not under a `site-packages` directory (`\"site-packages\" not in __file__` — so a source checkout, `pip install -e`, or a vendored/`--target` install), and `_check_conflicts()` then raises:\n\n```\nRuntimeError: server.port does not work when global.developmentMode is true.\n```\n\nThe raise looks deliberate — in dev mode the Node server hard-codes 8501, which is what the comment above the check explains — so this is a question about the *failure mode* rather than a claim that the check itself is wrong. Two things make it awkward from an application author's side:\n\n1. **A committed config value is enough.** An app that ships `[server] port = ...` in its `.streamlit/config.toml` (a normal thing to pin for a deployment) cannot start *at all* on a dev-mode install, and the author may never have intended that value for this environment.\n2. **The error does not name a way forward.** It says why the port does not work, not what to do about it. The escape hatch (below) is not discoverable from the message.\n\n### Steps to reproduce\n\nSelf-contained; `pip install --target` is just a convenient way to get a non-`site-packages` install.\n\n```bash\nWORK=/tmp/streamlit-devmode-repro\npython3 -m pip install --quiet --target \"$WORK/pkgs\" \"streamlit==1.64.0\"\nmkdir -p \"$WORK/app/.streamlit\"\nprintf '[server]\\nport = 9999\\n' > \"$WORK/app/.streamlit/config.toml\"\ncd \"$WORK/app\"\n\n# 1. Any library use that parses config\nPYTHONPATH=\"$WORK/pkgs\" python3 -c \"import streamlit.config as c; c.get_config_options()\"\n# RuntimeError: server.port does not work when global.developmentMode is true.\n\n# 2. The CLI\nPYTHONPATH=\"$WORK/pkgs\" python3 -m streamlit config show\n# same RuntimeError\n\n# 3. Even with no port in any config file:\nPYTHONPATH=\"$WORK/pkgs\" python3 -m streamlit config show --server.port 8502\n# same RuntimeError\n```\n\nAll three exit 1. With a config that sets no port, the same install parses fine (`server.port` = 8501).\n\n### Expected behavior\n\nOne of:\n\n- warn and ignore the configured port (nothing needs it in dev mode, and the server uses 8501 regardless), or\n- raise only for the port the server would actually use, and have the message name the escape hatch, e.g. *\"remove `server.port` from `.streamlit/config.toml`, or run with `--global.developmentMode false`\"*.\n\n### Actual behavior\n\nA hard `RuntimeError` from `get_config_options()`, before any app code runs, for any source of the value: a project or machine config file, or the documented `--server.port` flag.\n\n### Is this new?\n\nThe same on 1.63.0 and 1.64.0 (in 1.63 the check sits at the end of `streamlit/config.py`, reached via `_on_config_parsed`). I have not checked further back.\n\n### Workarounds (both verified)\n\n- `streamlit run app.py --global.developmentMode false` — per run.\n- `[global] developmentMode = false` in a config file — persistent, but it is a hidden option and it also turns off dev-mode conveniences (e.g. `logger.level` defaulting to `debug`).\n\n### Environment\n\n- Streamlit 1.63.0 and 1.64.0\n- Python 3.13.14\n- macOS 27.0 (arm64)",
+    "topic": "session",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:session-state",
+      "doc:widget-behavior"
+    ],
+    "acceptable_next_steps": [
+      "Ask whether installation is editable/source/target and inspect developmentMode before treating server.port as a network failure."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Ask whether installation is editable/source/target and inspect developmentMode before treating server.port as a network failure."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E18",
+    "family": "16977",
+    "split": "test",
+    "issue_number": 16977,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16977",
+    "title": "Scroll to st.chat_input",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nPlacing `st.chat_input` inside `st.bottom` causes an otherwise non-chat page to scroll to the bottom immediately on initial load, without any user interaction or chat messages. This hides the heading and initial content when using the bottom container for a persistent assistant alongside a dashboard. Replacing only `st.chat_input` with `st.text_input` prevents the unsolicited scrolling.\n\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\n\nst.title(\"Dashboard heading\")\nfor number in range(30):\n    st.write(f\"Dashboard row {number}\")\n\nwith st.bottom:\n    st.chat_input(\"Ask about the dashboard\")\n```\n\n### Steps To Reproduce\n\n1. Install `streamlit==1.63.0` and run the example with `streamlit run app.py`.\n2. Open a fresh browser tab/context with a viewport around 1280 x 720, so the main content exceeds the viewport height.\n3. Do not click, type, or scroll. Wait for rendering to settle.\n4. Observe that the main page has scrolled to the bottom and the dashboard heading is offscreen.\n5. As a control, replace `st.chat_input` with `st.text_input`, restart/reload in a fresh browser context, and observe that the page stays at the top.\n\nNo custom CSS, JavaScript, Snowflake connection, fragments, tabs, navigation, or third-party component is needed to reproduce this.\n\n### Expected Behavior\n\nAn initial dashboard load should remain at the top. A bottom-docked input should not make non-chat content above it auto-scroll before any conversation exists. If automatic scrolling is intentional for chat-first apps, an opt-out for this mixed dashboard/assistant use case would be helpful.\n\n\n### Current Behavior\n\nThe page scrolls to the bottom on its own. In three fresh Chrome contexts per variant, measured after rendering settled at a 1280 x 720 viewport:\n\n| Bottom widget | Main scrollTop | Main scrollHeight | Main clientHeight |\n| --- | ---: | ---: | ---: |\n| `st.chat_input` (all 3 runs) | 843 | 1563 | 720 |\n| `st.text_input` (all 3 control runs) | 0 | 1573 | 720 |\n\nThe scroll position was read from the main scrollable section (`section.stMain`), not `window.scrollY`. No Streamlit exception was displayed. Measurements used Playwright with installed Chrome in headless mode; the same symptom was first noticed in interactive Chrome in a larger app.\n\n### Is this a regression?\n\n- [x] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.63.0 (also the latest GitHub release at the time of filing)\n- Python version: 3.14.3\n- Operating System: macOS 26.6, ARM64\n- Browser: Google Chrome 152.0.7977.83\n- Deployment: local `streamlit run`, default theme for the minimal example\n\n### Additional Information\n\n_No response_",
+    "topic": "widget",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:widget-behavior",
+      "doc:forms"
+    ],
+    "acceptable_next_steps": [
+      "Escalate the scroll/input behavior using the supplied viewport and minimal app; version is already provided."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Escalate the scroll/input behavior using the supplied viewport and minimal app; version is already provided."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E19",
+    "family": "14324",
+    "split": "test",
+    "issue_number": 14324,
+    "source_url": "https://github.com/streamlit/streamlit/issues/14324",
+    "title": "@st.cache_data crashes with NameError on Python 3.14 when annotations use TYPE_CHECKING imports (PEP 649)",
+    "body": "## Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n## Summary\n\nOn Python 3.14, `@st.cache_data` (and likely `@st.cache_resource`) crashes with a `NameError` when a decorated function uses type annotations that reference types imported under `if TYPE_CHECKING:`. This is caused by Python 3.14's PEP 649 (deferred evaluation of annotations), which changes how `inspect.signature()` resolves annotations. Streamlit's caching internals call `inspect.signature()` to determine parameter names, and on Python 3.14 this now triggers lazy annotation evaluation, which fails when the referenced types are not available at runtime.\n\n## Reproducible Code Example\n\n```python\nfrom typing import TYPE_CHECKING\n\nimport streamlit as st\n\nif TYPE_CHECKING:\n    from collections.abc import Sequence\n\n@st.cache_data\ndef my_func(items: \"Sequence[str]\" = None) -> None:\n    return None\n\n# Calling the function triggers the crash\nmy_func([\"a\", \"b\"])\n```\n\n## Steps To Reproduce\n\n1. Install Python 3.14.x (e.g., 3.14.2)\n2. Install Streamlit (`pip install streamlit`)\n3. Create a file with the code above\n4. Run `streamlit run app.py`\n5. Observe the crash\n\n## Expected Behavior\n\n`@st.cache_data` should work correctly with functions whose annotations reference types imported under `if TYPE_CHECKING:`, just as it does on Python <= 3.13. The decorator only needs parameter *names* (not types) for cache key computation, so annotation resolution should not be required.\n\n## Current Behavior\n\nThe app crashes immediately with:\n\n```\nNameError: (\"name 'Sequence' is not defined\", '')\n```\n\nFull traceback (abbreviated):\n\n```\nFile \".../streamlit/runtime/caching/cache_utils.py\", line 440, in _make_value_key\n    arg_name = _get_positional_arg_name(func, arg_idx)\nFile \".../streamlit/runtime/caching/cache_utils.py\", line 535, in _get_positional_arg_name\n    params: list[inspect.Parameter] = list(inspect.signature(func).parameters.values())\nFile \".../lib/python3.14/inspect.py\", line 3321, in signature\n    return Signature.from_callable(obj, follow_wrapped=follow_wrapped, ...)\n...\nFile \".../lib/python3.14/annotationlib.py\", line 1137, in _get_dunder_annotations\n    ann = getattr(obj, \"__annotations__\", None)\nNameError: (\"name 'Sequence' is not defined\", '')\n```\n\n### Root cause\n\nIn `cache_utils.py`, the function `_get_positional_arg_name` calls `inspect.signature(func)`. On Python <= 3.13, this did not eagerly evaluate annotations. On Python 3.14 (PEP 649), annotations are evaluated lazily via `__annotate__`, and `inspect.signature()` now triggers that evaluation — causing a `NameError` for any type that is only imported under `TYPE_CHECKING`.\n\n### Suggested fix\n\nSince `_get_positional_arg_name` only accesses `.name` and `.kind` on the parameters (never `.annotation`), the fix could be to call `inspect.signature(func, eval_str=False)` or to use `inspect.get_annotations(func, format=inspect.Format.FORWARDREF)` (Python 3.14+) to avoid triggering annotation evaluation. Alternatively, wrapping the `inspect.signature()` call to catch `NameError` and falling back to a non-evaluating approach would also work.\n\n- [x] Yes, this used to work in a previous version.\n\n## Debug info\n\n- Streamlit version: 1.52.2 (likely affects all versions including 1.55.0)\n- Python version: 3.14.2\n- Operating System: Windows 11\n- Browser: N/A (crashes before rendering)\n\n## Additional Information\n\n- PEP 649: https://peps.python.org/pep-0649/\n- The `if TYPE_CHECKING:` pattern is the standard Python practice (recommended by ruff's TC rules) for avoiding circular imports and keeping runtime import overhead minimal. It is widely used across the Python ecosystem.\n- Streamlit's own codebase uses `from __future__ import annotations` in `cache_utils.py` and `hashing.py`, which currently shields its internal code from this issue — but user code that follows the `TYPE_CHECKING` pattern (without `from __future__ import annotations`) is affected.\n- **Workaround**: Move the affected imports out of the `TYPE_CHECKING` block so they are available at runtime. This requires adding `noqa` comments for ruff's TC rules.",
+    "topic": "cache",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:caching"
+    ],
+    "acceptable_next_steps": [
+      "Check the reported Python 3.14 annotation behavior and exact Streamlit version; attach the provided minimal example."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Check the reported Python 3.14 annotation behavior and exact Streamlit version; attach the provided minimal example."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E20",
+    "family": "14209",
+    "split": "test",
+    "issue_number": 14209,
+    "source_url": "https://github.com/streamlit/streamlit/issues/14209",
+    "title": "WebSocket fails behind Istio VirtualService despite websocketUpgrade: true, causing localhost requests to stall even with normal CPU/memory usage",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nWhen deploying a minimal Streamlit app behind Istio (using Gateway + VirtualService with websocketUpgrade: true), the browser fails to establish a WebSocket connection (wss://.../stream), falling back to HTTP polling. Surprisingly, this causes localhost requests from within the same pod to become extremely slow, even though CPU and memory usage remain low. The same Istio setup works fine for other WebSocket-based apps like JupyterLab.\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\nst.write(\"Hello World\")\n```\n\n### Steps To Reproduce\n\n_No response_\n\n### Expected Behavior\n\nWith websocketUpgrade: true, Streamlit should successfully establish a WebSocket connection through Istio.\nEven if WebSocket fails, localhost access should remain responsive, as the app is idle and system resources are not saturated.\n\n### Current Behavior\n\n_No response_\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\nStreamlit version: 1.47.1\nPython version: 3.10.12\nOperating System: Ubuntu 22.04.3 LTS\nBrowser: Edge/chrome\n\n### Additional Information\n\nthis is my virtual service template\napiVersion: networking.istio.io/v1beta1\nkind: VirtualService\nspec:\n  gateways:\n    - my-ns/my-gateway\n  hosts:\n    - \"example.com\"\n  http:\n    - match:\n        - uri:\n            prefix: /prefix/path\n      route:\n        - destination:\n            host: streamlit-svc.my-ns.svc.cluster.local\n            port:\n              number: 8501\n      websocketUpgrade: true\n      timeout: 60s\n\n<img width=\"2240\" height=\"308\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/2dda18e0-3b79-4f21-abaa-032b456a8e5e\" />\n\n<img width=\"1808\" height=\"542\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/aa9cb1b0-83a5-4a95-820c-a5ffc4273317\" />",
+    "topic": "websocket",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:remote-start",
+      "doc:resource-limits"
+    ],
+    "acceptable_next_steps": [
+      "Ask for sanitized proxy configuration/handshake status and compare direct pod versus proxied access; the small app is already supplied."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Ask for sanitized proxy configuration/handshake status and compare direct pod versus proxied access; the small app is already supplied."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E21",
+    "family": "17030",
+    "split": "test",
+    "issue_number": 17030,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17030",
+    "title": "`heartbeat_ack` is discarded when a script run starts before the queue flushes",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\n`ForwardMsgQueue.clear(retain_lifecycle_msgs=True)` keeps only `new_session`, `script_finished`, `session_status_changed`, `parent_message`, `page_info_changed` and toast deltas ([forward_msg_queue.py lines 135-146](https://github.com/streamlit/streamlit/blob/2bd9d77e68e1ef6beaee2bcf98da2c0707bacc63/lib/streamlit/runtime/forward_msg_queue.py#L135-L146)). `heartbeat_ack` is not in that set, so an ack that is already sitting in the queue is destroyed instead of delivered. `AppSession._clear_queue` calls this on every `SCRIPT_STARTED`, and the runtime flushes queues on a short timer, so an ack enqueued in the window between a heartbeat arriving and the next script run starting never reaches the browser. A host that sends one `SEND_APP_HEARTBEAT` and waits for the ack can wait forever.\n\n### Reproducible Code Example\n\n```Python\nfrom streamlit.proto.ForwardMsg_pb2 import ForwardMsg\nfrom streamlit.runtime.forward_msg_queue import ForwardMsgQueue\n\nqueue = ForwardMsgQueue()\n\nack = ForwardMsg()\nack.heartbeat_ack = True\nfinished = ForwardMsg()\nfinished.script_finished = ForwardMsg.FINISHED_SUCCESSFULLY\n\nqueue.enqueue(ack)\nqueue.enqueue(finished)\n[m.WhichOneof(\"type\") for m in queue._queue]  # ['heartbeat_ack', 'script_finished']\n\nqueue.clear(retain_lifecycle_msgs=True)\n[m.WhichOneof(\"type\") for m in queue._queue]  # ['script_finished']  <- ack is gone\n```\n\n### Steps To Reproduce\n\n1. `streamlit run` (or `uv run streamlit run`) the snippet.\n2. Observe that the second print no longer contains `heartbeat_ack`.\n\nEnd to end: open an app in an iframe host that sends `SEND_APP_HEARTBEAT` exactly once while a rerun is being triggered (for example, immediately after a widget interaction). The ack for that heartbeat is never received.\n\n### Expected Behavior\n\nA heartbeat ack is a one-shot reply to a client request, like a toast is a one-shot notification. It should survive the interrupted-run queue clear, or be sent directly rather than queued, so that one heartbeat always produces one ack.\n\n### Current Behavior\n\nThe ack is silently removed from the queue when a script run starts before the queue is flushed. Nothing is logged. The client sees no reply.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.63.0 and 1.64.0, both reproduced\n- Python version: 3.14.6\n- Operating System: Linux Mint 22.3 Zena 64-bit\n- Browser: Version 152.0.7977.82 (Official Build) for Linux Mint (x86_64) but **not browser-specific; reproduced as a pure function of `ForwardMsgQueue`**\n\n### Additional Information\n\nThe toast case (#7740) was fixed by adding `_is_toast_delta(msg)` to the retain predicate ([forward_msg_queue.py line 146](https://github.com/streamlit/streamlit/blob/2bd9d77e68e1ef6beaee2bcf98da2c0707bacc63/lib/streamlit/runtime/forward_msg_queue.py#L146)); the same shape would fix this (`msg.WhichOneof(\"type\") == \"heartbeat_ack\"`). We hit this from a test harness that uses a heartbeat round trip to prove a WebSocket reconnect completed; sending heartbeats on an interval rather than once is the workaround.",
+    "topic": "session",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:session-state",
+      "doc:widget-behavior"
+    ],
+    "acceptable_next_steps": [
+      "Escalate with the queue-lifecycle evidence; do not pretend generic session-state docs verify the heartbeat implementation."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Escalate with the queue-lifecycle evidence; do not pretend generic session-state docs verify the heartbeat implementation."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E22",
+    "family": "16909",
+    "split": "test",
+    "issue_number": 16909,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16909",
+    "title": "st.data_editor NumberColumn: typing a value starting with \".\" (no leading zero) drops the decimal point and reads digits as a whole number",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nWhen a NumberColumn cell is selected and you type a value that starts with `.` (e.g. `.01`), the `.` is silently dropped and the remaining digits are committed as a whole number — `.01` becomes `1`, `.07` becomes `7`. Typing the same value with a leading zero (`0.01`) works correctly, and **pasting** `.01` into the cell also works correctly. So this is specific to the character-by-character typed-entry path.\n\nImpact\nThis is a real-world data-entry trap: any user in the habit of typing .01-style shorthand (common for percentage/margin fields) silently enters a value the cell just shows a plausible-looking wrong number.\n\n### Reproducible Code Example\n\n```Python\nimport pandas as pd\nimport streamlit as st\ndf = pd.DataFrame({\"Customer\": [\"A\", \"B\"], \"Margin\": [12.0, 8.0]})\nst.data_editor(\n    df,\n    column_config={\n        \"Margin\": st.column_config.NumberColumn(\"Margin\", format=\"%.4f\", step=0.0001),\n    },\n)\n```\n\n### Steps To Reproduce\n\nClick the Margin cell for row A (shows 12.0000).\nType .07 (as literal keystrokes: ., 0, 7).\nPress Enter.\n\n\n\n### Expected Behavior\n\nExpected: cell shows 0.0700.\n\n\n### Current Behavior\n\nActual: cell shows 7.0000.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\nStreamlit version: 1.61.1\nPython version: 3.12/3.14\nBrowser: Chrome\nOS: Windows\n\n\n### Additional Information\n\n_No response_",
+    "topic": "widget",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:widget-behavior",
+      "doc:forms"
+    ],
+    "acceptable_next_steps": [
+      "Compare typed .01, typed 0.01 and pasted .01 using the provided reproduction; the distinction is already reported."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Compare typed .01, typed 0.01 and pasted .01 using the provided reproduction; the distinction is already reported."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E23",
+    "family": "14077",
+    "split": "test",
+    "issue_number": 14077,
+    "source_url": "https://github.com/streamlit/streamlit/issues/14077",
+    "title": "SqlConnection.query caches at the class level, not the instance level",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\n`SqlConnection` [uses the field `self._connection_name` as the \"per instance\" portion of a cache key](https://github.com/streamlit/streamlit/blob/7fb32187b54bd7d0cc181dadae85aea3780a98ee/lib/streamlit/connections/sql_connection.py#L342). However, the connection factory allows overriding any connection parameters when creating - which means that you can have multiple connections with different settings sharing a cache key.\n\n`SqlConnection` should likely add a dummy `self`-like argument to [the inner query function](https://github.com/streamlit/streamlit/blob/7fb32187b54bd7d0cc181dadae85aea3780a98ee/lib/streamlit/connections/sql_connection.py#L313) to ensure each instance has its own cache.\n\n### Reproducible Code Example\n\n```Python\n\n```\n\n### Steps To Reproduce\n\n_No response_\n\n### Expected Behavior\n\n_No response_\n\n### Current Behavior\n\n_No response_\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version:\n- Python version:\n- Operating System:\n- Browser:\n\n\n### Additional Information\n\n_No response_",
+    "topic": "cache",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:caching"
+    ],
+    "acceptable_next_steps": [
+      "Request a minimal two-connection example because code and reproduction are absent; inspect effective connection settings without revealing credentials."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Request a minimal two-connection example because code and reproduction are absent; inspect effective connection settings without revealing credentials."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E24",
+    "family": "11670",
+    "split": "test",
+    "issue_number": 11670,
+    "source_url": "https://github.com/streamlit/streamlit/issues/11670",
+    "title": "connection breaks up because WebSocketProtocol13.ping_timeout=1, but expected to be 30",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nIn server.py there is configuration for tornado:\n\n```\nTORNADO_SETTINGS = {\n    # Gzip HTTP responses.\n    \"compress_response\": True,\n    # Ping every 1s to keep WS alive.\n    # 2021.06.22: this value was previously 20s, and was causing\n    # connection instability for a small number of users. This smaller\n    # ping_interval fixes that instability.\n    # https://github.com/streamlit/streamlit/issues/3196\n    \"websocket_ping_interval\": 1,\n    # If we don't get a ping response within 30s, the connection\n    # is timed out.\n    \"websocket_ping_timeout\": 30,\n    \"xsrf_cookie_name\": \"_streamlit_xsrf\",\n}\n```\n\nBut if we go to tornado sources https://www.tornadoweb.org/en/stable/_modules/tornado/websocket.html\nthen we will find out:\n\n```python\n    @property\n    def ping_timeout(self) -> float:\n        timeout = self.params.ping_timeout\n        if timeout is not None:\n            if self.ping_interval and timeout > self.ping_interval:\n                de_dupe_gen_log(\n                    # Note: using de_dupe_gen_log to prevent this message from\n                    # being duplicated for each connection\n                    logging.WARNING,\n                    f\"The websocket_ping_timeout ({timeout}) cannot be longer\"\n                    f\" than the websocket_ping_interval ({self.ping_interval}).\"\n                    f\"\\nSetting websocket_ping_timeout={self.ping_interval}\",\n                )\n                return self.ping_interval\n            return timeout\n        return self.ping_interval\n```\n\nObviously, that streamlit have pint_timeout set to 1, which is super inconvenient with unstable connection (like delay on 1s will breaks up streaming)\n\n### Reproducible Code Example\n\n```Python\n\n```\n\n### Steps To Reproduce\n\nJust go with debugger to tornado/websocket.py line where get_websocket_protocol is defined and check that `WebSocketProtocol13(self, False, params)` will return both ping_timeout and ping_interval equals 1.\n\n\n### Expected Behavior\n\nI expect streamlit will provide an ability to set this parameters somewhere in config.\n\n### Current Behavior\n\n_No response_\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.45.1\n- Python version: 3.9 or 3.12, doesn't matter \n- Operating System: Linux\n- Browser: Chrome\n\n\n### Additional Information\n\n_No response_",
+    "topic": "websocket",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:remote-start",
+      "doc:resource-limits"
+    ],
+    "acceptable_next_steps": [
+      "Inspect the resolved Tornado and Streamlit versions and the actual timeout observation; keep reported configuration distinct from verified runtime behavior."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Inspect the resolved Tornado and Streamlit versions and the actual timeout observation; keep reported configuration distinct from verified runtime behavior."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E25",
+    "family": "17011",
+    "split": "test",
+    "issue_number": 17011,
+    "source_url": "https://github.com/streamlit/streamlit/issues/17011",
+    "title": "Conditionally created dialog in a fragment stops logically existing after rerun of a fragment while still existing on the website",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nWhen a fragment gets rerun and it has conditionally rendered child dialog (for example guarded by a button being clicked) the dialog will stop being responsive while still existing on the page\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\n\n\n@st.dialog(\"Dialog\", dismissible=False)\ndef show_dialog() -> None:\n    if st.button(\"Increment\"):\n        st.session_state[\"clicks\"] = st.session_state.get(\"clicks\", 0) + 1\n    st.write(\"Clicks:\", st.session_state.get(\"clicks\", 0))\n\n\n@st.fragment(run_every=5)\ndef parent_fragment() -> None:\n    st.session_state[\"parent_runs\"] = st.session_state.get(\"parent_runs\", 0) + 1\n    st.write(\"Parent runs:\", st.session_state[\"parent_runs\"])\n    if st.button(\"Open dialog\"):\n        show_dialog()\n\n\nst.write(\"Open the dialog, then wait for the parent fragment's next automatic rerun (every 5 seconds).\")\nparent_fragment()\n```\n\n### Steps To Reproduce\n\n1. Click Open dialog\n2. start clicking increment\n3. after parent reruns the dialog stops being responsive and streamlit will log The fragment with id <id> does not exist anymore - it might have been removed during a preceding full-app rerun.\n\n### Expected Behavior\n\nThe dialog to still be responsive\n\n### Current Behavior\n\nThe dialog stops being responsive\n\n### Is this a regression?\n\n- [x] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.64.0\n- Python version: Python 3.13.13\n- Operating System: Linux 7.1.4-arch1-1\n- Browser: Firefox\n\n\n### Additional Information\n\nworked when ran with\n```\nuv run --no-project --with streamlit==1.57.0 streamlit run repro.py\n```\nstopped working at\n```\nuv run --no-project --with streamlit==1.58.0 streamlit run repro.py\n```",
+    "topic": "session",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:session-state",
+      "doc:widget-behavior"
+    ],
+    "acceptable_next_steps": [
+      "Escalate the timed fragment/dialog reproduction with version and event sequence; do not ask to recreate the already supplied app."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Escalate the timed fragment/dialog reproduction with version and event sequence; do not ask to recreate the already supplied app."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E26",
+    "family": "16841",
+    "split": "test",
+    "issue_number": 16841,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16841",
+    "title": "st.multiselect no longer inserts the first filtered option on Enter (works in 1.49.1, not in 1.62.0)",
+    "body": "### Checklist\n\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [X] I added a very descriptive title to this issue.\n- [X] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nIn `st.multiselect`, typing a few letters and pressing Enter used to insert the first filtered option. Since the react-aria migration it inserts nothing: no option is marked as the user types, so Enter has nothing to commit and simply closes the list.\n\n`st.selectbox` still commits its first filtered option on Enter, which is why this reads as an oversight rather than a decision, but I may be wrong about that and would rather ask than assume.\n\nFiling it because the same migration produced #16003 (fuzzy search became contiguous-substring matching), which was accepted as a regression, and this is the same shape of quiet behaviour loss.\n\n### Reproducible Code Example\n\n```python\nimport streamlit as st\n\npicked = st.multiselect(\"Multi\", [\"Person\", \"Organization\", \"Department\", \"Role\", \"Project\"])\nst.write(\"multiselect:\", picked)\n\none = st.selectbox(\"Single\", [\"Person\", \"Organization\", \"Role\"], index=None)\nst.write(\"selectbox:\", one)\n```\n\n### Steps To Reproduce\n\n1. Click the multiselect and type `Pe`.\n2. Press Enter.\n3. Do the same in the selectbox below it.\n\n### Expected Behavior\n\nEnter inserts `Person`, the first filtered option, as it did in 1.49.1 and as the selectbox still does in 1.62.0.\n\n### Current Behavior\n\nEnter clears the text and closes the list, and nothing is selected.\n\nComparing the same script on both versions, in the DOM after typing `Pe`:\n\n| | 1.49.1 | 1.62.0 |\n|---|---|---|\n| options offered | Person, Project, Department | same (the fuzzy filter is unchanged) |\n| first option | `aria-selected=\"true\"`, tinted row | nothing marked, no `aria-activedescendant` |\n| Enter | inserts Person | inserts nothing |\n| extra row | none | `Select N matches`, keyed `__select_matches__` |\n| selectbox, Enter | - | inserts the first option |\n\nThe arrow keys reach the option, but the first ArrowDown lands on the new `Select N matches` row, so the natural keyboard recovery (ArrowDown, Enter) selects *every* match rather than the one that was wanted. It takes ArrowDown twice.\n\nI could not find a prop in React Aria's ComboBox for list autocomplete with automatic selection, so I appreciate this may not be a small change. The WAI-ARIA APG lists both automatic and manual selection as valid patterns, so this is a design question as much as a bug, which is why the question is in the summary.\n\n### Is this a regression?\n\n- [X] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.62.0 (working in 1.49.1)\n- Python version: 3.12\n- Operating System: macOS\n- Browser: Chrome\n\n### Additional Information\n\nRelated: #16003 and #15438 (the BaseWeb to react-aria migration).",
+    "topic": "widget",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:widget-behavior",
+      "doc:forms"
+    ],
+    "acceptable_next_steps": [
+      "Compare multiselect/selectbox Enter behavior and stated old/new versions; preserve the regression evidence."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Compare multiselect/selectbox Enter behavior and stated old/new versions; preserve the regression evidence."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E27",
+    "family": "13644",
+    "split": "test",
+    "issue_number": 13644,
+    "source_url": "https://github.com/streamlit/streamlit/issues/13644",
+    "title": "SnowflakeConnection.query() cache key ignores params argument",
+    "body": "## Checklist\n\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [X] I added a descriptive title and summary to this issue.\n\n## Summary\n\n`SnowflakeConnection.query()` (and likely `SQLConnection.query()`) does not include the `params` argument when generating the cache key. This causes incorrect cached results when the same query string is called with different parameter values.\n\n## Steps to reproduce\n\n```python\nimport streamlit as st\n\nconn = st.connection(\"mydb\", \"snowflake\")\nquery = \"SELECT * FROM my_table WHERE status = ?\"\n\n# First call - returns correct data for status 'active'\nresult1 = conn.query(query, params=[\"active\"])\n\n# Second call - SHOULD return data for status 'inactive'\n# ACTUALLY returns cached data for status 'active'\nresult2 = conn.query(query, params=[\"inactive\"])\n\n# Workaround: disable caching, but loses the benefit of caching\nresult3 = conn.query(query, params=[\"inactive\"], ttl=0)\n```\n\n## Expected behavior\n\nThe cache key should include both the query string AND the params argument. Different parameter values should result in separate cache entries.\n\n## Actual behavior\n\nThe cache key only includes the query string. The `params` argument is ignored, so `conn.query(q, params=[\"a\"])` and `conn.query(q, params=[\"b\"])` return the same cached result.\n\n## Workaround\n\nWrap the query in a custom cached function that includes params in the signature:\n\n```python\n@st.cache_data(ttl=600)\ndef query_with_params(query: str, params: tuple):\n    conn = st.connection(\"mydb\", \"snowflake\")\n    return conn.query(query, params=list(params), ttl=0)\n\n# Usage - params as tuple for hashability\nquery_with_params(query, (\"active\",))\nquery_with_params(query, (\"inactive\",))  # Now correctly cached separately\n```\n\n## Is this a regression?\n\nUnknown - this may have been the behavior since `st.connection` was introduced.\n\n## Debug info\n\n- Streamlit version: (current)\n- Python version: 3.11+\n- OS: macOS / Linux\n\n## Additional context\n\nThis also likely affects `SQLConnection.query()` and potentially other connection types that support parameterized queries with internal caching.\n\nUsing parameterized queries is a security best practice to prevent SQL injection, so it's important that the caching mechanism supports this pattern correctly.",
+    "topic": "cache",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:caching"
+    ],
+    "acceptable_next_steps": [
+      "Check parameter-dependent query caching against the provided SQL example; do not claim a patch or a fixed version."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Check parameter-dependent query caching against the provided SQL example; do not claim a patch or a fixed version."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E28",
+    "family": "16570",
+    "split": "test",
+    "issue_number": 11647,
+    "source_url": "https://github.com/streamlit/streamlit/issues/11647",
+    "title": "Connection error",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nWhen I clicked on a button in my app, I got this error. It happened once and I couldn't reproduce it. \n\nFailed to process a Websocket message. Error: Cached ForwardMsg MISS [hash=1d99864e8c71263a2968f13e2df28735]. This is not expected to happen. Please [report this bug](https://github.com/streamlit/streamlit/issues).\n\n### Reproducible Code Example\n\n```Python\n\n```\n\n### Steps To Reproduce\n\n_No response_\n\n### Expected Behavior\n\n_No response_\n\n### Current Behavior\n\n_No response_\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.45.0\n- Python version: 3.10.6\n- Operating System: Windows 11\n- Browser: Brave\n\n\n### Additional Information\n\n_No response_",
+    "topic": "websocket",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:remote-start",
+      "doc:resource-limits"
+    ],
+    "acceptable_next_steps": [
+      "Request timestamp/log context for the once-only failure; versions/OS/browser are already supplied and must not be asked again."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Request timestamp/log context for the once-only failure; versions/OS/browser are already supplied and must not be asked again."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E29",
+    "family": "16914",
+    "split": "test",
+    "issue_number": 16914,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16914",
+    "title": "[Bug] st.dataframe() / st.table() silently kill WebSocket when DataFrame has non-ASCII column names + emoji data (no traceback, session loss)",
+    "body": "## Summary\n\n`st.dataframe()` and `st.table()` silently close the WebSocket connection when the DataFrame contains **non-ASCII column names** (e.g. `ç`, `ê`, `/`) **combined with emoji in cell data**. No Python exception is raised, no error appears in the terminal — the browser simply reconnects with a brand-new session, wiping `st.session_state` entirely.\n\nThis is one of the hardest bugs to debug in Streamlit because it produces **zero tracebacks** and presents itself as an unrelated UX problem (\"users keep getting logged out\").\n\n---\n\n## Versions\n\n| Package | Version |\n|---|---|\n| streamlit | 1.41.0 |\n| pandas | 2.2.3 |\n| Python | 3.11 |\n| OS | Linux (Docker, python:3.11-slim) |\n\n---\n\n## Minimal Reproduction\n\n```python\n# app.py\nimport streamlit as st\nimport pandas as pd\n\n# This persists fine\nif \"logged_in\" not in st.session_state:\n    st.session_state[\"logged_in\"] = False\n\nif not st.session_state[\"logged_in\"]:\n    if st.button(\"Login\"):\n        st.session_state[\"logged_in\"] = True\n        st.rerun()\n    st.stop()\n\nst.write(\"✅ Logged in — session_state alive\")\n\ndf = pd.DataFrame({\n    \"Serviço\": [\"Manutenção Website\", \"Hospedagem\"],   # ← non-ASCII column name (cedilha)\n    \"Valor/mês\": [\"R$ 100,00\", \"R$ 200,00\"],           # ← non-ASCII + slash in column name  \n    \"Status\": [\"🟢 Ativo\", \"🔴 Pausado\"],              # ← emoji in cell data\n})\n\nst.dataframe(df)   # 💥 WebSocket dies here — no exception raised\nst.write(\"This line never renders — session is already dead\")\n```\n\nRun with Docker:\n\n```dockerfile\nFROM python:3.11-slim\nWORKDIR /app\nRUN pip install streamlit==1.41.0 pandas==2.2.3\nCOPY app.py .\nENTRYPOINT [\"streamlit\", \"run\", \"app.py\", \"--server.headless=true\", \"--server.fileWatcherType=none\"]\n```\n\n**Steps to reproduce:**\n1. Build and run the container\n2. Open `http://localhost:8501`\n3. Click \"Login\" → session is alive (`session_state[\"logged_in\"] = True`)\n4. `st.dataframe(df)` renders (or tries to)\n5. Browser reconnects → `session_state` is empty → \"Login\" button appears again\n\n---\n\n## Observed Behavior\n\n- `st.dataframe(df)` call executes without raising any Python exception\n- The line after `st.dataframe()` **never executes** (confirmed via `print()` to stdout)\n- Browser-side: WebSocket closes and immediately reconnects with a fresh session\n- `st.session_state` is wiped clean — any auth/navigation state is lost\n- **Identical behavior with `st.table(df)`** — same root cause\n\n### Diagnostic method that revealed the bug\n\nSince no traceback is produced, the only way to isolate it was:\n\n1. Store a UUID in `session_state` on first load: `st.session_state[\"sid\"] = uuid4()`\n2. Display it on every render: `st.caption(f\"sid: {st.session_state['sid']}\")`\n3. Add `print()` statements throughout the render function (visible in Docker logs)\n4. The `print()` output stopped exactly at the `st.dataframe()` call\n5. The displayed `sid` changed to a new value on the next render → confirmed new WebSocket session\n\n---\n\n## Root Cause Hypothesis\n\nThe bug appears to occur during **Arrow/protobuf serialization** of the DataFrame when:\n- Column names contain multi-byte UTF-8 characters (`ç` = U+00E7, `ê` = U+00EA, `/` combined with accented chars)\n- AND cell data contains 4-byte Unicode emoji (`🟢` = U+1F7E2, `🔴` = U+1F534)\n\nThe serialization fails at the **protocol level** (WebSocket frame), not at the Python level. The exception is caught internally by Streamlit/PyArrow and manifests as a connection close rather than an error message.\n\nThe bug does **not** occur when:\n- Column names are ASCII-only\n- Cell data has no emoji\n- `st.write(df.to_dict(orient=\"records\"))` is used instead (routes through JSON, not Arrow)\n\n---\n\n## Workaround\n\nReplace `st.dataframe()` / `st.table()` with a **GFM markdown table** rendered via `st.markdown()`:\n\n```python\ndef _esc(v) -> str:\n    \"\"\"Escape pipe to prevent breaking markdown table structure.\"\"\"\n    return str(v).replace(\"|\", \"\\\\|\")\n\nlines = [\n    \"| Servico | Valor_mes | Status |\",\n    \"|---|---|---|\",\n]\nfor _, row in df.iterrows():\n    lines.append(f\"| {_esc(row['Serviço'])} | {_esc(row['Valor/mês'])} | {row['Status']} |\")\n\nst.markdown(\"\\n\".join(lines))\n```\n\nThis bypasses the Arrow serialization layer entirely.\n\n---\n\n## Expected Behavior\n\n- `st.dataframe()` should either render the DataFrame correctly OR raise a visible Python exception / display an in-app error\n- The WebSocket connection should **never** be closed silently due to a data rendering issue\n- If Arrow serialization fails, Streamlit should fall back to a JSON/HTML representation rather than terminating the session\n\n---\n\n## Additional Notes\n\n- `fileWatcherType = \"none\"` was confirmed active — rules out hot-reload as the cause\n- The Docker container did **not** restart (verified via log message count)\n- The bug is **100% reproducible** in the described environment\n- Changing column names to ASCII-only (`Servico`, `Valor_mes`) likely resolves the Arrow schema issue\n\nWould appreciate confirmation of the root cause and whether a fix is planned for 1.41.x or 1.42.0.",
+    "topic": "session",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:session-state",
+      "doc:widget-behavior"
+    ],
+    "acceptable_next_steps": [
+      "Ask for minimal DataFrame/schema and browser/network observations; non-ASCII data is a reported clue, not an established cause."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Ask for minimal DataFrame/schema and browser/network observations; non-ASCII data is a reported clue, not an established cause."
+    ],
+    "designed_followups": true
+  },
+  {
+    "id": "E30",
+    "family": "16773",
+    "split": "test",
+    "issue_number": 16773,
+    "source_url": "https://github.com/streamlit/streamlit/issues/16773",
+    "title": "Clarify st.number_input return type when value= int | None",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nPassing a typed variable of int | None to the value parameter for number_input returns a float | None type.\n\nI expected this to be int | None, and that this is how you are expected to create an empty input field, that accepts integers only, assuming the step parameter would default to 1, but it appears that strictly requires value to be int.\n\nIf you set step=1, then static type checking works as expected, resolving to int | None.\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\n\ndefault_value: int | None = None\n\nnumber = st.number_input(\n    \"Input number\",\n    value=default_value,\n)\n\nif number:\n    assert isinstance(number, int)\n    print('Number is an int')\n```\n\n### Steps To Reproduce\n\n1. Run example\n2. Input number\n\n### Expected Behavior\n\nPrints 'Number is an int'\n\n### Current Behavior\n\nAssertion fails.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.59.1\n- Python version: 3.12\n- Operating System: Windows\n- Browser: Edge\n\n\n### Additional Information\n\n_No response_",
+    "topic": "widget",
+    "input_time": "saved snapshot; not an original historical reconstruction",
+    "facts": {},
+    "checks": [],
+    "acceptable_source_prefixes": [
+      "doc:widget-behavior",
+      "doc:forms"
+    ],
+    "acceptable_next_steps": [
+      "Explain the documented value/step/type behavior with a pinned API citation, and qualify applicability to the installed version."
+    ],
+    "gold_status": "Documentation relevance and decision categories annotated; root-cause correctness requires human review.",
+    "missing_information": [
+      "Only request details not already provided; Explain the documented value/step/type behavior with a pinned API citation, and qualify applicability to the installed version."
+    ],
+    "designed_followups": true
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "experiment": "simplified_langchain_v2_regression",
+  "test_status": "Existing split previously seen; no new blind-test claim",
+  "settings": {
+    "chunk_words": 180,
+    "overlap": 30,
+    "k": 4,
+    "docs_boost": 1.15,
+    "model_run_limit": 9,
+    "tool_run_limit": 10
+  },
+  "sha256": {
+    "src/agent.py": "55a7de1d2544fbbb32309c53952b7b8b3105e26b4e3aa5769e114c26c0feedaf",
+    "src/retrieval.py": "e095c86dd6e896aaa53c3c411a4fe8bcc246cbfb46bbf4ce91eb950f462204b4",
+    "src/store.py": "34f2ea74e575473e8f4cc6347859abe29f538fb9f1b20dd8d018c57d920382fa",
+    "src/budget.py": "e5ebc81b47689986ed181abecf95c001dab3d9ef811ec433839e6e219d8788a6",
+    "evaluation/cases.json": "460b3749c168d8e508f68ab85c9bc64bdbb50d3397c90defcb6b1ba5bc0dd0ca",
+    "evaluation/split.json": "3745293a5e833143068ee4f7d2f7ddff50d39c8b32107ea871e65362b1072e27",
+    "evaluation/annotations.json": "3bf43d8728ff530bf6a215779f1493fe6f6b8d5b030f4b0d1dd12085684c4718",
+    "data/knowledge.json": "d2e82ce17b2484f49e0a81b4a1af45b728459155ded6caed29c63b0dc4d56e24"
+  }
+}

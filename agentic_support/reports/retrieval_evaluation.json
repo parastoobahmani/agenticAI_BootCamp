@@ -1,0 +1,863 @@
+{
+  "mode": "local_retrieval_only",
+  "api_calls": 0,
+  "tokens": 0,
+  "cost_usd": 0,
+  "leakage_checks": {
+    "cases": 30,
+    "dev": 15,
+    "test": 15,
+    "heldout_family_members": 35,
+    "direct_and_link_leakage": false,
+    "semantic_family_audit": "human review still needed"
+  },
+  "scores": {
+    "dev_baseline": {
+      "cases": 15,
+      "labelled": 8,
+      "mean_recall_at_4": 0.1875,
+      "mean_seconds": 0.019002507799996238
+    },
+    "dev_final": {
+      "cases": 15,
+      "labelled": 8,
+      "mean_recall_at_4": 0.25,
+      "mean_seconds": 0.019568036133326434
+    },
+    "test_baseline": {
+      "cases": 15,
+      "labelled": 5,
+      "mean_recall_at_4": 0.2,
+      "mean_seconds": 0.015900679666629003
+    },
+    "test_final": {
+      "cases": 15,
+      "labelled": 5,
+      "mean_recall_at_4": 0.2,
+      "mean_seconds": 0.015641834466699343
+    }
+  },
+  "rows": [
+    {
+      "case": "E01",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:17026",
+        "issue:15544"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.011847988999988956
+    },
+    {
+      "case": "E01",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:17026",
+        "issue:15544",
+        "issue:15816"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.01078664800002116
+    },
+    {
+      "case": "E02",
+      "split": "dev",
+      "method": "baseline",
+      "category": "answerable",
+      "sources": [
+        "issue:15959",
+        "doc:widget-behavior:9",
+        "issue:14793",
+        "issue:16003"
+      ],
+      "recall_at_4": 0.5,
+      "seconds": 0.019951100000071165
+    },
+    {
+      "case": "E02",
+      "split": "dev",
+      "method": "final",
+      "category": "answerable",
+      "sources": [
+        "doc:widget-behavior:9",
+        "issue:14793",
+        "doc:api-multiselect:0",
+        "issue:15959"
+      ],
+      "recall_at_4": 1.0,
+      "seconds": 0.020241405999968265
+    },
+    {
+      "case": "E03",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "doc:widget-behavior:0",
+        "issue:16383"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.014138518999970984
+    },
+    {
+      "case": "E03",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "doc:widget-behavior:0",
+        "doc:caching:10",
+        "issue:16383",
+        "doc:caching:4"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.013408926000010979
+    },
+    {
+      "case": "E04",
+      "split": "dev",
+      "method": "baseline",
+      "category": "ambiguous",
+      "sources": [
+        "doc:caching:4",
+        "issue:12838",
+        "issue:16539",
+        "issue:16281"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.015624904999867795
+    },
+    {
+      "case": "E04",
+      "split": "dev",
+      "method": "final",
+      "category": "ambiguous",
+      "sources": [
+        "doc:caching:4",
+        "issue:12838",
+        "issue:16539",
+        "issue:16281"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.016132663000007597
+    },
+    {
+      "case": "E05",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:14793"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.01377593600000182
+    },
+    {
+      "case": "E05",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:14793",
+        "issue:16313",
+        "issue:16069"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.01419060500006708
+    },
+    {
+      "case": "E06",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:16181",
+        "issue:17127"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.019591792000028363
+    },
+    {
+      "case": "E06",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:13189",
+        "issue:15859",
+        "issue:16181",
+        "issue:17127"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.020452316000046267
+    },
+    {
+      "case": "E07",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:14847",
+        "issue:13165",
+        "issue:16383",
+        "issue:7426"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.01830065200010722
+    },
+    {
+      "case": "E07",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:13165",
+        "issue:16383",
+        "doc:caching:7",
+        "issue:7426"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.02052470299986453
+    },
+    {
+      "case": "E08",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:14847",
+        "issue:9140",
+        "issue:15816"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.015072622999923624
+    },
+    {
+      "case": "E08",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:13165",
+        "issue:14847",
+        "issue:9140",
+        "issue:15816"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.01855769999997392
+    },
+    {
+      "case": "E09",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:16388",
+        "issue:15959",
+        "issue:15544"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.01729029500006618
+    },
+    {
+      "case": "E09",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:16388",
+        "doc:widget-behavior:14",
+        "issue:15544",
+        "doc:session-state:3"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.01694817299994611
+    },
+    {
+      "case": "E10",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:16281",
+        "issue:15637",
+        "doc:api-selectbox:0",
+        "issue:16608"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.015440353000030882
+    },
+    {
+      "case": "E10",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:16281",
+        "doc:api-selectbox:0",
+        "doc:api-multiselect:0",
+        "issue:16608"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.01767158699999527
+    },
+    {
+      "case": "E11",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "doc:caching:10",
+        "doc:caching:7",
+        "doc:caching:5"
+      ],
+      "recall_at_4": 1.0,
+      "seconds": 0.024410258999978396
+    },
+    {
+      "case": "E11",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "doc:caching:10",
+        "doc:caching:7",
+        "doc:caching:5",
+        "doc:caching:12"
+      ],
+      "recall_at_4": 1.0,
+      "seconds": 0.02314970500015079
+    },
+    {
+      "case": "E12",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:17097",
+        "issue:8799",
+        "issue:15455",
+        "issue:15816"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.01979674199992587
+    },
+    {
+      "case": "E12",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:17097",
+        "issue:8799",
+        "issue:15455",
+        "issue:15816"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.020346211999822117
+    },
+    {
+      "case": "E13",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:8459",
+        "doc:session-state:5",
+        "issue:8901",
+        "issue:15816"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.01964950100000351
+    },
+    {
+      "case": "E13",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:8459",
+        "doc:session-state:5",
+        "issue:8901",
+        "issue:15816"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.019951450000007753
+    },
+    {
+      "case": "E14",
+      "split": "dev",
+      "method": "baseline",
+      "category": "ambiguous",
+      "sources": [
+        "issue:15959",
+        "issue:13326",
+        "issue:14793"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.025174923999884413
+    },
+    {
+      "case": "E14",
+      "split": "dev",
+      "method": "final",
+      "category": "ambiguous",
+      "sources": [
+        "issue:15959",
+        "issue:13326",
+        "issue:14793",
+        "issue:15892"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.025909253999998327
+    },
+    {
+      "case": "E15",
+      "split": "dev",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:16388",
+        "issue:14793",
+        "issue:12103",
+        "issue:12120"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.034972027000094386
+    },
+    {
+      "case": "E15",
+      "split": "dev",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:12103",
+        "doc:serializable-session-state:1",
+        "doc:session-state:11",
+        "issue:12120"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.03524919400001636
+    },
+    {
+      "case": "E16",
+      "split": "test",
+      "method": "baseline",
+      "category": "ambiguous",
+      "sources": [
+        "issue:11300",
+        "issue:13165",
+        "issue:15816",
+        "issue:11488"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.011669516999972984
+    },
+    {
+      "case": "E16",
+      "split": "test",
+      "method": "final",
+      "category": "ambiguous",
+      "sources": [
+        "issue:11300",
+        "issue:13165",
+        "issue:15816",
+        "issue:11488"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.010044667000101981
+    },
+    {
+      "case": "E17",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:7426",
+        "issue:13600"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.019572070999856805
+    },
+    {
+      "case": "E17",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:17097",
+        "issue:9719",
+        "issue:7426",
+        "issue:13600"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.01877766400002656
+    },
+    {
+      "case": "E18",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:9503",
+        "issue:16181",
+        "issue:14847"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.019658568999830095
+    },
+    {
+      "case": "E18",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:9503",
+        "issue:16181",
+        "issue:14847"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.019047782000143343
+    },
+    {
+      "case": "E19",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:17097",
+        "issue:13634",
+        "issue:14847"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.019882397999936074
+    },
+    {
+      "case": "E19",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "doc:caching:10",
+        "doc:caching:9",
+        "issue:14847"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.01983041200014668
+    },
+    {
+      "case": "E20",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:11300",
+        "issue:13165",
+        "issue:13748",
+        "issue:15816"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.014587939999955779
+    },
+    {
+      "case": "E20",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:11300",
+        "issue:13165",
+        "issue:13748",
+        "issue:15816"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.014730768999925203
+    },
+    {
+      "case": "E21",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:13165",
+        "issue:17026",
+        "issue:15816",
+        "issue:11488"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.020105907999777628
+    },
+    {
+      "case": "E21",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:13165",
+        "issue:17026",
+        "issue:15816",
+        "issue:11488"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.018312839000145686
+    },
+    {
+      "case": "E22",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:13748",
+        "issue:14847",
+        "issue:15816",
+        "issue:15985"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.014679614999977275
+    },
+    {
+      "case": "E22",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:13748",
+        "issue:14847",
+        "issue:15816",
+        "issue:15985"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.015891568000142797
+    },
+    {
+      "case": "E23",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:11300",
+        "issue:13165",
+        "issue:15816",
+        "issue:11488"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.010920764000047711
+    },
+    {
+      "case": "E23",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:11300",
+        "issue:13165",
+        "issue:15816",
+        "issue:11488"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.010510471999850779
+    },
+    {
+      "case": "E24",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15407",
+        "issue:11357",
+        "issue:15816",
+        "issue:11488"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.015627450000010867
+    },
+    {
+      "case": "E24",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15407",
+        "issue:11357",
+        "issue:15816",
+        "issue:11488"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.016206621000037558
+    },
+    {
+      "case": "E25",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:16005",
+        "issue:15599",
+        "issue:8459"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.014482325000017227
+    },
+    {
+      "case": "E25",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:16005",
+        "issue:15599",
+        "issue:8459"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.014098330000024362
+    },
+    {
+      "case": "E26",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:16003"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.017375010000023394
+    },
+    {
+      "case": "E26",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "issue:15959",
+        "issue:14793",
+        "issue:16003",
+        "issue:16109"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.017465353000034156
+    },
+    {
+      "case": "E27",
+      "split": "test",
+      "method": "baseline",
+      "category": "needs_escalation",
+      "sources": [
+        "doc:widget-behavior:17",
+        "issue:16055",
+        "issue:17141"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.014525838000054137
+    },
+    {
+      "case": "E27",
+      "split": "test",
+      "method": "final",
+      "category": "needs_escalation",
+      "sources": [
+        "doc:widget-behavior:17",
+        "issue:16055",
+        "doc:caching:4",
+        "doc:caching:3"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.013924813999892649
+    },
+    {
+      "case": "E28",
+      "split": "test",
+      "method": "baseline",
+      "category": "ambiguous",
+      "sources": [
+        "issue:13165",
+        "issue:11357",
+        "issue:15816",
+        "issue:12089"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.00959425399992142
+    },
+    {
+      "case": "E28",
+      "split": "test",
+      "method": "final",
+      "category": "ambiguous",
+      "sources": [
+        "issue:13165",
+        "issue:11357",
+        "issue:15816",
+        "issue:12089"
+      ],
+      "recall_at_4": 0.0,
+      "seconds": 0.009126405999950293
+    },
+    {
+      "case": "E29",
+      "split": "test",
+      "method": "baseline",
+      "category": "ambiguous",
+      "sources": [
+        "issue:16111"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.02379556500000035
+    },
+    {
+      "case": "E29",
+      "split": "test",
+      "method": "final",
+      "category": "ambiguous",
+      "sources": [
+        "doc:api-selectbox:0",
+        "issue:16111",
+        "issue:17026",
+        "doc:api-multiselect:0"
+      ],
+      "recall_at_4": null,
+      "seconds": 0.024554983000143693
+    },
+    {
+      "case": "E30",
+      "split": "test",
+      "method": "baseline",
+      "category": "answerable",
+      "sources": [
+        "issue:11300",
+        "doc:api-number_input:0",
+        "issue:13165",
+        "issue:15816"
+      ],
+      "recall_at_4": 1.0,
+      "seconds": 0.012032971000053294
+    },
+    {
+      "case": "E30",
+      "split": "test",
+      "method": "final",
+      "category": "answerable",
+      "sources": [
+        "issue:11300",
+        "doc:api-number_input:0",
+        "issue:13165",
+        "issue:15816"
+      ],
+      "recall_at_4": 1.0,
+      "seconds": 0.012104836999924373
+    }
+  ],
+  "limitation": "Re-evaluation of the existing split; test cases were previously seen. Not a new blind test. Documentary relevance labels are provisional; not proof of a root cause or final answer quality."
+}

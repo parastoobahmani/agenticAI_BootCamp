@@ -1,0 +1,2602 @@
+{
+  "mode": "real_LangChain_graph_with_fake_model",
+  "api_calls": 0,
+  "cost_usd": 0,
+  "limitation": "Initial reports are real; follow-ups and human decisions are designed. Dev/test tags describe a regression suite, not an unseen assessment of LLM reasoning.",
+  "passed": 10,
+  "total": 10,
+  "results": [
+    {
+      "scenario": "S01",
+      "name": "مسیر عادی",
+      "case": "E01",
+      "split": "dev",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E01",
+            "url": "https://github.com/streamlit/streamlit/issues/17195",
+            "title": "Programmatically set selections fail for empty selection",
+            "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nThe example in https://docs.streamlit.io/develop/api-reference/data/st.dataframe titled: \"Example 2: Programmatically set selections\" does not work if we try with empty selections.\n\n### Reproducible Code Example\n\n```Python\nimport pandas as pd\nimport streamlit as st\nfrom numpy.random import default_rng as rng\n\ndf = pd.DataFrame(rng(0).standard_normal((12, 5)), columns=[\"a\", \"b\", \"c\", \"d\", \"e\"])\n\nif st.button(\"Select the first row\"):\n    st.session_state[\"data\"] = {\"selection\": {\"rows\": [0], \"columns\": [], \"cells\": []}}\nif st.button(\"Select no row\"):\n    st.session_state[\"data\"] = {\"selection\": {\"rows\": [], \"columns\": [], \"cells\": []}}\n\nevent = st.dataframe(\n    df,\n    key=\"data\",\n    on_select=\"rerun\",\n    selection_mode=[\"single-row\"],\n)\n\nst.code(event.selection)\n```\n\n### Steps To Reproduce\n\n1. Run the code\n2. Select a row\n3. Click on the button \"Select the first row\", it works as expected\n4. Select a row again\n5. Click on the button \"Select no row\", the dataframe selection state is empty but the table keeps the previous selection.\n\n### Expected Behavior\n\nThe row selection should match the dataframe selection state and be empty.\n\n### Current Behavior\n\nThe dataframe selection state is empty but the table keeps the previous selection and is not empty.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.63.0\n- Python version: 3.12\n- Operating System: WSL Docker\n- Browser: Edge\n\n\n### Additional Information\n\nI remember it worked in Streamlit version 1.57.0 but I am not sure, I may be mistaken."
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E01",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "cd314fd3125ef82af0098a48bc41169d322ba0c554bcbaf9c473bf97d5760024",
+              "payload": {
+                "comment": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E01\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E01",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E01\", \"proposal_id\": 2, \"state\": \"open\", \"comment_count\": 2}"
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "python_version": "3.12",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "python_version": "3.12",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "Programmatically set selections fail for empty selection",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند.",
+                "proposal_id": 1
+              },
+              {
+                "body": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست.",
+                "proposal_id": 2
+              }
+            ],
+            "state": "open",
+            "revision": 3
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E01",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 2,
+              "case_id": "E01",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 3,
+              "case_id": "E01",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 4,
+              "case_id": "E01",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E01\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 5,
+              "case_id": "E01",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 6,
+              "case_id": "E01",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 7,
+              "case_id": "E01",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 8,
+              "case_id": "E01",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E01\", \"comment_count\": 2, \"proposal_id\": 2, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:15"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S02",
+      "name": "اصلاح اطلاعات قبلی",
+      "case": "E02",
+      "split": "dev",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E02",
+            "url": "https://github.com/streamlit/streamlit/issues/17210",
+            "title": "st.multiselect without key drops the user's selection when options come in a different order on rerun",
+            "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nIf `st.multiselect` has no `key` and its `options` list comes back in a different order on the next run, every selection the user makes is thrown away. The widget briefly shows the new chip, then flickers back to the default. Passing `sorted(options)` makes it work, and so does setting any `key`.\n\nThe order of options is often unstable in real apps: `list(set(...))`, `df[col].unique()` after a filter, SQL queries without `ORDER BY`, dict/set unions, and \"move selected to top\" patterns.\n\nSimilar reports were closed as expected behavior (#5995, #8496). #11277 fixed the case where `key` is set. The keyless case still resets, even though multiselect doesn't need it to.\n\n### Reproducible Code Example\n\n```Python\nimport random\nimport streamlit as st\n\nopts = [\"apple\", \"banana\", \"cherry\", \"date\", \"elderberry\"]\nrandom.shuffle(opts)  # stands in for list(set(...)), an unordered query, etc.\n\nsel = st.multiselect(\"Fruits\", opts)  # works with sorted(opts) or key=\"fruits\"\nst.write(sel)\n```\n\n### Steps To Reproduce\n\n1. Run the app.\n2. Pick any option in the multiselect.\n\n### Expected Behavior\n\nThe option stays selected, because the set of options didn't change and only their order did.\n\n### Current Behavior\n\nThe chip appears for a moment and then disappears. `sel` is `[]`. Measured with `AppTest` on 1.64.0:\n\n| options | key | value after select | value after next rerun |\n|---|---|---|---|\n| sorted | no | `['banana']` | `['banana']` |\n| sorted | yes | `['banana']` | `['banana']` |\n| shuffled | no | `[]` | `[]` |\n| shuffled | yes | `['banana']` | `['banana']` |\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n\nField | Value\n-- | --\nStreamlit version | 1.64.0\nPython version | 3.12\nOperating System | Linux\nBrowser | Chrome\n\n\n\n### Additional Information\n\n### Why this happens\n\nIn `lib/streamlit/elements/widgets/multiselect.py`, when there is no `key`, the widget ID is a hash of the widget parameters, including the **ordered** list of formatted options and the **indices** of the defaults:\n\n```python\nelement_id = compute_and_register_element_id(\n    widget_name,\n    user_key=key,\n    key_as_main_identity={\"max_selections\", \"accept_new_options\"},\n    ...\n    options=formatted_options,   # order-sensitive\n    default=default_values,      # indices into options, also order-sensitive\n    ...\n)\n```\n\nWith a new order, the ID changes on every run. When the user clicks, the frontend sends the value under the old ID. The rerun registers a widget with a new ID and no stored state, so it falls back to `default`. The frontend then mounts a new component with that ID, which is the flicker.\n\nFor multiselect, including the order isn't needed. The value travels as a list of **formatted option strings** (`string_array_value`), not indices. `MultiSelectSerde.deserialize` maps strings back with `formatted_options.index(v)`, and `validate_and_sync_multiselect_value_with_options` already handles options that change. The same selection means the same thing in any order.\n\n### Proposed fix\n\nHash the options without regard to order, and hash defaults by value rather than by index:\n\n```diff\n             dg=self.dg,\n             label=label,\n-            options=formatted_options,\n-            default=default_values,\n+            # Values are stored as formatted strings rather than indices, so the\n+            # order of options doesn't change their meaning. Hash options\n+            # order-insensitively so reordering them doesn't reset the widget.\n+            options=sorted(formatted_options),\n+            default=[formatted_options[i] for i in default_values],\n             help=help,\n             max_selections=max_selections,\n```\n\n`proto.options` and `proto.default` are unchanged, so the display order still follows what the user passed. Only the identity hash changes. With this patch applied to 1.64.0, all four rows in the table above keep the selection, including with `default=[...]` set.\n\nNotes:\n- Existing keyless multiselects get new IDs once after upgrading. That's the same one-time reset any ID-scheme change causes.\n- `selectbox`, `pills`, and `segmented_control` probably need the same change wherever they send values as strings. I haven't checked those."
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E02",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "fc518810baea82fe37d07bd51ed86ae7b87cde30740c1668684cac8c08479d89",
+              "payload": {
+                "comment": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E02\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "user_correction",
+          "value": {
+            "streamlit_version": "1.51.0"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E02",
+              "proposal_id": 2,
+              "revision": 3,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E02\", \"proposal_id\": 2, \"state\": \"open\", \"comment_count\": 2}"
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "streamlit_version": "1.51.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              },
+              {
+                "check": null,
+                "facts": {
+                  "streamlit_version": "1.51.0"
+                },
+                "message": "Correction: the failing version is 1.51.0."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "streamlit_version": "1.51.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "st.multiselect without key drops the user's selection when options come in a different order on rerun",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است.",
+                "proposal_id": 1
+              },
+              {
+                "body": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست.",
+                "proposal_id": 2
+              }
+            ],
+            "state": "open",
+            "revision": 4
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E02",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 2,
+              "case_id": "E02",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 3,
+              "case_id": "E02",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 4,
+              "case_id": "E02",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E02\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 5,
+              "case_id": "E02",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 6,
+              "case_id": "E02",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\"], \"turn\": 2}",
+              "at": "2026-10-07 15:50:15"
+            },
+            {
+              "id": 7,
+              "case_id": "E02",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 8,
+              "case_id": "E02",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 9,
+              "case_id": "E02",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E02\", \"comment_count\": 2, \"proposal_id\": 2, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S03",
+      "name": "رد پیشنهاد",
+      "case": "E03",
+      "split": "dev",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E03",
+            "url": "https://github.com/streamlit/streamlit/issues/16559",
+            "title": "@st.cache_data: distinct arguments can collide on one cache key",
+            "body": "### Summary\n\n`@st.cache_data` (and `@st.cache_resource`) can return one call's cached result for a **different** set of arguments. The per-call cache key is built by folding each argument name and value into a single hasher in sequence, with no marker between fields, so the boundaries between arguments are not part of the key. As a result, two distinct argument tuples can encode to the same bytes and collide on one cache entry, producing a silent false cache hit.\n\n### Reproducible Code Example\n\n```python\nimport streamlit as st\n\n\n@st.cache_data\ndef load(doc, org=\"\"):\n    # This line only prints on a real cache miss (a real computation).\n    st.write(f\"computing for doc={doc!r}, org={org!r}\")\n    return f\"{doc}|{org}\"\n\n\n# First call: computes and caches under some key.\nst.write(load(\"doc1\", \"acme\"))\n\n# Different arguments, but they hash to the SAME key as the call above,\n# so this returns the first call's cached value instead of computing its own.\nst.write(load(\"doc1str:orgstr:acme\"))\n```\n\n### Steps To Reproduce\n\n1. Run the app above.\n2. Note that only the first `load(...)` prints its `computing for ...` line.\n3. The second call, `load(\"doc1str:orgstr:acme\")`, prints no `computing` line and returns `\"doc1|acme\"` (the first call's result) instead of `\"doc1str:orgstr:acme|\"`.\n\n### Expected Behavior\n\nTwo calls with different arguments should never share a cache entry. `load(\"doc1\", \"acme\")` and `load(\"doc1str:orgstr:acme\")` are different calls and should each compute and cache their own result.\n\n### Current Behavior\n\nBoth calls map to the same value key, so the second call is a false cache hit and returns the first call's value. The cause is in `_make_value_key` in `lib/streamlit/runtime/caching/cache_utils.py`: each argument name and value is folded into the args hasher back to back with nothing encoding where one field ends and the next begins, so `(\"doc\", \"doc1\", \"org\", \"acme\")` and `(\"doc\", \"doc1str:orgstr:acme\")` produce the same digest. Concretely, the encoded fields concatenate to the same byte string:\n\n```\n\"str:doc\" + \"str:doc1\" + \"str:org\" + \"str:acme\"\n== \"str:doc\" + \"str:doc1str:orgstr:acme\"\n```\n\nThe key derivation is therefore non-injective: distinct argument tuples can produce identical keys.\n\n### Fix direction\n\nMake the key derivation injective by length-prefixing each field before folding it into the value-key hasher, so the boundary between an argument's name and value, and between successive arguments, is part of the key. Identical calls still produce the same key; distinct calls no longer collide. Because the key format changes, persisted (`persist=\"disk\"`) and in-memory caches take a one-time miss and recompute on the first call after upgrade.\n\n### Debug info\n\n- Streamlit version: develop (reproduced against the current `lib/streamlit/runtime/caching/cache_utils.py`)\n- Python version: 3.10-3.14\n- Operating System: any\n- Browser: n/a (backend logic)"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E03",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "fc518810baea82fe37d07bd51ed86ae7b87cde30740c1668684cac8c08479d89",
+              "payload": {
+                "comment": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E03\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E03",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "reject",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"status\": \"rejected\", \"applied\": false}"
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "python_version": "3.10",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "python_version": "3.10",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "@st.cache_data: distinct arguments can collide on one cache key",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است.",
+                "proposal_id": 1
+              }
+            ],
+            "state": "open",
+            "revision": 2
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E03",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 2,
+              "case_id": "E03",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 3,
+              "case_id": "E03",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 4,
+              "case_id": "E03",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E03\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 5,
+              "case_id": "E03",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 6,
+              "case_id": "E03",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 7,
+              "case_id": "E03",
+              "event": "human_rejected",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S04",
+      "name": "ویرایش پیشنهاد",
+      "case": "E04",
+      "split": "dev",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E04",
+            "url": "https://github.com/streamlit/streamlit/issues/16770",
+            "title": "Runtime errors in Streamlit apps on HF Spaces rose 12.4% → 31.7% for the 2026 cohort while other SDKs fell",
+            "body": "Not a reproducible bug report — a signal from population data that may point at one, and I can't tell from the outside whether the cause is Streamlit or the Hugging Face runtime image.\n\nI enumerated the complete public Hugging Face Spaces catalogue (1,458,692 Spaces) using the `runtime.stage` field HF exposes, and split permanent failures by SDK and creation year.\n\n**`BUILD_ERROR` is falling for every SDK — that part looks healthy.** But `RUNTIME_ERROR` diverges sharply for Streamlit in the 2026 cohort:\n\n| SDK | 2024 | 2025 | 2026 |\n|---|---|---|---|\n| **streamlit** | 18.1% | **12.4%** | **31.7%** |\n| gradio | 47.1% | 27.0% | 20.8% |\n| docker | 31.6% | 19.5% | 20.5% |\n\nGradio and Docker fell or stayed flat over the same period. Streamlit's rate went from 12.4% to 31.7%.\n\nThe failure mode also inverted. Among broken Streamlit Spaces created in 2025: 7,991 `BUILD_ERROR` vs 4,582 `RUNTIME_ERROR`. In 2026: **653 `BUILD_ERROR` vs 5,614 `RUNTIME_ERROR`.** Builds started succeeding and apps started crashing instead.\n\n**Checks I ran before posting, because the obvious explanations would each invalidate this:**\n\n- *Bulk uploaders?* No. The top-10 authors account for 2.3% of the 2026 Streamlit cohort, and excluding them entirely moves the rate from 36.6% to 37.1%. It is spread across 12,432 distinct authors.\n- *Just young Spaces still settling?* Newer cohorts are consistently *less* broken across every SDK, so a worse young cohort runs against the trend rather than with it. Separately, 300 error-state Spaces re-queried individually with retries were 300/300 still broken with none recovered, so these are not transient.\n- *An age artifact?* Age-standardising Streamlit to Gradio's creation-year distribution moves it 43.50% → 41.16%, so the cohort effect here isn't age composition.\n\n**What I can't determine from outside:** whether this is a Streamlit change, a change in the Streamlit runtime image HF builds, or an interaction between the two. HF controls the Space container, so it may not be yours at all — I've filed the general Spaces census with them separately at huggingface/hub-docs#2743.\n\nIf it is useful, I can produce the list of affected Space IDs so someone can look at actual tracebacks, which is the thing this analysis can't reach.\n\nData (1.46M rows, one row per Space): https://huggingface.co/datasets/Ashsinha1/hf-spaces-census\nMethod and code: https://github.com/ashishsinha1602/dataset-integrity-audit"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E04",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "fc518810baea82fe37d07bd51ed86ae7b87cde30740c1668684cac8c08479d89",
+              "payload": {
+                "comment": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E04\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E04",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "edit",
+            "payload": {
+              "comment": "پس از بررسی انسانی: علت قطعی روشن نیست؛ خلاصه به نگه‌دارنده ارجاع شود."
+            }
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [
+              {
+                "case_id": "E04",
+                "proposal_id": 3,
+                "revision": 2,
+                "hash": "25ac63ba51721f22b292e116b6b76bde173dfe06d9d65a5e0fd21fb14a371739",
+                "payload": {
+                  "comment": "پس از بررسی انسانی: علت قطعی روشن نیست؛ خلاصه به نگه‌دارنده ارجاع شود."
+                },
+                "choices": [
+                  "approve",
+                  "edit",
+                  "reject"
+                ]
+              }
+            ],
+            "last_message": ""
+          }
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E04\", \"proposal_id\": 3, \"state\": \"open\", \"comment_count\": 2}"
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "Runtime errors in Streamlit apps on HF Spaces rose 12.4% → 31.7% for the 2026 cohort while other SDKs fell",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است.",
+                "proposal_id": 1
+              },
+              {
+                "body": "پس از بررسی انسانی: علت قطعی روشن نیست؛ خلاصه به نگه‌دارنده ارجاع شود.",
+                "proposal_id": 3
+              }
+            ],
+            "state": "open",
+            "revision": 3
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E04",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 2,
+              "case_id": "E04",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 3,
+              "case_id": "E04",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 4,
+              "case_id": "E04",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E04\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 5,
+              "case_id": "E04",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 6,
+              "case_id": "E04",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 7,
+              "case_id": "E04",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 3}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 8,
+              "case_id": "E04",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 3}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 9,
+              "case_id": "E04",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E04\", \"comment_count\": 2, \"proposal_id\": 3, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:16"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S05",
+      "name": "راه‌اندازی مجدد",
+      "case": "E05",
+      "split": "dev",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E05",
+            "url": "https://github.com/streamlit/streamlit/issues/17175",
+            "title": "selectbox clears on rerun if format_func returns new value, even with the same options.",
+            "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nStreamlit selectbox gets re-created when formatted labels change, discarding user output. \n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\nimport time\n\nif \"start_time\" not in st.session_state:\n  st.session_state[\"start_time\"] = time.time()\n\nstart_time = st.session_state[\"start_time\"]\n\noption = st.selectbox(\n  label=\"Single-select Option\",\n  options=[\"A\", \"B\", \"C\"],\n  format_func=lambda option: f\"{option}: {int(time.time()-start_time)} seconds ago\",\n  key=\"option\",\n  index=None\n)\n\nst.write(\"Single-select Option:\", option)\n\noption2 = st.multiselect(\n  label=\"Multi-select Options\",\n  options=[\"D\", \"E\", \"F\"],\n  format_func=lambda option: f\"{option}: {int(time.time()-start_time)} seconds ago\",\n  key=\"option2\",\n)\n\nst.write(\"Multi-select Options:\", option2)\n```\n\n### Steps To Reproduce\n\n1. In Single-select Option, Select \"A\"\n2. In Multi-select Options, Select \"D\"\n3. In Multi-select Options, Select \"E\"\n4. In Multi-select Options, Select \"F\"\n5. Wait 1 second\n6. Click out of the multi select option dropdown\n\n### Expected Behavior\n\nIt should have option A selected for 'Single-select Option', and options D, E and F selected for 'Multi-select Options'\n\n### Current Behavior\n\nSingle-select option and multi-select options have nothing selected.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.63\n- Python version: Python 3.14.7\n- Operating System: Ubuntu 26.4\n- Browser: Firefox 156.0.1 \n\n\n### Additional Information\n\nProposed solution 1: Do not clear the selectbox if the selected options still exist.\n\nProposed solution 2: Update the selectbox and multiselect documentation with a warning about this. Currently the documentation for format_func says: \"This has no impact on the return value of the command.\" which I would say is incorrect in this case.\n\nThis issue seems closely related to issues #11277 and #11268. They seemed to be closed for being fixed in 1.54.1.dev20260204, though I am still seeing this unexpected behavior in 1.63.\n\nThank you so much for your work on streamlit. It is very amazing!"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E05",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "cd314fd3125ef82af0098a48bc41169d322ba0c554bcbaf9c473bf97d5760024",
+              "payload": {
+                "comment": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E05\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E05",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "restart_restored_same_proposal",
+          "value": true
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E05\", \"proposal_id\": 2, \"state\": \"open\", \"comment_count\": 2}"
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "python_version": "3.14.7",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "python_version": "3.14.7",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "selectbox clears on rerun if format_func returns new value, even with the same options.",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند.",
+                "proposal_id": 1
+              },
+              {
+                "body": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست.",
+                "proposal_id": 2
+              }
+            ],
+            "state": "open",
+            "revision": 3
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E05",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:16"
+            },
+            {
+              "id": 2,
+              "case_id": "E05",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 3,
+              "case_id": "E05",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 4,
+              "case_id": "E05",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E05\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 5,
+              "case_id": "E05",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 6,
+              "case_id": "E05",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 7,
+              "case_id": "E05",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 8,
+              "case_id": "E05",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E05\", \"comment_count\": 2, \"proposal_id\": 2, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:17"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S06",
+      "name": "درخواست تکراری",
+      "case": "E16",
+      "split": "test",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E16",
+            "url": "https://github.com/streamlit/streamlit/issues/15380",
+            "title": "extra_streamlit_components.CookieManager failing to load when running under uvicorn",
+            "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nThis happens when Fast Api is Mounted along with streamlit using uvicorn\n\n### Reproducible Code Example\n\n```Python\n\n```\n\n### Steps To Reproduce\n\n_No response_\n\n### Expected Behavior\n\n_No response_\n\n### Current Behavior\n\n_No response_\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version:\n- Python version:\n- Operating System:\n- Browser:\n\n\n### Additional Information\n\n_No response_"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E16",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "fc518810baea82fe37d07bd51ed86ae7b87cde30740c1668684cac8c08479d89",
+              "payload": {
+                "comment": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E16\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E16",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E16\", \"proposal_id\": 2, \"state\": \"open\", \"comment_count\": 2}"
+          }
+        },
+        {
+          "event": "three_retries_same_receipt",
+          "value": [
+            {
+              "applied": true,
+              "case_id": "E16",
+              "comment_count": 2,
+              "proposal_id": 2,
+              "state": "open"
+            },
+            {
+              "applied": true,
+              "case_id": "E16",
+              "comment_count": 2,
+              "proposal_id": 2,
+              "state": "open"
+            },
+            {
+              "applied": true,
+              "case_id": "E16",
+              "comment_count": 2,
+              "proposal_id": 2,
+              "state": "open"
+            }
+          ]
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "extra_streamlit_components.CookieManager failing to load when running under uvicorn",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است.",
+                "proposal_id": 1
+              },
+              {
+                "body": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست.",
+                "proposal_id": 2
+              }
+            ],
+            "state": "open",
+            "revision": 3
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E16",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 2,
+              "case_id": "E16",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 3,
+              "case_id": "E16",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 4,
+              "case_id": "E16",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E16\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 5,
+              "case_id": "E16",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 6,
+              "case_id": "E16",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 7,
+              "case_id": "E16",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 8,
+              "case_id": "E16",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E16\", \"comment_count\": 2, \"proposal_id\": 2, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 9,
+              "case_id": "E16",
+              "event": "duplicate_receipt",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 10,
+              "case_id": "E16",
+              "event": "duplicate_receipt",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 11,
+              "case_id": "E16",
+              "event": "duplicate_receipt",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:17"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S07",
+      "name": "تغییر پرونده پیش از اجرا",
+      "case": "E17",
+      "split": "test",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E17",
+            "url": "https://github.com/streamlit/streamlit/issues/17031",
+            "title": "A config that sets server.port raises at config parse and blocks startup on a dev-mode (non-site-packages) install",
+            "body": "### Summary\n\nSetting `server.port` raises out of config parsing and blocks startup when Streamlit considers itself a development install, and the message does not say how to proceed.\n\n`streamlit/config.py` defines `global.developmentMode` as true whenever the package is not under a `site-packages` directory (`\"site-packages\" not in __file__` — so a source checkout, `pip install -e`, or a vendored/`--target` install), and `_check_conflicts()` then raises:\n\n```\nRuntimeError: server.port does not work when global.developmentMode is true.\n```\n\nThe raise looks deliberate — in dev mode the Node server hard-codes 8501, which is what the comment above the check explains — so this is a question about the *failure mode* rather than a claim that the check itself is wrong. Two things make it awkward from an application author's side:\n\n1. **A committed config value is enough.** An app that ships `[server] port = ...` in its `.streamlit/config.toml` (a normal thing to pin for a deployment) cannot start *at all* on a dev-mode install, and the author may never have intended that value for this environment.\n2. **The error does not name a way forward.** It says why the port does not work, not what to do about it. The escape hatch (below) is not discoverable from the message.\n\n### Steps to reproduce\n\nSelf-contained; `pip install --target` is just a convenient way to get a non-`site-packages` install.\n\n```bash\nWORK=/tmp/streamlit-devmode-repro\npython3 -m pip install --quiet --target \"$WORK/pkgs\" \"streamlit==1.64.0\"\nmkdir -p \"$WORK/app/.streamlit\"\nprintf '[server]\\nport = 9999\\n' > \"$WORK/app/.streamlit/config.toml\"\ncd \"$WORK/app\"\n\n# 1. Any library use that parses config\nPYTHONPATH=\"$WORK/pkgs\" python3 -c \"import streamlit.config as c; c.get_config_options()\"\n# RuntimeError: server.port does not work when global.developmentMode is true.\n\n# 2. The CLI\nPYTHONPATH=\"$WORK/pkgs\" python3 -m streamlit config show\n# same RuntimeError\n\n# 3. Even with no port in any config file:\nPYTHONPATH=\"$WORK/pkgs\" python3 -m streamlit config show --server.port 8502\n# same RuntimeError\n```\n\nAll three exit 1. With a config that sets no port, the same install parses fine (`server.port` = 8501).\n\n### Expected behavior\n\nOne of:\n\n- warn and ignore the configured port (nothing needs it in dev mode, and the server uses 8501 regardless), or\n- raise only for the port the server would actually use, and have the message name the escape hatch, e.g. *\"remove `server.port` from `.streamlit/config.toml`, or run with `--global.developmentMode false`\"*.\n\n### Actual behavior\n\nA hard `RuntimeError` from `get_config_options()`, before any app code runs, for any source of the value: a project or machine config file, or the documented `--server.port` flag.\n\n### Is this new?\n\nThe same on 1.63.0 and 1.64.0 (in 1.63 the check sits at the end of `streamlit/config.py`, reached via `_on_config_parsed`). I have not checked further back.\n\n### Workarounds (both verified)\n\n- `streamlit run app.py --global.developmentMode false` — per run.\n- `[global] developmentMode = false` in a config file — persistent, but it is a hidden option and it also turns off dev-mode conveniences (e.g. `logger.level` defaulting to `debug`).\n\n### Environment\n\n- Streamlit 1.63.0 and 1.64.0\n- Python 3.13.14\n- macOS 27.0 (arm64)"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E17",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "cd314fd3125ef82af0098a48bc41169d322ba0c554bcbaf9c473bf97d5760024",
+              "payload": {
+                "comment": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E17\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E17",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "case_changed_while_waiting",
+          "value": {
+            "location": "local_and_server"
+          }
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"error\": \"STALE_PROPOSAL\"}"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E17",
+              "proposal_id": 3,
+              "revision": 3,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E17\", \"proposal_id\": 3, \"state\": \"open\", \"comment_count\": 2}"
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "local_and_server",
+              "python_version": "3.13.14",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              },
+              {
+                "check": null,
+                "facts": {
+                  "location": "local_and_server"
+                },
+                "message": "Correction before approval: local also fails."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "local_and_server",
+                "python_version": "3.13.14",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "A config that sets server.port raises at config parse and blocks startup on a dev-mode (non-site-packages) install",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند.",
+                "proposal_id": 1
+              },
+              {
+                "body": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست.",
+                "proposal_id": 3
+              }
+            ],
+            "state": "open",
+            "revision": 4
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E17",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 2,
+              "case_id": "E17",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 3,
+              "case_id": "E17",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 4,
+              "case_id": "E17",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E17\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 5,
+              "case_id": "E17",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 6,
+              "case_id": "E17",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 7,
+              "case_id": "E17",
+              "event": "updated",
+              "detail": "{\"fields\": [\"location\"], \"turn\": 2}",
+              "at": "2026-10-07 15:50:17"
+            },
+            {
+              "id": 8,
+              "case_id": "E17",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 3}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 9,
+              "case_id": "E17",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 3}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 10,
+              "case_id": "E17",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E17\", \"comment_count\": 2, \"proposal_id\": 3, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:18"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S08",
+      "name": "خرابی قبل از ثبت",
+      "case": "E18",
+      "split": "test",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E18",
+            "url": "https://github.com/streamlit/streamlit/issues/16977",
+            "title": "Scroll to st.chat_input",
+            "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nPlacing `st.chat_input` inside `st.bottom` causes an otherwise non-chat page to scroll to the bottom immediately on initial load, without any user interaction or chat messages. This hides the heading and initial content when using the bottom container for a persistent assistant alongside a dashboard. Replacing only `st.chat_input` with `st.text_input` prevents the unsolicited scrolling.\n\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\n\nst.title(\"Dashboard heading\")\nfor number in range(30):\n    st.write(f\"Dashboard row {number}\")\n\nwith st.bottom:\n    st.chat_input(\"Ask about the dashboard\")\n```\n\n### Steps To Reproduce\n\n1. Install `streamlit==1.63.0` and run the example with `streamlit run app.py`.\n2. Open a fresh browser tab/context with a viewport around 1280 x 720, so the main content exceeds the viewport height.\n3. Do not click, type, or scroll. Wait for rendering to settle.\n4. Observe that the main page has scrolled to the bottom and the dashboard heading is offscreen.\n5. As a control, replace `st.chat_input` with `st.text_input`, restart/reload in a fresh browser context, and observe that the page stays at the top.\n\nNo custom CSS, JavaScript, Snowflake connection, fragments, tabs, navigation, or third-party component is needed to reproduce this.\n\n### Expected Behavior\n\nAn initial dashboard load should remain at the top. A bottom-docked input should not make non-chat content above it auto-scroll before any conversation exists. If automatic scrolling is intentional for chat-first apps, an opt-out for this mixed dashboard/assistant use case would be helpful.\n\n\n### Current Behavior\n\nThe page scrolls to the bottom on its own. In three fresh Chrome contexts per variant, measured after rendering settled at a 1280 x 720 viewport:\n\n| Bottom widget | Main scrollTop | Main scrollHeight | Main clientHeight |\n| --- | ---: | ---: | ---: |\n| `st.chat_input` (all 3 runs) | 843 | 1563 | 720 |\n| `st.text_input` (all 3 control runs) | 0 | 1573 | 720 |\n\nThe scroll position was read from the main scrollable section (`section.stMain`), not `window.scrollY`. No Streamlit exception was displayed. Measurements used Playwright with installed Chrome in headless mode; the same symptom was first noticed in interactive Chrome in a larger app.\n\n### Is this a regression?\n\n- [x] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.63.0 (also the latest GitHub release at the time of filing)\n- Python version: 3.14.3\n- Operating System: macOS 26.6, ARM64\n- Browser: Google Chrome 152.0.7977.83\n- Deployment: local `streamlit run`, default theme for the minimal example\n\n### Additional Information\n\n_No response_"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E18",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "cd314fd3125ef82af0098a48bc41169d322ba0c554bcbaf9c473bf97d5760024",
+              "payload": {
+                "comment": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E18\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E18",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"error\": \"TEST_FAILURE_BEFORE_COMMIT\"}"
+          }
+        },
+        {
+          "event": "after_failure_comment_count",
+          "value": 1
+        },
+        {
+          "event": "explicit_retry_same_approved_operation",
+          "value": {
+            "applied": true,
+            "case_id": "E18",
+            "proposal_id": 2,
+            "state": "open",
+            "comment_count": 2
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "python_version": "3.14.3",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "python_version": "3.14.3",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "Scroll to st.chat_input",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند.",
+                "proposal_id": 1
+              },
+              {
+                "body": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست.",
+                "proposal_id": 2
+              }
+            ],
+            "state": "open",
+            "revision": 3
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E18",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 2,
+              "case_id": "E18",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 3,
+              "case_id": "E18",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 4,
+              "case_id": "E18",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E18\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 5,
+              "case_id": "E18",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 6,
+              "case_id": "E18",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 7,
+              "case_id": "E18",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 8,
+              "case_id": "E18",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E18\", \"comment_count\": 2, \"proposal_id\": 2, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:18"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S09",
+      "name": "دو پرونده",
+      "case": "E19",
+      "split": "test",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E19",
+            "url": "https://github.com/streamlit/streamlit/issues/14324",
+            "title": "@st.cache_data crashes with NameError on Python 3.14 when annotations use TYPE_CHECKING imports (PEP 649)",
+            "body": "## Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n## Summary\n\nOn Python 3.14, `@st.cache_data` (and likely `@st.cache_resource`) crashes with a `NameError` when a decorated function uses type annotations that reference types imported under `if TYPE_CHECKING:`. This is caused by Python 3.14's PEP 649 (deferred evaluation of annotations), which changes how `inspect.signature()` resolves annotations. Streamlit's caching internals call `inspect.signature()` to determine parameter names, and on Python 3.14 this now triggers lazy annotation evaluation, which fails when the referenced types are not available at runtime.\n\n## Reproducible Code Example\n\n```python\nfrom typing import TYPE_CHECKING\n\nimport streamlit as st\n\nif TYPE_CHECKING:\n    from collections.abc import Sequence\n\n@st.cache_data\ndef my_func(items: \"Sequence[str]\" = None) -> None:\n    return None\n\n# Calling the function triggers the crash\nmy_func([\"a\", \"b\"])\n```\n\n## Steps To Reproduce\n\n1. Install Python 3.14.x (e.g., 3.14.2)\n2. Install Streamlit (`pip install streamlit`)\n3. Create a file with the code above\n4. Run `streamlit run app.py`\n5. Observe the crash\n\n## Expected Behavior\n\n`@st.cache_data` should work correctly with functions whose annotations reference types imported under `if TYPE_CHECKING:`, just as it does on Python <= 3.13. The decorator only needs parameter *names* (not types) for cache key computation, so annotation resolution should not be required.\n\n## Current Behavior\n\nThe app crashes immediately with:\n\n```\nNameError: (\"name 'Sequence' is not defined\", '')\n```\n\nFull traceback (abbreviated):\n\n```\nFile \".../streamlit/runtime/caching/cache_utils.py\", line 440, in _make_value_key\n    arg_name = _get_positional_arg_name(func, arg_idx)\nFile \".../streamlit/runtime/caching/cache_utils.py\", line 535, in _get_positional_arg_name\n    params: list[inspect.Parameter] = list(inspect.signature(func).parameters.values())\nFile \".../lib/python3.14/inspect.py\", line 3321, in signature\n    return Signature.from_callable(obj, follow_wrapped=follow_wrapped, ...)\n...\nFile \".../lib/python3.14/annotationlib.py\", line 1137, in _get_dunder_annotations\n    ann = getattr(obj, \"__annotations__\", None)\nNameError: (\"name 'Sequence' is not defined\", '')\n```\n\n### Root cause\n\nIn `cache_utils.py`, the function `_get_positional_arg_name` calls `inspect.signature(func)`. On Python <= 3.13, this did not eagerly evaluate annotations. On Python 3.14 (PEP 649), annotations are evaluated lazily via `__annotate__`, and `inspect.signature()` now triggers that evaluation — causing a `NameError` for any type that is only imported under `TYPE_CHECKING`.\n\n### Suggested fix\n\nSince `_get_positional_arg_name` only accesses `.name` and `.kind` on the parameters (never `.annotation`), the fix could be to call `inspect.signature(func, eval_str=False)` or to use `inspect.get_annotations(func, format=inspect.Format.FORWARDREF)` (Python 3.14+) to avoid triggering annotation evaluation. Alternatively, wrapping the `inspect.signature()` call to catch `NameError` and falling back to a non-evaluating approach would also work.\n\n- [x] Yes, this used to work in a previous version.\n\n## Debug info\n\n- Streamlit version: 1.52.2 (likely affects all versions including 1.55.0)\n- Python version: 3.14.2\n- Operating System: Windows 11\n- Browser: N/A (crashes before rendering)\n\n## Additional Information\n\n- PEP 649: https://peps.python.org/pep-0649/\n- The `if TYPE_CHECKING:` pattern is the standard Python practice (recommended by ruff's TC rules) for avoiding circular imports and keeping runtime import overhead minimal. It is widely used across the Python ecosystem.\n- Streamlit's own codebase uses `from __future__ import annotations` in `cache_utils.py` and `hashing.py`, which currently shields its internal code from this issue — but user code that follows the `TYPE_CHECKING` pattern (without `from __future__ import annotations`) is affected.\n- **Workaround**: Move the affected imports out of the `TYPE_CHECKING` block so they are available at runtime. This requires adding `noqa` comments for ruff's TC rules."
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E19",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "cd314fd3125ef82af0098a48bc41169d322ba0c554bcbaf9c473bf97d5760024",
+              "payload": {
+                "comment": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E19\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E19",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "other",
+              "proposal_id": 3,
+              "revision": 0,
+              "hash": "fc518810baea82fe37d07bd51ed86ae7b87cde30740c1668684cac8c08479d89",
+              "payload": {
+                "comment": "نسخهٔ Streamlit محیطی که خطا دارد چیست؟\nبرای مقایسه با مستندات و تغییرات نسخه‌ها لازم است."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "cross_case_request_blocked",
+          "value": true
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E19\", \"proposal_id\": 2, \"state\": \"open\", \"comment_count\": 2}"
+          }
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "reject",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"status\": \"rejected\", \"applied\": false}"
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "python_version": "3.14",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "python_version": "3.14",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "@st.cache_data crashes with NameError on Python 3.14 when annotations use TYPE_CHECKING imports (PEP 649)",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند.",
+                "proposal_id": 1
+              },
+              {
+                "body": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست.",
+                "proposal_id": 2
+              }
+            ],
+            "state": "open",
+            "revision": 3
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E19",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 2,
+              "case_id": "E19",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 3,
+              "case_id": "E19",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 4,
+              "case_id": "E19",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E19\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 5,
+              "case_id": "E19",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 6,
+              "case_id": "E19",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 9,
+              "case_id": "E19",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 10,
+              "case_id": "E19",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E19\", \"comment_count\": 2, \"proposal_id\": 2, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:18"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "S10",
+      "name": "قطع پاسخ بعد از ثبت",
+      "case": "E20",
+      "split": "test",
+      "passed": true,
+      "trace": [
+        {
+          "event": "real_issue_initial_input",
+          "value": {
+            "id": "E20",
+            "url": "https://github.com/streamlit/streamlit/issues/14209",
+            "title": "WebSocket fails behind Istio VirtualService despite websocketUpgrade: true, causing localhost requests to stall even with normal CPU/memory usage",
+            "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nWhen deploying a minimal Streamlit app behind Istio (using Gateway + VirtualService with websocketUpgrade: true), the browser fails to establish a WebSocket connection (wss://.../stream), falling back to HTTP polling. Surprisingly, this causes localhost requests from within the same pod to become extremely slow, even though CPU and memory usage remain low. The same Istio setup works fine for other WebSocket-based apps like JupyterLab.\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\nst.write(\"Hello World\")\n```\n\n### Steps To Reproduce\n\n_No response_\n\n### Expected Behavior\n\nWith websocketUpgrade: true, Streamlit should successfully establish a WebSocket connection through Istio.\nEven if WebSocket fails, localhost access should remain responsive, as the app is idle and system resources are not saturated.\n\n### Current Behavior\n\n_No response_\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\nStreamlit version: 1.47.1\nPython version: 3.10.12\nOperating System: Ubuntu 22.04.3 LTS\nBrowser: Edge/chrome\n\n### Additional Information\n\nthis is my virtual service template\napiVersion: networking.istio.io/v1beta1\nkind: VirtualService\nspec:\n  gateways:\n    - my-ns/my-gateway\n  hosts:\n    - \"example.com\"\n  http:\n    - match:\n        - uri:\n            prefix: /prefix/path\n      route:\n        - destination:\n            host: streamlit-svc.my-ns.svc.cluster.local\n            port:\n              number: 8501\n      websocketUpgrade: true\n      timeout: 60s\n\n<img width=\"2240\" height=\"308\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/2dda18e0-3b79-4f21-abaa-032b456a8e5e\" />\n\n<img width=\"1808\" height=\"542\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/aa9cb1b0-83a5-4a95-820c-a5ffc4273317\" />"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E20",
+              "proposal_id": 1,
+              "revision": 0,
+              "hash": "cd314fd3125ef82af0098a48bc41169d322ba0c554bcbaf9c473bf97d5760024",
+              "payload": {
+                "comment": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"applied\": true, \"case_id\": \"E20\", \"proposal_id\": 1, \"state\": \"open\", \"comment_count\": 1}"
+          }
+        },
+        {
+          "event": "designed_followup_not_historical",
+          "value": {
+            "streamlit_version": "1.50.0",
+            "location": "server"
+          }
+        },
+        {
+          "event": "model_tool_sequence",
+          "value": [
+            "read_case",
+            "search_docs",
+            "draft_reply",
+            "apply_change"
+          ]
+        },
+        {
+          "event": "pending_human_review",
+          "value": [
+            {
+              "case_id": "E20",
+              "proposal_id": 2,
+              "revision": 2,
+              "hash": "848c8d5bb26495ca2b3a7d5c056831ee7ba4baea2e343bb15f4a9d866f506d15",
+              "payload": {
+                "comment": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "choices": [
+                "approve",
+                "edit",
+                "reject"
+              ]
+            }
+          ]
+        },
+        {
+          "event": "human_decision",
+          "value": {
+            "choice": "approve",
+            "payload": null
+          }
+        },
+        {
+          "event": "result_after_review",
+          "value": {
+            "pending": [],
+            "last_message": "DEMO: نتیجهٔ ابزار ثبت شد: {\"error\": \"TEST_RESPONSE_LOST_AFTER_COMMIT\"}"
+          }
+        },
+        {
+          "event": "after_failure_comment_count",
+          "value": 2
+        },
+        {
+          "event": "explicit_retry_same_approved_operation",
+          "value": {
+            "applied": true,
+            "case_id": "E20",
+            "comment_count": 2,
+            "proposal_id": 2,
+            "state": "open"
+          }
+        },
+        {
+          "event": "final_state",
+          "value": {
+            "facts": {
+              "location": "server",
+              "python_version": "3.10.12",
+              "streamlit_version": "1.50.0"
+            },
+            "checks": [
+              {
+                "name": "minimal_reproduction",
+                "result": "still fails in the designed scenario"
+              }
+            ],
+            "history": [
+              {
+                "check": {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                },
+                "facts": {
+                  "location": "server",
+                  "streamlit_version": "1.50.0"
+                },
+                "message": "Designed follow-up: version 1.50.0, server only."
+              }
+            ],
+            "summary": {
+              "completed_checks": [
+                {
+                  "name": "minimal_reproduction",
+                  "result": "still fails in the designed scenario"
+                }
+              ],
+              "environment": {
+                "location": "server",
+                "python_version": "3.10.12",
+                "streamlit_version": "1.50.0"
+              },
+              "next_step": {
+                "check_name": "",
+                "decision": "escalate",
+                "question_field": "",
+                "reason": "اطلاعات موجود برای ادعای راه‌حل کافی نیست."
+              },
+              "problem": "WebSocket fails behind Istio VirtualService despite websocketUpgrade: true, causing localhost requests to stall even with normal CPU/memory usage",
+              "sources": [],
+              "unknowns": [
+                "root_cause"
+              ]
+            },
+            "comments": [
+              {
+                "body": "همین برنامه در محیط محلی هم مشکل دارد یا فقط روی سرور؟\nپاسخ، تفاوت محیط استقرار و رفتار برنامه را جدا می‌کند.",
+                "proposal_id": 1
+              },
+              {
+                "body": "علت قطعی مشخص نیست؛ پرونده با اطلاعات موجود به نگه‌دارنده ارجاع شود.\nاطلاعات موجود برای ادعای راه‌حل کافی نیست.",
+                "proposal_id": 2
+              }
+            ],
+            "state": "open",
+            "revision": 3
+          }
+        },
+        {
+          "event": "audit",
+          "value": [
+            {
+              "id": 1,
+              "case_id": "E20",
+              "event": "created",
+              "detail": "{}",
+              "at": "2026-10-07 15:50:18"
+            },
+            {
+              "id": 2,
+              "case_id": "E20",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:19"
+            },
+            {
+              "id": 3,
+              "case_id": "E20",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 1}",
+              "at": "2026-10-07 15:50:19"
+            },
+            {
+              "id": 4,
+              "case_id": "E20",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E20\", \"comment_count\": 1, \"proposal_id\": 1, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:19"
+            },
+            {
+              "id": 5,
+              "case_id": "E20",
+              "event": "updated",
+              "detail": "{\"fields\": [\"streamlit_version\", \"location\"], \"turn\": 1}",
+              "at": "2026-10-07 15:50:19"
+            },
+            {
+              "id": 6,
+              "case_id": "E20",
+              "event": "proposed",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:19"
+            },
+            {
+              "id": 7,
+              "case_id": "E20",
+              "event": "human_approved",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:19"
+            },
+            {
+              "id": 8,
+              "case_id": "E20",
+              "event": "executed",
+              "detail": "{\"applied\": true, \"case_id\": \"E20\", \"comment_count\": 2, \"proposal_id\": 2, \"state\": \"open\"}",
+              "at": "2026-10-07 15:50:19"
+            },
+            {
+              "id": 9,
+              "case_id": "E20",
+              "event": "duplicate_receipt",
+              "detail": "{\"proposal_id\": 2}",
+              "at": "2026-10-07 15:50:19"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
