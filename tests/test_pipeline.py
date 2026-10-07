@@ -184,3 +184,26 @@ def test_similar_reports_alone_never_yield_an_answer():
 def test_report_round_trips_through_json(stuck_loading):
     report = _run(stuck_loading)
     assert type(report).model_validate_json(report.model_dump_json()) == report
+
+
+def _example(name: str):
+    return analyze(AnalysisInput.model_validate_json((EXAMPLES / f"{name}.json").read_text()))
+
+
+def test_widget_reset_asks_what_separates_identity_from_new_session():
+    report = _example("multiselect_selection_reset")
+
+    assert report.decision.type is DecisionType.REQUEST_INFORMATION
+    assert [step.facet for step in report.next_steps] == ["lost_after_page_reload", "options_change_between_reruns"]
+    # The shared code has no key, which contradicts the keyed-widget cleanup explanation.
+    cleanup = _hypothesis(report, "h_widget_cleanup")
+    assert "widget_has_key=no" in cleanup.conflicting_facts
+    assert cleanup.posterior < cleanup.prior
+    assert "widget_has_key" not in {step.facet for step in report.next_steps}
+
+
+def test_widget_reset_answers_lead_to_identity_explanation():
+    report = _example("multiselect_selection_reset_after_answer")
+
+    assert report.decision.type is DecisionType.PROPOSE_ANSWER
+    assert report.decision.hypothesis_id == "h_widget_identity"

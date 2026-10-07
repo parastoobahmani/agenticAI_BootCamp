@@ -1,0 +1,267 @@
+{
+  "schema_version": "1.0",
+  "case_id": "example-multiselect-reset-turn2",
+  "decision": {
+    "type": "propose_answer",
+    "rationale": "h_widget_identity is the leading explanation (posterior 0.85, runner-up 0.09) and is backed by authoritative sources. Any step listed is an optional confirmation.",
+    "hypothesis_id": "h_widget_identity"
+  },
+  "known_facts": [
+    {
+      "facet": "streamlit_version",
+      "value": "1.52.0",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "- Streamlit version: 1.52.0"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "python_version",
+      "value": "3.12",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "- Python version: 3.12"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "browser",
+      "value": "firefox",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "- Browser: Firefox"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "code_snippet",
+      "value": "present",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "```python"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "lost_after_page_reload",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "comment:c1",
+        "quote": "No page reload, it happens on normal clicks."
+      },
+      "superseded": []
+    },
+    {
+      "facet": "options_change_between_reruns",
+      "value": "yes",
+      "status": "observed",
+      "origin": {
+        "location": "comment:c1",
+        "quote": "load_items() returns a set, so the options come in a different order each time."
+      },
+      "superseded": []
+    },
+    {
+      "facet": "uses_callback",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "inside_fragment",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "inside_dialog",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "inside_form",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "calls_st_rerun",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "multipage_app",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "widget_has_key",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    }
+  ],
+  "missing_information": [],
+  "hypotheses": [
+    {
+      "hypothesis_id": "h_widget_identity",
+      "statement": "The multiselect has no key and its options come in a different order on each rerun, so it gets a new identity and resets.",
+      "prior": 0.4,
+      "posterior": 0.8461,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:widget-behavior#identity",
+        "issue:17210"
+      ],
+      "expectations": {
+        "widget_has_key": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        },
+        "options_change_between_reruns": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "lost_after_page_reload": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [
+        "widget_has_key=no",
+        "options_change_between_reruns=yes",
+        "lost_after_page_reload=no"
+      ],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "unlisted_cause",
+      "statement": "A cause that none of the retrieved evidence describes.",
+      "prior": 0.2,
+      "posterior": 0.0861,
+      "evidence_strength": "none",
+      "evidence_ids": [],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h_widget_cleanup",
+      "statement": "The keyed widget is not rendered in some script run, so its state is cleaned up.",
+      "prior": 0.1778,
+      "posterior": 0.039,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:widget-behavior#cleanup"
+      ],
+      "expectations": {
+        "widget_has_key": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "lost_after_page_reload": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [
+        "lost_after_page_reload=no"
+      ],
+      "conflicting_facts": [
+        "widget_has_key=no"
+      ]
+    },
+    {
+      "hypothesis_id": "h_new_session",
+      "statement": "The selection is lost because the page is reloaded or reopened, which starts a new session.",
+      "prior": 0.2222,
+      "posterior": 0.0287,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:session-state#what-is-state"
+      ],
+      "expectations": {
+        "lost_after_page_reload": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [],
+      "conflicting_facts": [
+        "lost_after_page_reload=no"
+      ]
+    }
+  ],
+  "next_steps": [],
+  "skipped_probes": [
+    {
+      "facet": "lost_after_page_reload",
+      "reason": "already stated (comment:c1: \"No page reload, it happens on normal clicks.\") -> lost_after_page_reload=no"
+    },
+    {
+      "facet": "widget_has_key",
+      "reason": "already stated (body: \"(not used in the code shared in this message)\") -> widget_has_key=no"
+    },
+    {
+      "facet": "options_change_between_reruns",
+      "reason": "already stated (comment:c1: \"load_items() returns a set, so the options come in a different order each time.\") -> options_change_between_reruns=yes"
+    }
+  ],
+  "limitations": [
+    "h_widget_cleanup conflicts with reported facts: widget_has_key=no.",
+    "h_new_session conflicts with reported facts: lost_after_page_reload=no."
+  ]
+}
