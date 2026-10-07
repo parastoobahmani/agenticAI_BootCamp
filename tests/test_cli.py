@@ -43,3 +43,18 @@ def test_llm_without_api_key_fails_cleanly(monkeypatch, capsys):
     monkeypatch.delenv("METIS_API_KEY", raising=False)
     assert main(["analyze", str(EXAMPLE), "--llm"]) == 2
     assert "error:" in capsys.readouterr().err
+
+
+PART1 = EXAMPLE.parent / "part1"
+
+
+def test_from_part1_with_case_file(tmp_path):
+    output = tmp_path / "report.json"
+    argv = ["from-part1", str(PART1 / "evidence_synthesis_result.json"), "--case", str(PART1 / "session_state_case.json")]
+    assert main([*argv, "--output", str(output)]) == 0
+    assert json.loads(output.read_text())["case_id"] == "part1-demo-session-state"
+
+
+def test_from_part1_issue_requires_data_dir(capsys):
+    assert main(["from-part1", str(PART1 / "evidence_synthesis_result.json"), "--issue", "1"]) == 2
+    assert "--data-dir" in capsys.readouterr().err
