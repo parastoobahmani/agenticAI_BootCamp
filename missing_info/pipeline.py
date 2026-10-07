@@ -141,9 +141,13 @@ def _limitations(
 
     if not listed:
         notes.append("No candidate explanation was found in the evidence base.")
+    untestable = [item.hypothesis_id for item in listed if item.expectation_source == "none"]
+    if untestable:
+        notes.append(
+            f"{', '.join(untestable)}: no testable prediction, so no question can confirm or rule "
+            f"{'it' if len(untestable) == 1 else 'them'} out."
+        )
     for item in listed:
-        if item.expectation_source == "none":
-            notes.append(f"{item.hypothesis_id} makes no testable prediction, so no question can confirm or rule it out.")
         if item.conflicting_facts:
             notes.append(f"{item.hypothesis_id} conflicts with reported facts: {', '.join(item.conflicting_facts)}.")
     if listed and listed[0].evidence_strength is not EvidenceStrength.STRONG:

@@ -180,7 +180,9 @@ RULES: tuple[ExtractionRule, ...] = (
     ),
     *_check_rules(
         "upgrade_resolves",
-        r"(?:(?:upgrad\w*|updat\w*)(?: to)? (?:streamlit|the latest|latest|to \d)|pip install (?:-U|--upgrade) streamlit)",
+        # "After/since upgrading to X" is when the bug appeared, not an attempted fix.
+        r"(?:(?<!after )(?<!since )(?:upgrad\w*|updat\w*)(?: to)? (?:streamlit|the latest|latest|to \d)|"
+        r"pip install (?:-U|--upgrade) streamlit)",
     ),
     *_check_rules(
         "reinstall_resolves",

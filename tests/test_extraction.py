@@ -54,6 +54,7 @@ def test_rule_extracts_explicit_statements(text, facet, value):
         ("It doesn't work locally either", "reproduces_locally"),  # must not read as "works locally"
         ("Which version should I use?", "streamlit_version"),
         ("this is a cutting edge feature", "browser"),
+        ("After upgrading to 1.64.0, values disappear", "upgrade_resolves"),
         ("<!-- e.g. Chrome, Firefox -->", "browser"),
     ],
 )
