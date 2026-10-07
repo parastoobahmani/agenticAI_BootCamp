@@ -1,0 +1,236 @@
+{
+  "schema_version": "1.0",
+  "case_id": "part1-demo-session-state",
+  "decision": {
+    "type": "escalate",
+    "rationale": "No explanation is decisive (best: unlisted_cause at 0.20) and no available question or check separates the remaining ones. Refer the case with the evidence collected so far.",
+    "hypothesis_id": null
+  },
+  "known_facts": [
+    {
+      "facet": "streamlit_version",
+      "value": "1.64.0",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "Environment: Python 3.11, Streamlit 1.64.0, Chrome."
+      },
+      "superseded": []
+    },
+    {
+      "facet": "python_version",
+      "value": "3.11",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "Environment: Python 3.11, Streamlit 1.64.0, Chrome."
+      },
+      "superseded": []
+    },
+    {
+      "facet": "browser",
+      "value": "chrome",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "Environment: Python 3.11, Streamlit 1.64.0, Chrome."
+      },
+      "superseded": []
+    },
+    {
+      "facet": "code_snippet",
+      "value": "present",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "```python"
+      },
+      "superseded": []
+    }
+  ],
+  "missing_information": [],
+  "hypotheses": [
+    {
+      "hypothesis_id": "unlisted_cause",
+      "statement": "A cause that none of the retrieved evidence describes.",
+      "prior": 0.2,
+      "posterior": 0.2,
+      "evidence_strength": "none",
+      "evidence_ids": [],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h1",
+      "statement": "et's move on to something a little more complex.",
+      "prior": 0.0932,
+      "posterior": 0.0932,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "c0ebd0e650c2"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h2",
+      "statement": "mples that illustrate how to add Session State to our Counter app.",
+      "prior": 0.0874,
+      "posterior": 0.0874,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "1d504bd0eaa0"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h3",
+      "statement": "_value\n\nincrement = st.button('Increment', on_click=increment_counter,\n    args=(increment_value, ))\n\nst.write('Count = ', st.session_state.count)\n```\n\nAdditionally, we can also...",
+      "prior": 0.0871,
+      "posterior": 0.0871,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "8df884b9630d"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h4",
+      "statement": "existing session is lost and a new one created, causing unpleasant/unexpected user experience.",
+      "prior": 0.0817,
+      "posterior": 0.0817,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "a042fda17de2"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h5",
+      "statement": "st.button('Increment', on_click=increment_counter)\n\nst.write('Count = ', st.session_state.count)\n```\n\nNow, pressing the **_Increment_** button updates the count each time by cal...",
+      "prior": 0.08,
+      "posterior": 0.08,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "0b6e5a7879cc"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h6",
+      "statement": "ement_value=5))\n\nst.button('Decrement', on_click=decrement_counter,\n\tkwargs=dict(decrement_value=1))\n\nst.write('Count = ', st.session_state.count)\n```\n\n### Example 4: Forms and ...",
+      "prior": 0.0771,
+      "posterior": 0.0771,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "153896459e66"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h7",
+      "statement": "om_proto` re-imports that frontend value into session state, undoing the delete.",
+      "prior": 0.0747,
+      "posterior": 0.0747,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "69148da76a40"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h8",
+      "statement": "the consequence is that it can result in a seemingly invalid state.",
+      "prior": 0.073,
+      "posterior": 0.073,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "5f0ab4898506"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h9",
+      "statement": "de a Session State variable across app reruns.",
+      "prior": 0.0729,
+      "posterior": 0.0729,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "b9c15df19daa"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h10",
+      "statement": "_state:\n    # set the initial default value of the slider widget\n    st.session_state.celsius = 50.0\n\nst.slider(\n    \"Temperature in Celsius\",\n    min_value=-100.0,\n    max_valu...",
+      "prior": 0.0729,
+      "posterior": 0.0729,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "5327c94e35e1"
+      ],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    }
+  ],
+  "next_steps": [
+    {
+      "facet": "error_message",
+      "kind": "question",
+      "basis": "fallback",
+      "text": "Please paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.",
+      "rationale": "Not stated in the case; needed to continue the investigation (exact error message / traceback).",
+      "distinguishes": [],
+      "expected_information_gain": 0.0,
+      "cost": 1,
+      "score": 0.0
+    },
+    {
+      "facet": "deployment_target",
+      "kind": "question",
+      "basis": "fallback",
+      "text": "Where does the failing app run: your own machine, Streamlit Community Cloud, a Docker container, Kubernetes, a platform such as Heroku/Cloud Run, or your own server/VM?",
+      "rationale": "Not stated in the case; needed to continue the investigation (where the failing app runs).",
+      "distinguishes": [],
+      "expected_information_gain": 0.0,
+      "cost": 1,
+      "score": 0.0
+    }
+  ],
+  "skipped_probes": [],
+  "limitations": [
+    "Part 1: No matching release note found – version that introduced/fixed the issue is unknown.",
+    "h1, h2, h3, h4, h5, h6, h7, h8, h9, h10: no testable prediction, so no question can confirm or rule them out.",
+    "The leading explanation h1 rests only on similar reports; a similar report does not prove the same root cause."
+  ]
+}
