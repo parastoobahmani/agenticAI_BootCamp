@@ -12,6 +12,10 @@ setups.
 Rules are tried in order within a message and the first match for a facet wins,
 so more specific rules come first. Across messages, later statements override
 earlier ones; the overridden statements are kept as ``superseded``.
+
+Code shared by the reporter is also evidence: a feature that does not appear
+in their Streamlit code (e.g. no ``on_click=``) is recorded as "no", but only
+for facets nobody stated explicitly anywhere in the conversation.
 """
 
 from __future__ import annotations
@@ -36,6 +40,15 @@ _VERSION_PREFIX = r"(?:\s*(?:version|ver\.?))?\s*(?:==|:|=|is|-)?\s*v?"
 _VERSION = r"(\d+\.\d+(?:\.\d+)?(?:(?:a|b|rc)\d+)?)\b"
 _NOT_NEGATED = r"(?<!n't )(?<!not )(?<!never )"
 _HTML_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+# Unticked issue-template checkboxes ("- [ ] Yes, this used to work") assert nothing.
+_UNCHECKED_BOX = re.compile(r"^\s*[-*]\s*\[ \][^\n]*$", re.MULTILINE)
+_CODE_BLOCK = re.compile(r"```[^\n]*\n(.*?)```", re.DOTALL)
+_STREAMLIT_CODE = re.compile(r"\bst\.\w+|import streamlit")
+_WIDGET_CALL = re.compile(
+    r"\bst\.(?:button|checkbox|toggle|radio|selectbox|multiselect|slider|select_slider|text_input|text_area|"
+    r"number_input|date_input|time_input|file_uploader|color_picker|pills|segmented_control|data_editor|"
+    r"chat_input|feedback)\("
+)
 _SENTENCE_END = re.compile(r"[.!?؟。](?=\s)|\n")
 
 
@@ -189,11 +202,87 @@ RULES: tuple[ExtractionRule, ...] = (
         r"(?:re-?install\w*|clean install|fresh (?:venv|virtual ?env\w*)|نصب دوباره|دوباره نصب)",
     ),
     *_check_rules("cache_clear_resolves", r"(?:clear\w* (?:the |streamlit'?s? )?cache|cache clear)"),
+    # --- session state and widgets
+    _rule(
+        "regression",
+        r"\bnever worked\b|\bnot a regression\b|\b(?:also|same) (?:happens|fails|broken|occurs) (?:in|on|with) "
+        r"(?:older|previous|earlier)",
+        "no",
+    ),
+    _rule(
+        "regression",
+        r"\bused to work\b|\bregression\b|\bworked (?:fine |well |correctly )?(?:in|with|on|before|until) "
+        r"(?:streamlit )?(?:v(?:ersion)? ?)?\d|\b(?:after|since) (?:upgrading|updating|the upgrade|the update)\b|"
+        r"\bbroke (?:in|after|with|since)\b",
+        "yes",
+    ),
+    _rule(
+        "lost_after_page_reload",
+        r"\bwithout (?:a )?(?:page )?(?:reload|refresh)\w*|\bno (?:page )?(?:reload|refresh)\b",
+        "no",
+    ),
+    _rule(
+        "lost_after_page_reload",
+        r"\b(?:after|on|upon|when (?:i|we|you)) (?:a |the )?(?:page |browser )?(?:refresh|reload)\w*|"
+        r"\b(?:refresh|reload)\w* (?:the )?(?:page|browser|tab)\b|\bF5\b|\bnew (?:browser )?tab\b",
+        "yes",
+    ),
+    _rule("widget_has_key", r"\bwithout (?:a |an )?(?:explicit )?key\b|\bno key\b|\b(?:key-?less|unkeyed)\b", "no"),
+    _rule(
+        "widget_has_key",
+        r"\bkey\s*=|\b(?:with|has|have|using|set|give it) (?:a |an )?(?:explicit |unique |fixed )?key\b|\bkeyed\b",
+        "yes",
+    ),
+    _rule(
+        "options_change_between_reruns",
+        r"\boptions? (?:are|stay|remain) (?:the same|unchanged|static|constant)\b|\bstatic options\b",
+        "no",
+    ),
+    _rule(
+        "options_change_between_reruns",
+        r"\boptions? (?:change|changes|changed|are (?:re)?generated|are recomputed|come in a different order)\b|"
+        r"\bdifferent order\b|\bdynamic(?:ally)? (?:generated |computed )?options\b|\b(?:label|default value) changes\b",
+        "yes",
+    ),
+    _rule("uses_callback", r"\bwithout (?:a |any )?callbacks?\b|\bno callbacks?\b", "no"),
+    _rule("uses_callback", r"\bon_(?:click|change|submit)\s*=|\bcallbacks?\b", "yes"),
+    _rule("multipage_app", r"\bsingle[- ]page app\b|\bnot a multi-?page\b", "no"),
+    _rule(
+        "multipage_app",
+        r"\bst\.(?:switch_page|navigation|page_link)\b|\bst\.Page\(|\bmulti-?page\b|"
+        r"\b(?:switch\w*|navigat\w*|go\w*|mov\w*) (?:to|between) (?:another |other |a different |the next |the previous )?pages?\b|"
+        r"\bpages/ (?:folder|directory)\b",
+        "yes",
+    ),
+    _rule("inside_fragment", r"\bst\.fragment\b|\bfragments?\b|\brun_every\b", "yes"),
+    _rule(
+        "inside_dialog",
+        r"\bst\.(?:experimental_)?dialog\b|\b(?:in|inside|within|from) (?:a|the) (?:modal )?dialog\b",
+        "yes",
+    ),
+    _rule(
+        "inside_form",
+        r"\bst\.form\b|\bform_submit_button\b|\b(?:in|inside|within) (?:a|an|the) (?:st\.)?form\b",
+        "yes",
+    ),
+    _rule("calls_st_rerun", r"\bst\.(?:experimental_)?rerun\b", "yes"),
     # --- free-text details
     _rule("error_message", r"^\s*((?:\w+\.)*\w*(?:Error|Exception)\b:[^\n]*)"),
     _rule("error_message", r"(WebSocket connection to \S+ failed[^\n]*)"),
     _rule("code_snippet", r"```py(?:thon)?\b|^\s*import streamlit\b|^\s*from streamlit\b|^\s*st\.\w+\(", "present"),
 )
+
+
+# Features whose absence from the reporter's Streamlit code means "no".
+CODE_FEATURES: dict[str, re.Pattern[str]] = {
+    "uses_callback": re.compile(r"\bon_(?:click|change|submit)\s*="),
+    "inside_fragment": re.compile(r"\bst\.fragment\b"),
+    "inside_dialog": re.compile(r"\bst\.(?:experimental_)?dialog\b"),
+    "inside_form": re.compile(r"\bst\.form\b"),
+    "calls_st_rerun": re.compile(r"\bst\.(?:experimental_)?rerun\b"),
+    "multipage_app": re.compile(r"\bst\.(?:switch_page|navigation|Page|page_link)\b"),
+    "widget_has_key": re.compile(r"\bkey\s*="),
+}
 
 
 @dataclass(frozen=True)
@@ -224,7 +313,7 @@ def _quote(text: str, match: re.Match[str]) -> str:
 
 def observe(segment: Segment, rules: tuple[ExtractionRule, ...] = RULES) -> list[FactObservation]:
     """All facet observations in one message; the first matching rule per facet wins."""
-    text = _HTML_COMMENT.sub("", segment.text)  # issue templates hide instructions in comments
+    text = _clean(segment.text)
     observations: dict[str, FactObservation] = {}
     for rule in rules:
         if rule.facet in observations:
@@ -239,6 +328,24 @@ def observe(segment: Segment, rules: tuple[ExtractionRule, ...] = RULES) -> list
             origin=FactOrigin(location=segment.location, quote=_quote(text, match)),
         )
     return list(observations.values())
+
+
+def absent_in_code(segment: Segment) -> list[FactObservation]:
+    """'No' observations for code features missing from the Streamlit code in this message."""
+    code = "\n".join(_CODE_BLOCK.findall(_clean(segment.text)))
+    if not _STREAMLIT_CODE.search(code):
+        return []
+    origin = FactOrigin(location=segment.location, quote="(not used in the code shared in this message)")
+    return [
+        FactObservation(facet=facet, value="no", status=FactStatus.OBSERVED, origin=origin)
+        for facet, pattern in CODE_FEATURES.items()
+        if not pattern.search(code) and (facet != "widget_has_key" or _WIDGET_CALL.search(code))
+    ]
+
+
+def _clean(text: str) -> str:
+    """Drop issue-template noise: hidden instructions and unticked checkboxes."""
+    return _UNCHECKED_BOX.sub("", _HTML_COMMENT.sub("", text))
 
 
 def consolidate(observations: list[FactObservation]) -> list[KnownFact]:
@@ -266,5 +373,13 @@ def consolidate(observations: list[FactObservation]) -> list[KnownFact]:
 
 
 def extract_facts(case: Case, rules: tuple[ExtractionRule, ...] = RULES) -> list[KnownFact]:
-    observations = [item for segment in reporter_segments(case) for item in observe(segment, rules)]
-    return consolidate(observations)
+    segments = reporter_segments(case)
+    facts = consolidate([item for segment in segments for item in observe(segment, rules)])
+
+    # Absence from shared code is weaker than any explicit statement: it only fills gaps.
+    known = {fact.facet for fact in facts}
+    for observation in (item for segment in segments for item in absent_in_code(segment)):
+        if observation.facet not in known:
+            known.add(observation.facet)
+            facts.append(KnownFact(**observation.model_dump()))
+    return facts

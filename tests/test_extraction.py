@@ -39,6 +39,19 @@ def _case(body: str, comments: list[Comment] = (), author: str | None = "reporte
         ("I upgraded streamlit and that fixed it", "upgrade_resolves", "yes"),
         ("ModuleNotFoundError: No module named 'foo'", "error_message", "ModuleNotFoundError: No module named 'foo'"),
         ("```python\nimport streamlit as st\n```", "code_snippet", "present"),
+        ("- [x] Yes, this used to work in a previous version.", "regression", "yes"),
+        ("It worked fine in 1.40 but not anymore", "regression", "yes"),
+        ("The value is gone after I refresh the page", "lost_after_page_reload", "yes"),
+        ("It resets on normal clicks, without reloading", "lost_after_page_reload", "no"),
+        ("The selectbox has no key", "widget_has_key", "no"),
+        ("st.selectbox('A', opts, key='choice')", "widget_has_key", "yes"),
+        ("options come in a different order on each rerun", "options_change_between_reruns", "yes"),
+        ("The value is set in an on_change callback", "uses_callback", "yes"),
+        ("I call st.switch_page after saving", "multipage_app", "yes"),
+        ("The widget lives in a fragment with run_every", "inside_fragment", "yes"),
+        ("The input is inside a dialog", "inside_dialog", "yes"),
+        ("The slider is inside a form", "inside_form", "yes"),
+        ("then st.rerun() is called", "calls_st_rerun", "yes"),
     ],
 )
 def test_rule_extracts_explicit_statements(text, facet, value):
@@ -54,6 +67,7 @@ def test_rule_extracts_explicit_statements(text, facet, value):
         ("It doesn't work locally either", "reproduces_locally"),  # must not read as "works locally"
         ("Which version should I use?", "streamlit_version"),
         ("this is a cutting edge feature", "browser"),
+        ("- [ ] Yes, this used to work in a previous version.", "regression"),  # unticked box
         ("After upgrading to 1.64.0, values disappear", "upgrade_resolves"),
         ("<!-- e.g. Chrome, Firefox -->", "browser"),
     ],
@@ -138,3 +152,33 @@ def test_console_checked_without_result_is_marked_performed():
 def test_pasted_websocket_error_is_kept_as_error_message():
     text = "Console: WebSocket connection to wss://host/_stcore/stream failed"
     assert _facts(text)["error_message"].startswith("WebSocket connection to wss://host/_stcore/stream failed")
+
+
+def test_features_missing_from_shared_code_are_recorded_as_no():
+    code = "```python\nimport streamlit as st\nx = st.multiselect('Items', items)\n```"
+    facts = {item.facet: item for item in extract_facts(_case(code))}
+
+    for facet in ("uses_callback", "inside_fragment", "inside_dialog", "inside_form", "calls_st_rerun", "multipage_app"):
+        assert facts[facet].value == "no"
+    assert facts["widget_has_key"].value == "no"
+    assert facts["uses_callback"].origin.quote == "(not used in the code shared in this message)"
+
+
+def test_code_absence_never_overrides_an_explicit_statement():
+    case = _case(
+        "I use an on_click callback in the real app.",
+        [Comment(id="c1", author="reporter", body="```python\nimport streamlit as st\nst.write('hi')\n```")],
+    )
+    facts = {item.facet: item for item in extract_facts(case)}
+    assert facts["uses_callback"].value == "yes"
+    assert facts["uses_callback"].superseded == []
+
+
+def test_key_absence_needs_a_widget_in_the_code():
+    facts = {item.facet for item in extract_facts(_case("```python\nimport streamlit as st\nst.write(1)\n```"))}
+    assert "widget_has_key" not in facts
+
+
+def test_text_without_code_infers_nothing_about_code_features():
+    facts = {item.facet for item in extract_facts(_case("My multiselect loses its value."))}
+    assert not facts & {"uses_callback", "inside_fragment", "widget_has_key"}
