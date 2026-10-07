@@ -1,3 +1,5 @@
+import pytest
+
 from missing_info.profiling import RuleBasedProfiler, profile_hypothesis, version_expectations
 from missing_info.schemas import Evidence, Expectation, Hypothesis, SourceType
 
@@ -89,3 +91,29 @@ def test_profilers_fill_only_open_facets_in_order():
     assert profiled.expectations["reverse_proxy"].values == ["no"]
     assert "websocket_error_in_console" in profiled.expectations
     assert profiled.source == "llm+rules"
+
+
+@pytest.mark.parametrize(
+    ("statement", "expected"),
+    [
+        (
+            "The multiselect has no key and its options come in a different order, so it resets.",
+            {"widget_has_key": ["no"], "options_change_between_reruns": ["yes"], "lost_after_page_reload": ["no"]},
+        ),
+        ("A page reload starts a new session, so the value is gone.", {"lost_after_page_reload": ["yes"]}),
+        ("The keyed widget is not rendered in some run, so its state is cleaned up.", {"widget_has_key": ["yes"]}),
+        ("Widget keys are deleted when you switch_page to another page.", {"multipage_app": ["yes"]}),
+        ("The value set in the on_change callback is overwritten.", {"uses_callback": ["yes"]}),
+        ("Pending widget changes are lost when interrupted by st.rerun.", {"calls_st_rerun": ["yes"]}),
+        ("This is expected behavior, not a bug.", {"regression": ["no"], "upgrade_resolves": ["no"]}),
+    ],
+)
+def test_session_state_and_widget_families(statement, expected):
+    expectations = RuleBasedProfiler().profile(_hypothesis(statement), [])
+    for facet, values in expected.items():
+        assert expectations[facet].values == values
+
+
+def test_introduced_in_version_implies_regression():
+    expectations = version_expectations(_hypothesis("Regression introduced in 1.64.0"), [])
+    assert expectations["regression"].values == ["yes"]

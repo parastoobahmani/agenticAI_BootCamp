@@ -93,6 +93,47 @@ PROFILE_RULES: tuple[ProfileRule, ...] = (
         r"\bmemory\b|\boom\b|resource limits?|\bcpu\b|out of resources",
         reproduces_locally=NO,
     ),
+    # --- session state and widgets; grounded in the "Widget behavior" and "Session State" docs:
+    # without a key, changing a widget's label/options/default gives it a new identity and resets
+    # it; a widget not rendered in a run loses its state; every browser tab/reload is a new session.
+    _profile_rule(
+        r"by design|expected behaviou?r|intended behaviou?r|works as (?:designed|intended)|documented behaviou?r|"
+        r"not a bug|usage (?:error|mistake)",
+        regression=NO,
+        upgrade_resolves=NO,
+    ),
+    _profile_rule(
+        r"\bnew session\b|session (?:is )?(?:lost|reset|recreated|ends)|(?:page|browser) (?:reload|refresh)|"
+        r"\breload\w*|\brefresh\w*|new (?:browser )?tab|each (?:browser )?tab",
+        lost_after_page_reload=YES,
+    ),
+    _profile_rule(
+        r"\bwithout (?:a )?key\b|\bno key\b|\bkey-?less\b|(?:widget|element) (?:id|identity)|identity changes|"
+        r"options (?:change|order)|different order|label changes|default (?:value )?changes|format_func",
+        widget_has_key=NO,
+        options_change_between_reruns=YES,
+        lost_after_page_reload=NO,
+    ),
+    _profile_rule(
+        r"not (?:rendered|called|displayed)|conditionally (?:rendered|shown|created|displayed)|"
+        r"widget (?:state|key)s? (?:is |are )?(?:deleted|cleaned up|removed)|clean(?:ed)?[- ]?up",
+        widget_has_key=YES,
+        lost_after_page_reload=NO,
+    ),
+    _profile_rule(
+        r"switch_page|st\.navigation|multi-?page|(?:switch\w*|navigat\w*) (?:between |to )?(?:another |other )?pages?",
+        multipage_app=YES,
+        lost_after_page_reload=NO,
+    ),
+    _profile_rule(r"\bcallbacks?\b|on_(?:click|change|submit)", uses_callback=YES),
+    _profile_rule(r"\bfragments?\b|run_every", inside_fragment=YES),
+    _profile_rule(r"\bdialogs?\b", inside_dialog=YES),
+    _profile_rule(
+        r"\bst\.form\b|\b(?:in|inside|within) (?:a|an|the) form\b|form submission|form_submit|\bforms\b",
+        inside_form=YES,
+    ),
+    _profile_rule(r"\bst\.(?:experimental_)?rerun\b|interrupted by (?:a |an )?(?:st\.)?rerun", calls_st_rerun=YES),
+    _profile_rule(r"\bregression\b|\bused to work\b|\bbroke in\b", regression=YES),
     _profile_rule(r"\bwindows\b", operating_system=Expectation(values=["windows"])),
     _profile_rule(r"\bmac ?os\b|\bos ?x\b", operating_system=Expectation(values=["macos"])),
     _profile_rule(r"\blinux\b", operating_system=Expectation(values=["linux"])),
@@ -121,6 +162,8 @@ def version_expectations(hypothesis: Hypothesis, evidence: list[Evidence]) -> di
     if not bounds:
         return {}
     expectations = {"streamlit_version": Expectation(version_spec=",".join(bounds))}
+    if introduced:
+        expectations["regression"] = YES
     if fixed:
         expectations["upgrade_resolves"] = YES
     return expectations
