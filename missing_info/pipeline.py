@@ -62,7 +62,7 @@ def analyze(
         hypotheses=hypotheses,
         next_steps=outcome.next_steps,
         skipped_probes=candidates.skipped,
-        limitations=_limitations(profiled, hypotheses, facts.values()),
+        limitations=[f"Part 1: {note}" for note in bundle.notes] + _limitations(profiled, hypotheses, facts.values()),
     )
 
 

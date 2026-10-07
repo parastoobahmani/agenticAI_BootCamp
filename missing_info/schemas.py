@@ -68,27 +68,41 @@ class Case(_Model):
 
     @classmethod
     def from_github(cls, issue: dict[str, Any], comments: Iterable[dict[str, Any]] = ()) -> Case:
-        """Build a case from raw GitHub REST API payloads (issue + its comments)."""
+        """Build a case from GitHub issue + comment records.
+
+        Accepts both the raw REST API shape (``user.login``) and the flattened
+        snapshot shape of part 1's ``issues.jsonl`` / ``comments.jsonl``
+        (``user_login``). Bot comments are automatic replies and are dropped.
+        """
         if "pull_request" in issue:
             raise ValueError(f"#{issue.get('number')} is a pull request, not an issue")
+        human_comments = [comment for comment in comments if not _is_bot(_login(comment))]
         return cls(
             case_id=str(issue["number"]),
             title=issue["title"],
             body=issue.get("body") or "",
             url=issue.get("html_url"),
-            author=(issue.get("user") or {}).get("login"),
+            author=_login(issue),
             created_at=issue.get("created_at"),
             comments=[
                 Comment(
                     id=comment["id"],
                     body=comment.get("body") or "",
                     created_at=comment.get("created_at"),
-                    author=(comment.get("user") or {}).get("login"),
-                    author_association=comment.get("author_association", "NONE"),
+                    author=_login(comment),
+                    author_association=comment.get("author_association") or "NONE",
                 )
-                for comment in comments
+                for comment in sorted(human_comments, key=lambda comment: comment.get("created_at") or "")
             ],
         )
+
+
+def _login(record: dict[str, Any]) -> str | None:
+    return (record.get("user") or {}).get("login") or record.get("user_login")
+
+
+def _is_bot(login: str | None) -> bool:
+    return bool(login) and login.endswith("[bot]")
 
 
 class SourceType(str, Enum):
@@ -175,6 +189,8 @@ class Hypothesis(_Model):
 class EvidenceBundle(_Model):
     evidence: list[Evidence] = Field(default_factory=list)
     hypotheses: list[Hypothesis] = Field(default_factory=list)
+    # Caveats reported by part 1 (e.g. conflicting sources), passed on as limitations.
+    notes: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _check_references(self) -> EvidenceBundle:

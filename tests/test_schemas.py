@@ -87,3 +87,18 @@ def test_bundle_rejects_duplicate_ids():
 )
 def test_evidence_authority(overrides, expected):
     assert _evidence(**overrides).is_authoritative is expected
+
+
+def test_case_from_part1_snapshot_records():
+    issue = {"number": 17265, "title": "connection error", "body": "x", "html_url": "https://github.com/streamlit/streamlit/issues/17265"}
+    comments = [
+        {"issue_number": 17265, "id": 3, "body": "later", "created_at": "2026-10-05T13:00:00Z", "user_login": "reporter", "author_association": "NONE"},
+        {"issue_number": 17265, "id": 1, "body": "please react", "created_at": "2026-10-05T12:37:26Z", "user_login": "github-actions[bot]", "author_association": "CONTRIBUTOR"},
+        {"issue_number": 17265, "id": 2, "body": "earlier", "created_at": "2026-10-05T12:50:00Z", "user_login": "dev", "author_association": "COLLABORATOR"},
+    ]
+
+    case = Case.from_github(issue, comments)
+
+    assert case.author is None
+    assert [comment.id for comment in case.comments] == ["2", "3"]  # bot dropped, chronological
+    assert case.comments[1].author == "reporter"
