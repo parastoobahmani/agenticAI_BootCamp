@@ -1,0 +1,29 @@
+{
+  "case_id": "issue-10501",
+  "seed_issue_number": 10501,
+  "seed_created_at": "2025-02-24T20:38:15Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/10501",
+  "title": "st.rerun in callback in fragment",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nIt would be nice to allow st.rerun to work in a callback, since if the callback is in a fragment, the entire page is not rerun when the callback is hit\n\n### Why?\n\nI have a section of a page that would be nice to encapsulate in a fragment and within that fragment I have a button. If certain conditions are met when the button is clicked, it would be nice to rerun the entire page, rather than just the fragment. I use a callback with the button (to check the conditions), but then cannot rerun the entire page. It seems that the callback is called and then just the fragment is rerun, but st.rerun in the callback gives me the \"Calling st.rerun() within a callback is a no-op.\" error\n\n### How?\n\n_No response_\n\n### Additional Context\n\n_No response_",
+  "labels": [
+    "type:enhancement",
+    "feature:st.rerun",
+    "feature:st.fragment"
+  ],
+  "state": "closed",
+  "stratum_auto": "ambiguous",
+  "is_multi_turn": true,
+  "split": "dev",
+  "visible_input": {
+    "title": "st.rerun in callback in fragment",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nIt would be nice to allow st.rerun to work in a callback, since if the callback is in a fragment, the entire page is not rerun when the callback is hit\n\n### Why?\n\nI have a section of a page that would be nice to encapsulate in a fragment and within that fragment I have a button. If certain conditions are met when the button is clicked, it would be nice to rerun the entire page, rather than just the fragment. I use a callback with the button (to check the conditions), but then cannot rerun the entire page. It seems that the callback is called and then just the fragment is rerun, but st.rerun in the callback gives me the \"Calling st.rerun() within a callback is a no-op.\" error\n\n### How?\n\n_No response_\n\n### Additional Context\n\n_No response_",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2025-02-24T20:38:15Z",
+  "forbidden_source_ids": [
+    "issue-10501"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

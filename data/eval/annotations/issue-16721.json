@@ -1,0 +1,15 @@
+{
+  "case_id": "issue-16721",
+  "bucket": "ambiguous",
+  "relevant_source_ids": [],
+  "relevant_chunk_ids": [],
+  "acceptable_actions_turn0": [
+    "ask_clarification"
+  ],
+  "ideal_response_notes": "TODO: write what a good first reply should do.",
+  "expected_state_after_turn0": {
+    "waiting_for_user": true,
+    "escalated": false,
+    "status": "open"
+  }
+}

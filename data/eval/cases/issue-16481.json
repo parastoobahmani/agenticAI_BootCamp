@@ -1,0 +1,29 @@
+{
+  "case_id": "issue-16481",
+  "seed_issue_number": 16481,
+  "seed_created_at": "2026-08-11T20:29:30Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/16481",
+  "title": "Add a `type=\"pills\"` variant to `st.tabs` to show tabs as pills",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nAdd a `type` parameter to `st.tabs` with a `\"pills\"` variant that renders the tab headers as pills (rounded, button-like segments) instead of the default underlined tab bar. Keep the same tab behavior — only the visual style of the tab headers changes.\n\n### Why?\n\nThe underlined tab style is great for section navigation, but pill-style tabs are a very common, more compact and prominent look — especially for filters, view switchers, and dashboards. Today users approximate this with `st.pills`/`st.segmented_control` plus manual conditional rendering, which is more boilerplate and doesn't give the clean container-per-tab model that `st.tabs` provides.\n\n### How?\n\nAdd a `type` parameter (default preserves today's look):\n\n```python\ntab1, tab2, tab3 = st.tabs([\"Overview\", \"Details\", \"Settings\"], type=\"pills\")\nwith tab1:\n    st.write(\"...\")\n```\n\n- `type=\"default\"` (or `\"underline\"`) — current tab bar.\n- `type=\"pills\"` — render the tab headers as pills.\n- Everything else (content containers, active-tab state, etc.) stays identical.\n\n### Additional Context\n\n- Visually aligns `st.tabs` with the existing pill styling used by `st.pills` / `st.segmented_control`, but with the `st.tabs` container model.\n- Design references for the pills style:\n  - [Tailwind Plus — Tabs (pill variant)](https://tailwindcss.com/plus/ui-blocks/application-ui/navigation/tabs#component-2a66fc822e8ad55f59321825e5af0980)\n  - [Tremor — Tabs, solid variant](https://tremor.so/docs/ui/tabs#example-tabs-solid-variant)\n  - [Tremor — Tabs, stretched](https://tremor.so/docs/ui/tabs#example-streched-tabs)",
+  "labels": [
+    "type:enhancement",
+    "area:styling",
+    "feature:st.tabs"
+  ],
+  "state": "open",
+  "stratum_auto": "escalation",
+  "is_multi_turn": true,
+  "split": "dev",
+  "visible_input": {
+    "title": "Add a `type=\"pills\"` variant to `st.tabs` to show tabs as pills",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nAdd a `type` parameter to `st.tabs` with a `\"pills\"` variant that renders the tab headers as pills (rounded, button-like segments) instead of the default underlined tab bar. Keep the same tab behavior — only the visual style of the tab headers changes.\n\n### Why?\n\nThe underlined tab style is great for section navigation, but pill-style tabs are a very common, more compact and prominent look — especially for filters, view switchers, and dashboards. Today users approximate this with `st.pills`/`st.segmented_control` plus manual conditional rendering, which is more boilerplate and doesn't give the clean container-per-tab model that `st.tabs` provides.\n\n### How?\n\nAdd a `type` parameter (default preserves today's look):\n\n```python\ntab1, tab2, tab3 = st.tabs([\"Overview\", \"Details\", \"Settings\"], type=\"pills\")\nwith tab1:\n    st.write(\"...\")\n```\n\n- `type=\"default\"` (or `\"underline\"`) — current tab bar.\n- `type=\"pills\"` — render the tab headers as pills.\n- Everything else (content containers, active-tab state, etc.) stays identical.\n\n### Additional Context\n\n- Visually aligns `st.tabs` with the existing pill styling used by `st.pills` / `st.segmented_control`, but with the `st.tabs` container model.\n- Design references for the pills style:\n  - [Tailwind Plus — Tabs (pill variant)](https://tailwindcss.com/plus/ui-blocks/application-ui/navigation/tabs#component-2a66fc822e8ad55f59321825e5af0980)\n  - [Tremor — Tabs, solid variant](https://tremor.so/docs/ui/tabs#example-tabs-solid-variant)\n  - [Tremor — Tabs, stretched](https://tremor.so/docs/ui/tabs#example-streched-tabs)",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2026-08-11T20:29:30Z",
+  "forbidden_source_ids": [
+    "issue-16481"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

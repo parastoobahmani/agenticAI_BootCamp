@@ -1,0 +1,103 @@
+{
+  "case_id": "issue-16827",
+  "split": "dev",
+  "bucket": "ambiguous",
+  "n_allowed_docs": 385,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": true,
+      "expected_actions": [
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": true,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "aa8c162d13f0",
+        "50b38eb679f9",
+        "a12296835eee",
+        "cfe302e184ba",
+        "d83f6ea47d2b",
+        "94fff473e572",
+        "00f4bd325adf",
+        "d0921e58c0ba",
+        "4beed3fa2488",
+        "d5761aefb91a"
+      ],
+      "latency_sec": 0.15196489985100925,
+      "token_estimate": 515,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Support Markdown in the options of `st.selectbox` and `st.multiselect`",
+          "citation": "[past_report] Support Markdown in the options of `st.selectbox` and `st.multiselect` (chunk aa8c162d13f0)",
+          "source_id": "issue-7466"
+        },
+        {
+          "claim": "Title: Update error dialogs to be more helpful",
+          "citation": "[past_report] Update error dialogs to be more helpful (chunk 50b38eb679f9)",
+          "source_id": "issue-12380"
+        },
+        {
+          "claim": "Title: Allow HTML in `st.dataframe`",
+          "citation": "[past_report] Allow HTML in `st.dataframe` (chunk a12296835eee)",
+          "source_id": "issue-10878"
+        },
+        {
+          "claim": "Title: Toasts are not preserved when page is rerun",
+          "citation": "[past_report] Toasts are not preserved when page is rerun (chunk cfe302e184ba)",
+          "source_id": "issue-7740"
+        },
+        {
+          "claim": "Title: add a 12 hr format option to time_input",
+          "citation": "[past_report] add a 12 hr format option to time_input (chunk d83f6ea47d2b)",
+          "source_id": "issue-8234"
+        },
+        {
+          "claim": "Title: 508 Compliance - Add Alt=\"\" tag to decorative elements",
+          "citation": "[past_report] 508 Compliance - Add Alt=\"\" tag to decorative elements (chunk 94fff473e572)",
+          "source_id": "issue-12873"
+        },
+        {
+          "claim": "Title: copy and paste values from excel in to st.data_editor",
+          "citation": "[past_report] copy and paste values from excel in to st.data_editor (chunk 00f4bd325adf)",
+          "source_id": "issue-7866"
+        },
+        {
+          "claim": "Title: Pending changes to a widget are not submitted if interrupted by `st.rerun()` or `st.switch_page()`.",
+          "citation": "[past_report] Pending changes to a widget are not submitted if interrupted by `st.rerun()` or `st.switch_page()`. (chunk d0921e58c0ba)",
+          "source_id": "issue-10169"
+        },
+        {
+          "claim": "Title: Customizable toolbar loading animation",
+          "citation": "[past_report] Customizable toolbar loading animation (chunk 4beed3fa2488)",
+          "source_id": "issue-14806"
+        },
+        {
+          "claim": "Title: Add icon to st.header and st.subheader (and st.markdown?)",
+          "citation": "[past_report] Add icon to st.header and st.subheader (and st.markdown?) (chunk d5761aefb91a)",
+          "source_id": "issue-11752"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.15196489985100925,
+  "total_token_estimate": 515,
+  "n_turns": 1,
+  "ran_at": "2026-10-08T11:23:24.656884+00:00"
+}

@@ -1,0 +1,33 @@
+{
+  "case_id": "issue-16909",
+  "seed_issue_number": 16909,
+  "seed_created_at": "2026-09-09T21:45:45Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/16909",
+  "title": "st.data_editor NumberColumn: typing a value starting with \".\" (no leading zero) drops the decimal point and reads digits as a whole number",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nWhen a NumberColumn cell is selected and you type a value that starts with `.` (e.g. `.01`), the `.` is silently dropped and the remaining digits are committed as a whole number — `.01` becomes `1`, `.07` becomes `7`. Typing the same value with a leading zero (`0.01`) works correctly, and **pasting** `.01` into the cell also works correctly. So this is specific to the character-by-character typed-entry path.\n\nImpact\nThis is a real-world data-entry trap: any user in the habit of typing .01-style shorthand (common for percentage/margin fields) silently enters a value the cell just shows a plausible-looking wrong number.\n\n### Reproducible Code Example\n\n```Python\nimport pandas as pd\nimport streamlit as st\ndf = pd.DataFrame({\"Customer\": [\"A\", \"B\"], \"Margin\": [12.0, 8.0]})\nst.data_editor(\n    df,\n    column_config={\n        \"Margin\": st.column_config.NumberColumn(\"Margin\", format=\"%.4f\", step=0.0001),\n    },\n)\n```\n\n### Steps To Reproduce\n\nClick the Margin cell for row A (shows 12.0000).\nType .07 (as literal keystrokes: ., 0, 7).\nPress Enter.\n\n\n\n### Expected Behavior\n\nExpected: cell shows 0.0700.\n\n\n### Current Behavior\n\nActual: cell shows 7.0000.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\nStreamlit version: 1.61.1\nPython version: 3.12/3.14\nBrowser: Chrome\nOS: Windows\n\n\n### Additional Information\n\n_No response_",
+  "labels": [
+    "type:bug",
+    "area:frontend",
+    "status:confirmed",
+    "priority:P2",
+    "feature:st.data_editor",
+    "feature:st.column_config",
+    "upstream"
+  ],
+  "state": "closed",
+  "stratum_auto": "answerable",
+  "is_multi_turn": true,
+  "split": "test",
+  "visible_input": {
+    "title": "st.data_editor NumberColumn: typing a value starting with \".\" (no leading zero) drops the decimal point and reads digits as a whole number",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nWhen a NumberColumn cell is selected and you type a value that starts with `.` (e.g. `.01`), the `.` is silently dropped and the remaining digits are committed as a whole number — `.01` becomes `1`, `.07` becomes `7`. Typing the same value with a leading zero (`0.01`) works correctly, and **pasting** `.01` into the cell also works correctly. So this is specific to the character-by-character typed-entry path.\n\nImpact\nThis is a real-world data-entry trap: any user in the habit of typing .01-style shorthand (common for percentage/margin fields) silently enters a value the cell just shows a plausible-looking wrong number.\n\n### Reproducible Code Example\n\n```Python\nimport pandas as pd\nimport streamlit as st\ndf = pd.DataFrame({\"Customer\": [\"A\", \"B\"], \"Margin\": [12.0, 8.0]})\nst.data_editor(\n    df,\n    column_config={\n        \"Margin\": st.column_config.NumberColumn(\"Margin\", format=\"%.4f\", step=0.0001),\n    },\n)\n```\n\n### Steps To Reproduce\n\nClick the Margin cell for row A (shows 12.0000).\nType .07 (as literal keystrokes: ., 0, 7).\nPress Enter.\n\n\n\n### Expected Behavior\n\nExpected: cell shows 0.0700.\n\n\n### Current Behavior\n\nActual: cell shows 7.0000.\n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\nStreamlit version: 1.61.1\nPython version: 3.12/3.14\nBrowser: Chrome\nOS: Windows\n\n\n### Additional Information\n\n_No response_",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2026-09-09T21:45:45Z",
+  "forbidden_source_ids": [
+    "issue-16909"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

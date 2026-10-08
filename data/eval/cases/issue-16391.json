@@ -1,0 +1,33 @@
+{
+  "case_id": "issue-16391",
+  "seed_issue_number": 16391,
+  "seed_created_at": "2026-08-06T17:41:56Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/16391",
+  "title": "WebSocket protocol error path ignores client.showErrorDetails and leaks stack traces",
+  "body": "## Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n## Summary\n\nWhen a malformed WebSocket `BackMsg` frame fails protobuf deserialization, Streamlit uses a path that bypasses uncaught app exception redaction. Because of this, `client.showErrorDetails` does not apply. Stack traces with file paths and line numbers can reach the client. I reproduced this on 1.61.1.\n\n## Reproducible Code Example\n\n```python\n# app.py\nimport streamlit as st\n\nst.write(\"hello\")\n\n# send_malformed_frame.py\nimport asyncio\nimport websockets\n\n\nasync def main():\n    async with websockets.connect(\n        \"ws://localhost:8501/_stcore/stream\",\n        subprotocols=[\"streamlit\"],\n    ) as ws:\n        # b\"\\\\xff\" is not a valid BackMsg protobuf frame.\n        await ws.send(b\"\\\\xff\")\n\n\nasyncio.run(main())\n```\n\n## Steps To Reproduce\n\n1. Run `app.py` on Streamlit 1.61.1.\n2. Set `client.showErrorDetails = \"none\"`.\n3. In a second terminal, run `send_malformed_frame.py`.\n4. The script connects to `ws://localhost:8501/_stcore/stream` with subprotocol `streamlit` and sends `b\"\\xff\"`.\n5. Observe that the script receives a `ForwardMsg` Exception payload.\n6. Observe that the Exception payload contains `DecodeError` and a stack trace entry with an absolute file path.\n\n## Expected Behavior\n\nProtocol-level WebSocket errors should return a generic client error or close the connection. They should not expose stack traces, file paths, or line numbers to the client. `client.showErrorDetails` should not be bypassed.\n\n## Current Behavior\n\nThe deserialization exception goes through `AppSession._create_exception_message()`. That method calls `exception_utils.marshall(...)` without `is_uncaught_app_exception=True`. The redaction logic does not run. On the event-loop thread there is no script run context, so traceback filtering does not remove internal frames. In my local repro, the returned Exception payload had message `Error parsing message with type 'BackMsg'`, type `DecodeError`, and a stack trace entry that exposed `lib/streamlit/web/server/starlette/starlette_websocket.py`.\n\n## Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n## Debug info\n\n- Streamlit version: 1.61.1\n- Python version: 3.12\n- Operating System: Any\n- Browser: N/A\n\n## Additional Information\n\nSplit from [issue #16386](https://github.com/streamlit/streamlit/issues/16386). This also affects the generic `AppSession.handle_backmsg()` exception path, not only protobuf deserialization failures.",
+  "labels": [
+    "type:bug",
+    "area:security",
+    "status:confirmed",
+    "priority:P2",
+    "feature:config",
+    "area:server",
+    "feature:runtime"
+  ],
+  "state": "closed",
+  "stratum_auto": "answerable",
+  "is_multi_turn": false,
+  "split": "test",
+  "visible_input": {
+    "title": "WebSocket protocol error path ignores client.showErrorDetails and leaks stack traces",
+    "body": "## Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [x] I added a very descriptive title to this issue.\n- [x] I have provided sufficient information below to help reproduce this issue.\n\n## Summary\n\nWhen a malformed WebSocket `BackMsg` frame fails protobuf deserialization, Streamlit uses a path that bypasses uncaught app exception redaction. Because of this, `client.showErrorDetails` does not apply. Stack traces with file paths and line numbers can reach the client. I reproduced this on 1.61.1.\n\n## Reproducible Code Example\n\n```python\n# app.py\nimport streamlit as st\n\nst.write(\"hello\")\n\n# send_malformed_frame.py\nimport asyncio\nimport websockets\n\n\nasync def main():\n    async with websockets.connect(\n        \"ws://localhost:8501/_stcore/stream\",\n        subprotocols=[\"streamlit\"],\n    ) as ws:\n        # b\"\\\\xff\" is not a valid BackMsg protobuf frame.\n        await ws.send(b\"\\\\xff\")\n\n\nasyncio.run(main())\n```\n\n## Steps To Reproduce\n\n1. Run `app.py` on Streamlit 1.61.1.\n2. Set `client.showErrorDetails = \"none\"`.\n3. In a second terminal, run `send_malformed_frame.py`.\n4. The script connects to `ws://localhost:8501/_stcore/stream` with subprotocol `streamlit` and sends `b\"\\xff\"`.\n5. Observe that the script receives a `ForwardMsg` Exception payload.\n6. Observe that the Exception payload contains `DecodeError` and a stack trace entry with an absolute file path.\n\n## Expected Behavior\n\nProtocol-level WebSocket errors should return a generic client error or close the connection. They should not expose stack traces, file paths, or line numbers to the client. `client.showErrorDetails` should not be bypassed.\n\n## Current Behavior\n\nThe deserialization exception goes through `AppSession._create_exception_message()`. That method calls `exception_utils.marshall(...)` without `is_uncaught_app_exception=True`. The redaction logic does not run. On the event-loop thread there is no script run context, so traceback filtering does not remove internal frames. In my local repro, the returned Exception payload had message `Error parsing message with type 'BackMsg'`, type `DecodeError`, and a stack trace entry that exposed `lib/streamlit/web/server/starlette/starlette_websocket.py`.\n\n## Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n## Debug info\n\n- Streamlit version: 1.61.1\n- Python version: 3.12\n- Operating System: Any\n- Browser: N/A\n\n## Additional Information\n\nSplit from [issue #16386](https://github.com/streamlit/streamlit/issues/16386). This also affects the generic `AppSession.handle_backmsg()` exception path, not only protobuf deserialization failures.",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2026-08-06T17:41:56Z",
+  "forbidden_source_ids": [
+    "issue-16391"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

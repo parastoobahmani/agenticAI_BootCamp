@@ -1,0 +1,31 @@
+{
+  "case_id": "issue-2975",
+  "seed_issue_number": 2975,
+  "seed_created_at": "2021-03-18T00:13:56Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/2975",
+  "title": "Server shutdown fails to exit while processing infinite loop",
+  "body": "### Summary\r\n\r\nPython process does not exit when shutting down the server while processing an infinite loop in a script\r\n\r\n### Steps to reproduce\r\n\r\nCode snippet: (using a recent SessionState prototype, before I fixed the implementation)\r\n\r\n```\r\nimport streamlit as st\r\n\r\nstate = st.get_state()\r\nst.write(\"printed something\")\r\nst.write(\"foobar\" in state) # this line infinite looped before I fixed the implementation\r\n```\r\n\r\nIf applicable, please provide the steps we should take to reproduce the bug:\r\n\r\n1. Run the above snippet against the [previous state prototype](https://github.com/AnOctopus/streamlit/tree/c17d119aef34ae1f15f0e7dff5051469d8bb745d) (I ran the react server as a separate process from the dev install of that commit, rather than running them together via a wheel, don't know if that affects this)\r\n2. C-c in the shell running the python server\r\n\r\n**Expected behavior:**\r\n\r\nPython server stops, process exits and control returns to my shell\r\n\r\n**Actual behavior:**\r\n\r\nLogs indicate server goes into the STOPPING state and then almost immediately the STOPPED state, but after 20 seconds it still has not exited the process. Sending SIGTERM repeatedly afterwards fails to cause the process to exit, and SIGKILL was required to regain control.\r\n\r\n### Is this a regression?\r\n\r\nUnknown\r\n\r\n### Debug info\r\n\r\n- Streamlit version: Session state prototype, as linked above, development install\r\n- Python version: 3.8.6\r\n- Using Conda? PipEnv? PyEnv? Pex?: Pipenv\r\n- OS version: Arch Linux\r\n- Shell version: Zsh 5.8\r\n",
+  "labels": [
+    "type:bug",
+    "status:confirmed",
+    "priority:P3",
+    "area:backend",
+    "feature:runtime"
+  ],
+  "state": "closed",
+  "stratum_auto": "answerable",
+  "is_multi_turn": false,
+  "split": "dev",
+  "visible_input": {
+    "title": "Server shutdown fails to exit while processing infinite loop",
+    "body": "### Summary\r\n\r\nPython process does not exit when shutting down the server while processing an infinite loop in a script\r\n\r\n### Steps to reproduce\r\n\r\nCode snippet: (using a recent SessionState prototype, before I fixed the implementation)\r\n\r\n```\r\nimport streamlit as st\r\n\r\nstate = st.get_state()\r\nst.write(\"printed something\")\r\nst.write(\"foobar\" in state) # this line infinite looped before I fixed the implementation\r\n```\r\n\r\nIf applicable, please provide the steps we should take to reproduce the bug:\r\n\r\n1. Run the above snippet against the [previous state prototype](https://github.com/AnOctopus/streamlit/tree/c17d119aef34ae1f15f0e7dff5051469d8bb745d) (I ran the react server as a separate process from the dev install of that commit, rather than running them together via a wheel, don't know if that affects this)\r\n2. C-c in the shell running the python server\r\n\r\n**Expected behavior:**\r\n\r\nPython server stops, process exits and control returns to my shell\r\n\r\n**Actual behavior:**\r\n\r\nLogs indicate server goes into the STOPPING state and then almost immediately the STOPPED state, but after 20 seconds it still has not exited the process. Sending SIGTERM repeatedly afterwards fails to cause the process to exit, and SIGKILL was required to regain control.\r\n\r\n### Is this a regression?\r\n\r\nUnknown\r\n\r\n### Debug info\r\n\r\n- Streamlit version: Session state prototype, as linked above, development install\r\n- Python version: 3.8.6\r\n- Using Conda? PipEnv? PyEnv? Pex?: Pipenv\r\n- OS version: Arch Linux\r\n- Shell version: Zsh 5.8\r\n",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2021-03-18T00:13:56Z",
+  "forbidden_source_ids": [
+    "issue-2975"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

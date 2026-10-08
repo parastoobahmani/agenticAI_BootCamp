@@ -1,0 +1,104 @@
+{
+  "case_id": "issue-10603",
+  "split": "dev",
+  "bucket": "escalation",
+  "n_allowed_docs": 136,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": false,
+      "expected_actions": [
+        "escalate",
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": true,
+        "status": "escalated"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "ddd7c14cc5ac",
+        "c2223c2a0256",
+        "68ed47e8ba49",
+        "66f46e46a568",
+        "cfe302e184ba",
+        "6105331bee9a",
+        "d8f1db0128a2",
+        "d83f6ea47d2b",
+        "3ab009bb3b38",
+        "ca1ec71bd81c"
+      ],
+      "latency_sec": 0.06564550008624792,
+      "token_estimate": 421,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Rerun fragment only programatically with `st.fragment` instead of `run_every`",
+          "citation": "[past_report] Rerun fragment only programatically with `st.fragment` instead of `run_every` (chunk ddd7c14cc5ac)",
+          "source_id": "issue-8511"
+        },
+        {
+          "claim": "Title: st.rerun in callback in fragment",
+          "citation": "[past_report] st.rerun in callback in fragment (chunk c2223c2a0256)",
+          "source_id": "issue-10501"
+        },
+        {
+          "claim": "Title: Ability to clear a `date_input`",
+          "citation": "[past_report] Ability to clear a `date_input` (chunk 68ed47e8ba49)",
+          "source_id": "issue-8059"
+        },
+        {
+          "claim": "Title: st.button - add delay to `help` tooltip",
+          "citation": "[past_report] st.button - add delay to `help` tooltip (chunk 66f46e46a568)",
+          "source_id": "issue-8686"
+        },
+        {
+          "claim": "Title: Toasts are not preserved when page is rerun",
+          "citation": "[past_report] Toasts are not preserved when page is rerun (chunk cfe302e184ba)",
+          "source_id": "issue-7740"
+        },
+        {
+          "claim": "Title: Add form validation to make form fields required",
+          "citation": "[past_report] Add form validation to make form fields required (chunk 6105331bee9a)",
+          "source_id": "issue-7165"
+        },
+        {
+          "claim": "Title: Type-hint values in session_state",
+          "citation": "[past_report] Type-hint values in session_state (chunk d8f1db0128a2)",
+          "source_id": "issue-9455"
+        },
+        {
+          "claim": "Title: add a 12 hr format option to time_input",
+          "citation": "[past_report] add a 12 hr format option to time_input (chunk d83f6ea47d2b)",
+          "source_id": "issue-8234"
+        },
+        {
+          "claim": "Title: Support custom LaTeX delimiters",
+          "citation": "[past_report] Support custom LaTeX delimiters (chunk 3ab009bb3b38)",
+          "source_id": "issue-9272"
+        },
+        {
+          "claim": "Title: Allow using custom images for `icon` parameters",
+          "citation": "[past_report] Allow using custom images for `icon` parameters (chunk ca1ec71bd81c)",
+          "source_id": "issue-9770"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.06564550008624792,
+  "total_token_estimate": 421,
+  "n_turns": 1,
+  "ran_at": "2026-10-08T11:23:22.689102+00:00"
+}

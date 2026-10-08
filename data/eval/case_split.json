@@ -1,0 +1,60 @@
+{
+  "dev_case_ids": [
+    "issue-8186",
+    "issue-16247",
+    "issue-2975",
+    "issue-10501",
+    "issue-10603",
+    "issue-17107",
+    "issue-16721",
+    "issue-16377",
+    "issue-16448",
+    "issue-16481",
+    "issue-7426",
+    "issue-16538",
+    "issue-16827",
+    "issue-16148",
+    "issue-8838"
+  ],
+  "test_case_ids": [
+    "issue-12380",
+    "issue-16783",
+    "issue-7714",
+    "issue-16909",
+    "issue-10045",
+    "issue-7427",
+    "issue-17097",
+    "issue-16478",
+    "issue-12302",
+    "issue-16660",
+    "issue-16800",
+    "issue-13600",
+    "issue-9971",
+    "issue-16391",
+    "issue-11050"
+  ],
+  "multi_turn_case_ids": [
+    "issue-16538",
+    "issue-10501",
+    "issue-13600",
+    "issue-8186",
+    "issue-16148",
+    "issue-12380",
+    "issue-16481",
+    "issue-16909",
+    "issue-7714",
+    "issue-16721"
+  ],
+  "split_seed": 42,
+  "created_at": "2026-10-08T10:23:53.135203+00:00",
+  "n_dev": 15,
+  "n_test": 15,
+  "sampling": "stratified by rough answerable/ambiguous/escalation; whole-case split",
+  "source_counts": {
+    "issues_total": 400,
+    "issues_usable": 398,
+    "comments": 1781,
+    "docs": 267,
+    "releases": 40
+  }
+}

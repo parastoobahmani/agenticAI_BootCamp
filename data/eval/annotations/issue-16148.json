@@ -1,0 +1,16 @@
+{
+  "case_id": "issue-16148",
+  "bucket": "escalation",
+  "relevant_source_ids": [],
+  "relevant_chunk_ids": [],
+  "acceptable_actions_turn0": [
+    "escalate",
+    "ask_clarification"
+  ],
+  "ideal_response_notes": "TODO: write what a good first reply should do.",
+  "expected_state_after_turn0": {
+    "waiting_for_user": false,
+    "escalated": true,
+    "status": "escalated"
+  }
+}

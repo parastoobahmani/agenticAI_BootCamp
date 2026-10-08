@@ -1,0 +1,31 @@
+{
+  "case_id": "issue-9971",
+  "seed_issue_number": 9971,
+  "seed_created_at": "2024-12-05T21:45:02Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/9971",
+  "title": "Unable to drag to copy a value from one cell to a range of cells in the rightmost column of st.data_editor",
+  "body": "### Checklist\n\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [X] I added a very descriptive title to this issue.\n- [X] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nUnable to drag to copy a value from one cell to a range of cells in the rightmost column of st.data_editor, as the selection handle is underneath the data_editor scrollbar, so when the click and drag happens you just interact with the scrollbar and jump to a different point in the data_editor instead of dragging a selection \r\n\r\n\r\nI can get around the issue by pushing some custom css, but this isnt ideal as it ends up with some whitespace on the right side of the header row \r\n\r\n```\r\nstyl = f\"\"\"\r\n    <style>\r\n        .dvn-scroller {{scrollbar-gutter: stable both-edges;}}\r\n    </style>\r\n    \"\"\"\r\nst.markdown(styl, unsafe_allow_html=True)\r\n```\r\n\r\n![image](https://github.com/user-attachments/assets/90a4e19f-1147-4a5b-810e-b0fbc681b731)\r\n\r\n\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\r\nimport pandas as pd\r\nimport numpy as np\r\n\r\n# Generate random data\r\ndata = pd.DataFrame({\r\n    \"Column 1\": np.random.random(100),\r\n    \"Column 2\": np.random.random(100),\r\n})\r\n\r\n# Title of the app\r\nst.title(\"Streamlit Data Editor Example\")\r\n\r\n# Display editable data editor\r\nst.data_editor(data, use_container_width=True)\n```\n\n\n### Steps To Reproduce\n\n1. select one of the cells in the right most column\r\n2. grab the handle in the bottom right of the cell\r\n3. attempt to drag to cells below\n\n### Expected Behavior\n\nvalue is copied to the cells that are drag selected\n\n### Current Behavior\n\nthe selection handle is underneath the data_editor scrollbar, so when the click and drag happens you just interact with the scrollbar and jump to a different point in the data_editor instead of dragging a selection \n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.40.2\r\n- Python version: 3.11.4\r\n- Operating System: Windows 11 21H2\r\n- Browser: Edge Version 131.0.2903.70\r\n\n\n### Additional Information\n\nthis issue also occurs on the streamlit demo website\r\n\r\ntry to drag the handle in the right most column of this demo\r\ndocs.streamlit.io/develop/api-reference/data/st.data_editor#configuring-columns",
+  "labels": [
+    "type:bug",
+    "status:confirmed",
+    "priority:P4",
+    "feature:st.data_editor",
+    "upstream"
+  ],
+  "state": "open",
+  "stratum_auto": "answerable",
+  "is_multi_turn": false,
+  "split": "test",
+  "visible_input": {
+    "title": "Unable to drag to copy a value from one cell to a range of cells in the rightmost column of st.data_editor",
+    "body": "### Checklist\n\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\n- [X] I added a very descriptive title to this issue.\n- [X] I have provided sufficient information below to help reproduce this issue.\n\n### Summary\n\nUnable to drag to copy a value from one cell to a range of cells in the rightmost column of st.data_editor, as the selection handle is underneath the data_editor scrollbar, so when the click and drag happens you just interact with the scrollbar and jump to a different point in the data_editor instead of dragging a selection \r\n\r\n\r\nI can get around the issue by pushing some custom css, but this isnt ideal as it ends up with some whitespace on the right side of the header row \r\n\r\n```\r\nstyl = f\"\"\"\r\n    <style>\r\n        .dvn-scroller {{scrollbar-gutter: stable both-edges;}}\r\n    </style>\r\n    \"\"\"\r\nst.markdown(styl, unsafe_allow_html=True)\r\n```\r\n\r\n![image](https://github.com/user-attachments/assets/90a4e19f-1147-4a5b-810e-b0fbc681b731)\r\n\r\n\n\n### Reproducible Code Example\n\n```Python\nimport streamlit as st\r\nimport pandas as pd\r\nimport numpy as np\r\n\r\n# Generate random data\r\ndata = pd.DataFrame({\r\n    \"Column 1\": np.random.random(100),\r\n    \"Column 2\": np.random.random(100),\r\n})\r\n\r\n# Title of the app\r\nst.title(\"Streamlit Data Editor Example\")\r\n\r\n# Display editable data editor\r\nst.data_editor(data, use_container_width=True)\n```\n\n\n### Steps To Reproduce\n\n1. select one of the cells in the right most column\r\n2. grab the handle in the bottom right of the cell\r\n3. attempt to drag to cells below\n\n### Expected Behavior\n\nvalue is copied to the cells that are drag selected\n\n### Current Behavior\n\nthe selection handle is underneath the data_editor scrollbar, so when the click and drag happens you just interact with the scrollbar and jump to a different point in the data_editor instead of dragging a selection \n\n### Is this a regression?\n\n- [ ] Yes, this used to work in a previous version.\n\n### Debug info\n\n- Streamlit version: 1.40.2\r\n- Python version: 3.11.4\r\n- Operating System: Windows 11 21H2\r\n- Browser: Edge Version 131.0.2903.70\r\n\n\n### Additional Information\n\nthis issue also occurs on the streamlit demo website\r\n\r\ntry to drag the handle in the right most column of this demo\r\ndocs.streamlit.io/develop/api-reference/data/st.data_editor#configuring-columns",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2024-12-05T21:45:02Z",
+  "forbidden_source_ids": [
+    "issue-9971"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

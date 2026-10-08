@@ -1,0 +1,43 @@
+{
+  "split": "dev",
+  "n_cases": 15,
+  "evidence_quality": {
+    "recall@5": {
+      "mean": 0.0,
+      "n_labeled": 0
+    },
+    "recall@10": {
+      "mean": 0.0,
+      "n_labeled": 0
+    }
+  },
+  "decision_quality": {
+    "by_bucket": {
+      "ambiguous": {
+        "n": 6,
+        "accuracy": 1.0
+      },
+      "escalation": {
+        "n": 5,
+        "accuracy": 1.0
+      },
+      "answerable": {
+        "n": 4,
+        "accuracy": 0.0
+      }
+    },
+    "overall_accuracy": 0.7333333333333333,
+    "n_scored": 15
+  },
+  "operational_success": {
+    "state_transition_accuracy": 0.4444444444444444,
+    "n_checked": 27
+  },
+  "cost_time": {
+    "mean_latency_sec": 0.18477910668589176,
+    "mean_token_estimate": 1845.9333333333334,
+    "mean_steps": 1.8,
+    "total_token_estimate": 27689
+  },
+  "n_failures_logged": 4
+}

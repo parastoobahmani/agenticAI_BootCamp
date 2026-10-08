@@ -1,0 +1,103 @@
+{
+  "case_id": "issue-17107",
+  "split": "dev",
+  "bucket": "ambiguous",
+  "n_allowed_docs": 419,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": true,
+      "expected_actions": [
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": true,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "b1c2d01221d8",
+        "8d26e8a5ed08",
+        "2b20bf31cc40",
+        "8c56efb4b27a",
+        "868aad780518",
+        "acfc0045e9f4",
+        "a7173768a0b5",
+        "aedee7651bb3",
+        "e5911f923600",
+        "411220955995"
+      ],
+      "latency_sec": 0.16791349998675287,
+      "token_estimate": 319,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: GlobalHotkeys crashes on keydown/keyup events without a key",
+          "citation": "[past_report] GlobalHotkeys crashes on keydown/keyup events without a key (chunk b1c2d01221d8)",
+          "source_id": "issue-17082"
+        },
+        {
+          "claim": "connected OAuth application because the streamlit organization restricts third-party OAuth app write access, but the comparison is ready for review or cherry-picking.",
+          "citation": "[past_report] GlobalHotkeys crashes on keydown/keyup events without a key (chunk 8d26e8a5ed08)",
+          "source_id": "issue-17082"
+        },
+        {
+          "claim": "nd covering keyless events in `GlobalHotkeys.test.tsx`) is the right fix. Note: `Dialog.tsx` also calls `e.key.toLowerCase()` unguarded on capture-phase `keydown`.",
+          "citation": "[past_report] GlobalHotkeys crashes on keydown/keyup events without a key (chunk 2b20bf31cc40)",
+          "source_id": "issue-17082"
+        },
+        {
+          "claim": "Streamlit's `ScriptRunner` creates a dedicated thread (`ScriptRunner.scriptThread`) to execute user scripts, but this thread does not have an asyncio event loop associated with it.",
+          "citation": "[past_report] RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio (chunk 8c56efb4b27a)",
+          "source_id": "issue-744"
+        },
+        {
+          "claim": "ep caller isolation without fully unpickling a new object on every cache hit. Today this is intentional: cached values are stored as pickled bytes (including in the in-memory layer",
+          "citation": "[past_report] [feature] Add copy=\"cow\" option to st.cache_data (chunk 868aad780518)",
+          "source_id": "issue-17084"
+        },
+        {
+          "claim": "KeyDown`; it only opens the dialog when developer options are shown (localhost / owner / `toolbarMode = \"developer\"`). Viewer/minimal mode already suppresses it, which is the curre",
+          "citation": "[past_report] Setting to modify the Clear-Cache \"c\" shortcut (chunk acfc0045e9f4)",
+          "source_id": "issue-16954"
+        },
+        {
+          "claim": "ifferent: [#12519](https://github.com/streamlit/streamlit/issues/12519) quoted the same warning in the context of `st.image` + `width=\"stretch\"` (closed as a separate bug).",
+          "citation": "[past_report] `use_container_width` deprecation date (2025-12-31) has passed; parameter is still accepted (chunk a7173768a0b5)",
+          "source_id": "issue-16871"
+        },
+        {
+          "claim": "Button-like APIs (`st.button`, `st.download_button`, `st.link_button`, `st.page_link`, `st.form_submit_button`, `st.popover`) still remap `True`/`False` to `width=\"stretch\"`/`\"cont",
+          "citation": "[past_report] `use_container_width` deprecation date (2025-12-31) has passed; parameter is still accepted (chunk aedee7651bb3)",
+          "source_id": "issue-16871"
+        },
+        {
+          "claim": "oses without selecting anything. `st.selectbox` still commits its first filtered option via a dedicated Enter handler, which is why the widgets now diverge.",
+          "citation": "[past_report] st.multiselect no longer inserts the first filtered option on Enter (works in 1.49.1, not in 1.62.0) (chunk e5911f923600)",
+          "source_id": "issue-16841"
+        },
+        {
+          "claim": "would otherwise be executed as a host command if the app origin is allow-listed. `sendMessageToSameOriginHost` has the same parent-only limitation (used for `REDIRECT_TO_URL`).",
+          "citation": "[past_report] Guest-to-host messages are only posted to window.parent, so a same-window embed host never receives them (METRICS_EVENT is dropped) (chunk 411220955995)",
+          "source_id": "issue-16644"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.16791349998675287,
+  "total_token_estimate": 319,
+  "n_turns": 1,
+  "ran_at": "2026-10-08T11:23:22.860994+00:00"
+}

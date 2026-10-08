@@ -1,0 +1,28 @@
+{
+  "case_id": "issue-11050",
+  "seed_issue_number": 11050,
+  "seed_created_at": "2025-04-08T08:18:43Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/11050",
+  "title": "Add the ability to initialize the cache (and orchestrate its refreshment)",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nHello,\n\nThis is a suggestion for adding feature to initialize the cache (and orchestrate its refreshment).\n\nHere's one of my current needs: I have an application with lots of pages. For each page, there are several cached functions that take a few minutes to execute but have a relatively long ttl (several days). The problem is that the user experience is degraded for the first user to access a page.\n\nWhat would be nice, I think, is to be able to run all pages in the background (without rendering) to initialize the cache, or to be able to run a function or a page in the background (with different query params), and to be able to empty and refill the cache from time to time.\n\n### Why?\n\n_No response_\n\n### How?\n\n_No response_\n\n### Additional Context\n\n_No response_",
+  "labels": [
+    "type:enhancement",
+    "feature:cache"
+  ],
+  "state": "closed",
+  "stratum_auto": "escalation",
+  "is_multi_turn": false,
+  "split": "test",
+  "visible_input": {
+    "title": "Add the ability to initialize the cache (and orchestrate its refreshment)",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nHello,\n\nThis is a suggestion for adding feature to initialize the cache (and orchestrate its refreshment).\n\nHere's one of my current needs: I have an application with lots of pages. For each page, there are several cached functions that take a few minutes to execute but have a relatively long ttl (several days). The problem is that the user experience is degraded for the first user to access a page.\n\nWhat would be nice, I think, is to be able to run all pages in the background (without rendering) to initialize the cache, or to be able to run a function or a page in the background (with different query params), and to be able to empty and refill the cache from time to time.\n\n### Why?\n\n_No response_\n\n### How?\n\n_No response_\n\n### Additional Context\n\n_No response_",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2025-04-08T08:18:43Z",
+  "forbidden_source_ids": [
+    "issue-11050"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

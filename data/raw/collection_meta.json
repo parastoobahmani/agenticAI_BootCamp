@@ -1,0 +1,16 @@
+{
+  "collected_at": "2026-10-06T02:51:45.320135+00:00",
+  "repo": "streamlit/streamlit",
+  "max_issues": 400,
+  "sampling": "most-recently-updated issues (PRs excluded), client-side label filter optional",
+  "labels_considered": [
+    "feature:st.session_state",
+    "area:widgets",
+    "feature:st.selectbox",
+    "feature:st.multiselect",
+    "feature:st.slider",
+    "type:bug"
+  ],
+  "num_issues": 400,
+  "num_comments": 1781
+}

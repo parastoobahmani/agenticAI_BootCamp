@@ -1,0 +1,31 @@
+{
+  "case_id": "issue-7714",
+  "seed_issue_number": 7714,
+  "seed_created_at": "2023-11-13T15:00:07Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/7714",
+  "title": "Bar chart does not display for one column data if there is a '.' in the column name",
+  "body": "### Checklist\r\n\r\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\r\n- [X] I added a very descriptive title to this issue.\r\n- [X] I have provided sufficient information below to help reproduce this issue.\r\n\r\n### Summary\r\n\r\nBar chart does not display for one column data if there is a '.' in the column name.\r\n\r\n### Reproducible Code Example\r\n\r\n[![Open in Streamlit Cloud](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://issues.streamlitapp.com/?issue=gh-7714)\r\n\r\n```Python\r\nimport pandas as pd\r\nimport streamlit as st\r\nimport numpy as np\r\n\r\nst.title(\"This works\")\r\nchart_data = pd.DataFrame(np.random.randn(20, 3), columns=[\"a\", \"b\", \"c\"])\r\nst.bar_chart(chart_data)\r\n\r\nst.title(\"This works\")\r\nchart_data = pd.DataFrame(np.random.randn(20, 3), columns=[\"a.b\", \"b.c\", \"c.d\"])\r\nst.bar_chart(chart_data)\r\n\r\nst.title(\"This works\")\r\nchart_data = pd.DataFrame(np.random.randn(20, 1), columns=[\"a\"])\r\nst.bar_chart(chart_data)\r\n\r\nst.title(\"This doesn't work\")\r\nchart_data = pd.DataFrame(np.random.randn(20, 1), columns=[\"a.b\"])\r\nst.bar_chart(chart_data)\r\n```\r\n\r\n\r\n### Steps To Reproduce\r\n\r\n1. Run this\r\n2. Note the cases which do and do not display a graph\r\n\r\n### Expected Behavior\r\n\r\nThere should be four graphs.\r\n\r\n### Current Behavior\r\n\r\nThere are only three being displayed properly.\r\n\r\n### Is this a regression?\r\n\r\n- [ ] Yes, this used to work in a previous version.\r\n\r\n### Debug info\r\n\r\n- Streamlit version: 1.28.1\r\n- Python version: 3.10.12\r\n- Operating System: 5.15.0-88-generic #98-Ubuntu\r\n- Browser: Chrome Version 119.0.6045.123 (Official Build) (arm64)\r\n\r\n\r\n### Additional Information\r\n\r\nI suspect that there is somewhere in the code confusing the '.' in the column name for the dot operator. I expect that '.'s need to be escaped. Not sure why this only happens with one column and not with multiple columns.",
+  "labels": [
+    "type:bug",
+    "status:confirmed",
+    "priority:P3",
+    "feature:st.altair_chart",
+    "feature:builtin-charts"
+  ],
+  "state": "closed",
+  "stratum_auto": "answerable",
+  "is_multi_turn": true,
+  "split": "test",
+  "visible_input": {
+    "title": "Bar chart does not display for one column data if there is a '.' in the column name",
+    "body": "### Checklist\r\n\r\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\r\n- [X] I added a very descriptive title to this issue.\r\n- [X] I have provided sufficient information below to help reproduce this issue.\r\n\r\n### Summary\r\n\r\nBar chart does not display for one column data if there is a '.' in the column name.\r\n\r\n### Reproducible Code Example\r\n\r\n[![Open in Streamlit Cloud](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://issues.streamlitapp.com/?issue=gh-7714)\r\n\r\n```Python\r\nimport pandas as pd\r\nimport streamlit as st\r\nimport numpy as np\r\n\r\nst.title(\"This works\")\r\nchart_data = pd.DataFrame(np.random.randn(20, 3), columns=[\"a\", \"b\", \"c\"])\r\nst.bar_chart(chart_data)\r\n\r\nst.title(\"This works\")\r\nchart_data = pd.DataFrame(np.random.randn(20, 3), columns=[\"a.b\", \"b.c\", \"c.d\"])\r\nst.bar_chart(chart_data)\r\n\r\nst.title(\"This works\")\r\nchart_data = pd.DataFrame(np.random.randn(20, 1), columns=[\"a\"])\r\nst.bar_chart(chart_data)\r\n\r\nst.title(\"This doesn't work\")\r\nchart_data = pd.DataFrame(np.random.randn(20, 1), columns=[\"a.b\"])\r\nst.bar_chart(chart_data)\r\n```\r\n\r\n\r\n### Steps To Reproduce\r\n\r\n1. Run this\r\n2. Note the cases which do and do not display a graph\r\n\r\n### Expected Behavior\r\n\r\nThere should be four graphs.\r\n\r\n### Current Behavior\r\n\r\nThere are only three being displayed properly.\r\n\r\n### Is this a regression?\r\n\r\n- [ ] Yes, this used to work in a previous version.\r\n\r\n### Debug info\r\n\r\n- Streamlit version: 1.28.1\r\n- Python version: 3.10.12\r\n- Operating System: 5.15.0-88-generic #98-Ubuntu\r\n- Browser: Chrome Version 119.0.6045.123 (Official Build) (arm64)\r\n\r\n\r\n### Additional Information\r\n\r\nI suspect that there is somewhere in the code confusing the '.' in the column name for the dot operator. I expect that '.'s need to be escaped. Not sure why this only happens with one column and not with multiple columns.",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2023-11-13T15:00:07Z",
+  "forbidden_source_ids": [
+    "issue-7714"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

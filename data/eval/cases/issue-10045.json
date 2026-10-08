@@ -1,0 +1,28 @@
+{
+  "case_id": "issue-10045",
+  "seed_issue_number": 10045,
+  "seed_created_at": "2024-12-18T16:48:56Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/10045",
+  "title": "Fragment to fragment (co-fragment) communication instead of rerunning entire app",
+  "body": "### Checklist\r\n\r\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\r\n- [X] I added a descriptive title and summary to this issue.\r\n\r\n### Summary\r\n\r\nWould be great to create a functionality for co-fragment communication directly rather than re-running the entire app. This could be streamlit's blockhain moment - no middle men (in this case the entire app).\r\n\r\n### Why?\r\n\r\nRe-rendering the entire app for co-fragment communication is frustration slow. Co-fragment communication would drastically increase the speed and performance of a streamlit app. \r\n\r\n### How?\r\n\r\nMy app looks like the below:\r\n\r\n![fragments](https://github.com/user-attachments/assets/f5e0ea57-452c-4696-89c2-112ac27dd9b2)\r\n\r\nThe black outlines are fragments. The purple/pink outlines are nested fragments. I understand co-fragment communication occurs through session_state which is great but for this communication to be recognised, one must re-run the whole app. This makes the app more slow and somewhat buggy in my experience of operating my app. \r\n\r\nSeeing as fragments can be re-run periodically, it would be great to add the possibility to communicate between specific fragments via an action. For example, in my app image, After I input details in the \"Contact Details\" expander, I want to update the CV Preview fragment. But to do that, I have to re-run the entire app. Perhaps the possibility to rerun specific fragments based on some unique Id (like a key of a streamlit widget) when I say click on the submit form button in the Contact Details expander would be great. \r\n\r\nJust an example\r\n```\r\n@st.fragment(key=\"test_frag\", keys_to_update=[\"frag1\", \"frag2\"])\r\n```\r\n\r\nThe issue with the above is for every rerun action, the `keys to update` will rerun. So perhaps, we could create a trigger command parameter.\r\n\r\n```\r\n@st.fragment(key=\"test_frag\", keys_to_update=[\"frag1\", \"frag2\"], trigger_keys=[\"form_submit_btn\"])\r\n```\r\n\r\nWe could also get fancy and connect trigger keys to keys to update:\r\n\r\n\r\n```\r\n@st.fragment(key=\"test_frag\", keys_to_update=[\"frag1\", \"frag2\"], trigger_keys=[{\"frag1\":\"form_submit_btn\"}])\r\n```\r\n\r\n### Additional Context\r\n\r\n_No response_",
+  "labels": [
+    "type:enhancement",
+    "feature:st.fragment"
+  ],
+  "state": "closed",
+  "stratum_auto": "escalation",
+  "is_multi_turn": false,
+  "split": "test",
+  "visible_input": {
+    "title": "Fragment to fragment (co-fragment) communication instead of rerunning entire app",
+    "body": "### Checklist\r\n\r\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\r\n- [X] I added a descriptive title and summary to this issue.\r\n\r\n### Summary\r\n\r\nWould be great to create a functionality for co-fragment communication directly rather than re-running the entire app. This could be streamlit's blockhain moment - no middle men (in this case the entire app).\r\n\r\n### Why?\r\n\r\nRe-rendering the entire app for co-fragment communication is frustration slow. Co-fragment communication would drastically increase the speed and performance of a streamlit app. \r\n\r\n### How?\r\n\r\nMy app looks like the below:\r\n\r\n![fragments](https://github.com/user-attachments/assets/f5e0ea57-452c-4696-89c2-112ac27dd9b2)\r\n\r\nThe black outlines are fragments. The purple/pink outlines are nested fragments. I understand co-fragment communication occurs through session_state which is great but for this communication to be recognised, one must re-run the whole app. This makes the app more slow and somewhat buggy in my experience of operating my app. \r\n\r\nSeeing as fragments can be re-run periodically, it would be great to add the possibility to communicate between specific fragments via an action. For example, in my app image, After I input details in the \"Contact Details\" expander, I want to update the CV Preview fragment. But to do that, I have to re-run the entire app. Perhaps the possibility to rerun specific fragments based on some unique Id (like a key of a streamlit widget) when I say click on the submit form button in the Contact Details expander would be great. \r\n\r\nJust an example\r\n```\r\n@st.fragment(key=\"test_frag\", keys_to_update=[\"frag1\", \"frag2\"])\r\n```\r\n\r\nThe issue with the above is for every rerun action, the `keys to update` will rerun. So perhaps, we could create a trigger command parameter.\r\n\r\n```\r\n@st.fragment(key=\"test_frag\", keys_to_update=[\"frag1\", \"frag2\"], trigger_keys=[\"form_submit_btn\"])\r\n```\r\n\r\nWe could also get fancy and connect trigger keys to keys to update:\r\n\r\n\r\n```\r\n@st.fragment(key=\"test_frag\", keys_to_update=[\"frag1\", \"frag2\"], trigger_keys=[{\"frag1\":\"form_submit_btn\"}])\r\n```\r\n\r\n### Additional Context\r\n\r\n_No response_",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2024-12-18T16:48:56Z",
+  "forbidden_source_ids": [
+    "issue-10045"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

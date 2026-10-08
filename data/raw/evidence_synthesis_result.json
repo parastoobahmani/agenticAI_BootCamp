@@ -1,0 +1,166 @@
+{
+  "report_summary": "Title: Session state lost after widget interaction in 1.64\nBody excerpt: After upgrading to 1.64.0, st.session_state values set inside a callback disappear on the next rerun. Minimal example:\n\n```python\nimport streamlit as st\nif 'count' not in st.session_state:\n    st.session_state.count = 0\nst.button('inc', on_click=lambda: st.session_state.count += 1)\nst.write(st.sessi...",
+  "known_facts": [
+    {
+      "claim": "om_proto` re-imports that frontend value into session state, undoing the delete.",
+      "citation": "[past_report] Deleting a widget's session_state key leaves the frontend showing the stale value (backend/frontend divergence for one rerun) – (chunk 69148da76a40)"
+    }
+  ],
+  "documented_explanations": [
+    {
+      "claim": "_state:\n    # set the initial default value of the slider widget\n    st.session_state.celsius = 50.0\n\nst.slider(\n    \"Temperature in Celsius\",\n    min_value=-100.0,\n    max_valu...",
+      "citation": "[documentation] Add statefulness to apps – (chunk 5327c94e35e1)"
+    }
+  ],
+  "hypotheses": [
+    {
+      "claim": "et's move on to something a little more complex.",
+      "reasoning": "Inferred from source similarity; not an explicit documented statement.",
+      "citation": "[documentation] Add statefulness to apps – (chunk c0ebd0e650c2)"
+    },
+    {
+      "claim": "mples that illustrate how to add Session State to our Counter app.",
+      "reasoning": "Inferred from source similarity; not an explicit documented statement.",
+      "citation": "[documentation] Add statefulness to apps – (chunk 1d504bd0eaa0)"
+    },
+    {
+      "claim": "_value\n\nincrement = st.button('Increment', on_click=increment_counter,\n    args=(increment_value, ))\n\nst.write('Count = ', st.session_state.count)\n```\n\nAdditionally, we can also...",
+      "reasoning": "Inferred from source similarity; not an explicit documented statement.",
+      "citation": "[documentation] Add statefulness to apps – (chunk 8df884b9630d)"
+    },
+    {
+      "claim": "existing session is lost and a new one created, causing unpleasant/unexpected user experience.",
+      "reasoning": "Inferred from source similarity; not an explicit documented statement.",
+      "citation": "[past_report] Reconnect to existing sessions instead of creating new upon unclean websocket close. – (chunk a042fda17de2)"
+    },
+    {
+      "claim": "st.button('Increment', on_click=increment_counter)\n\nst.write('Count = ', st.session_state.count)\n```\n\nNow, pressing the **_Increment_** button updates the count each time by cal...",
+      "reasoning": "Inferred from source similarity; not an explicit documented statement.",
+      "citation": "[documentation] Add statefulness to apps – (chunk 0b6e5a7879cc)"
+    },
+    {
+      "claim": "ement_value=5))\n\nst.button('Decrement', on_click=decrement_counter,\n\tkwargs=dict(decrement_value=1))\n\nst.write('Count = ', st.session_state.count)\n```\n\n### Example 4: Forms and ...",
+      "reasoning": "Inferred from source similarity; not an explicit documented statement.",
+      "citation": "[documentation] Add statefulness to apps – (chunk 153896459e66)"
+    },
+    {
+      "claim": "the consequence is that it can result in a seemingly invalid state.",
+      "reasoning": "Inferred from source similarity; not an explicit documented statement.",
+      "citation": "[past_report] Pending changes to a widget are not submitted if interrupted by `st.rerun()` or `st.switch_page()`. – (chunk 5f0ab4898506)"
+    },
+    {
+      "claim": "de a Session State variable across app reruns.",
+      "reasoning": "Inferred from source similarity; not an explicit documented statement.",
+      "citation": "[documentation] Add statefulness to apps – (chunk b9c15df19daa)"
+    }
+  ],
+  "conflicting_sources": [],
+  "remaining_gaps": [
+    "No matching release note found – version that introduced/fixed the issue is unknown.",
+    "User did not specify the exact product version or environment."
+  ],
+  "recommended_next_action": "Ask the user for the exact product version, OS, and a minimal reproducible example. Also check the latest release notes for any related changelog entries.",
+  "generated_at": "2026-10-06T03:38:47.209315Z",
+  "evidence_used": [
+    {
+      "score": 0.9554578840022255,
+      "claim_type": "hypothesis",
+      "extracted_claim": "et's move on to something a little more complex.",
+      "citation": "[documentation] Add statefulness to apps – (chunk c0ebd0e650c2)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.955). Source type: documentation.",
+      "source_id": "doc-content-develop-concepts-architecture-session-state.md",
+      "source_type": "documentation",
+      "url": "Add statefulness to apps"
+    },
+    {
+      "score": 0.8962685116582401,
+      "claim_type": "hypothesis",
+      "extracted_claim": "mples that illustrate how to add Session State to our Counter app.",
+      "citation": "[documentation] Add statefulness to apps – (chunk 1d504bd0eaa0)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.896). Source type: documentation.",
+      "source_id": "doc-content-develop-concepts-architecture-session-state.md",
+      "source_type": "documentation",
+      "url": "Add statefulness to apps"
+    },
+    {
+      "score": 0.8936294947537085,
+      "claim_type": "hypothesis",
+      "extracted_claim": "_value\n\nincrement = st.button('Increment', on_click=increment_counter,\n    args=(increment_value, ))\n\nst.write('Count = ', st.session_state.count)\n```\n\nAdditionally, we can also...",
+      "citation": "[documentation] Add statefulness to apps – (chunk 8df884b9630d)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.894). Source type: documentation.",
+      "source_id": "doc-content-develop-concepts-architecture-session-state.md",
+      "source_type": "documentation",
+      "url": "Add statefulness to apps"
+    },
+    {
+      "score": 0.8382826729366567,
+      "claim_type": "hypothesis",
+      "extracted_claim": "existing session is lost and a new one created, causing unpleasant/unexpected user experience.",
+      "citation": "[past_report] Reconnect to existing sessions instead of creating new upon unclean websocket close. – (chunk a042fda17de2)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.838). Source type: past_report.",
+      "source_id": "issue-8901",
+      "source_type": "past_report",
+      "url": "Reconnect to existing sessions instead of creating new upon unclean websocket close."
+    },
+    {
+      "score": 0.8199142949381963,
+      "claim_type": "hypothesis",
+      "extracted_claim": "st.button('Increment', on_click=increment_counter)\n\nst.write('Count = ', st.session_state.count)\n```\n\nNow, pressing the **_Increment_** button updates the count each time by cal...",
+      "citation": "[documentation] Add statefulness to apps – (chunk 0b6e5a7879cc)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.820). Source type: documentation.",
+      "source_id": "doc-content-develop-concepts-architecture-session-state.md",
+      "source_type": "documentation",
+      "url": "Add statefulness to apps"
+    },
+    {
+      "score": 0.7902562733689378,
+      "claim_type": "hypothesis",
+      "extracted_claim": "ement_value=5))\n\nst.button('Decrement', on_click=decrement_counter,\n\tkwargs=dict(decrement_value=1))\n\nst.write('Count = ', st.session_state.count)\n```\n\n### Example 4: Forms and ...",
+      "citation": "[documentation] Add statefulness to apps – (chunk 153896459e66)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.790). Source type: documentation.",
+      "source_id": "doc-content-develop-concepts-architecture-session-state.md",
+      "source_type": "documentation",
+      "url": "Add statefulness to apps"
+    },
+    {
+      "score": 0.7659449797403303,
+      "claim_type": "fact",
+      "extracted_claim": "om_proto` re-imports that frontend value into session state, undoing the delete.",
+      "citation": "[past_report] Deleting a widget's session_state key leaves the frontend showing the stale value (backend/frontend divergence for one rerun) – (chunk 69148da76a40)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.766). Source type: past_report.",
+      "source_id": "issue-16388",
+      "source_type": "past_report",
+      "url": "Deleting a widget's session_state key leaves the frontend showing the stale value (backend/frontend divergence for one rerun)"
+    },
+    {
+      "score": 0.7488400271010951,
+      "claim_type": "hypothesis",
+      "extracted_claim": "the consequence is that it can result in a seemingly invalid state.",
+      "citation": "[past_report] Pending changes to a widget are not submitted if interrupted by `st.rerun()` or `st.switch_page()`. – (chunk 5f0ab4898506)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.749). Source type: past_report.",
+      "source_id": "issue-10169",
+      "source_type": "past_report",
+      "url": "Pending changes to a widget are not submitted if interrupted by `st.rerun()` or `st.switch_page()`."
+    },
+    {
+      "score": 0.7479348866072589,
+      "claim_type": "hypothesis",
+      "extracted_claim": "de a Session State variable across app reruns.",
+      "citation": "[documentation] Add statefulness to apps – (chunk b9c15df19daa)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.748). Source type: documentation.",
+      "source_id": "doc-content-develop-concepts-architecture-session-state.md",
+      "source_type": "documentation",
+      "url": "Add statefulness to apps"
+    },
+    {
+      "score": 0.7477295019889465,
+      "claim_type": "documented_explanation",
+      "extracted_claim": "_state:\n    # set the initial default value of the slider widget\n    st.session_state.celsius = 50.0\n\nst.slider(\n    \"Temperature in Celsius\",\n    min_value=-100.0,\n    max_valu...",
+      "citation": "[documentation] Add statefulness to apps – (chunk 5327c94e35e1)",
+      "relevance_reason": "Matches symptoms/environment in the report (score=0.748). Source type: documentation.",
+      "source_id": "doc-content-develop-concepts-architecture-session-state.md",
+      "source_type": "documentation",
+      "url": "Add statefulness to apps"
+    }
+  ]
+}

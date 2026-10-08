@@ -1,0 +1,28 @@
+{
+  "case_id": "issue-10603",
+  "seed_issue_number": 10603,
+  "seed_created_at": "2025-03-03T14:55:41Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/10603",
+  "title": "Rerun fragment from anywhere, not just from within itself",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nRelated to #8511 and #10045.\n\nCurrently the only way to rerun a fragment is calling `st.rerun(scope=\"fragment\")` from within itself. Allowing a fragment rerun to be triggered from anywhere (another fragment or the main app) would unlock new powerful use-cases.  \n\n### Why?\n\nWhen a fragment is dependent on another fragment or on a change on the main app, the only current way to reflect that dependency is to rerun the full application whenever a dependency changes.\n\n### How?\n\nI think adding a key to each fragment would allow the user to build his custom logic to manage the dependency chain and take full control on when to run a given fragment:\n\n```python\n@st.fragment(key=\"depends_on_b\")\ndef a():\n    st.write(st.session_state.input_for_a)\n\n@st.fragment(key=\"depends_on_main\")\ndef b():\n    st.session_state.input_for_a = ...\n    if st.button(\"Should rerun a\"):\n        st.rerun(scope=\"fragment\", key=\"depends_on_b\")\n\nif other_condition:\n    st.rerun(scope=\"fragment\", key=\"depends_on_main\")\n```\n\nThis implementation doesn't go the full mile to describe the dependency chain in the fragment's definition and let streamlit handle the rerun logic as suggested in #10045, but provides more flexibility for the user to rerun a fragment from anywhere and under any conditions that fits his use-case\n\n### Additional Context\n\n_No response_",
+  "labels": [
+    "type:enhancement",
+    "feature:st.fragment"
+  ],
+  "state": "closed",
+  "stratum_auto": "escalation",
+  "is_multi_turn": false,
+  "split": "dev",
+  "visible_input": {
+    "title": "Rerun fragment from anywhere, not just from within itself",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nRelated to #8511 and #10045.\n\nCurrently the only way to rerun a fragment is calling `st.rerun(scope=\"fragment\")` from within itself. Allowing a fragment rerun to be triggered from anywhere (another fragment or the main app) would unlock new powerful use-cases.  \n\n### Why?\n\nWhen a fragment is dependent on another fragment or on a change on the main app, the only current way to reflect that dependency is to rerun the full application whenever a dependency changes.\n\n### How?\n\nI think adding a key to each fragment would allow the user to build his custom logic to manage the dependency chain and take full control on when to run a given fragment:\n\n```python\n@st.fragment(key=\"depends_on_b\")\ndef a():\n    st.write(st.session_state.input_for_a)\n\n@st.fragment(key=\"depends_on_main\")\ndef b():\n    st.session_state.input_for_a = ...\n    if st.button(\"Should rerun a\"):\n        st.rerun(scope=\"fragment\", key=\"depends_on_b\")\n\nif other_condition:\n    st.rerun(scope=\"fragment\", key=\"depends_on_main\")\n```\n\nThis implementation doesn't go the full mile to describe the dependency chain in the fragment's definition and let streamlit handle the rerun logic as suggested in #10045, but provides more flexibility for the user to rerun a fragment from anywhere and under any conditions that fits his use-case\n\n### Additional Context\n\n_No response_",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2025-03-03T14:55:41Z",
+  "forbidden_source_ids": [
+    "issue-10603"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}
