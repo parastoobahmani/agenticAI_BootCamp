@@ -109,7 +109,7 @@ def _user_reply(report, intro):
     if kind == 'propose_answer':
         selected = next((h for h in report['hypotheses'] if h['hypothesis_id'] == report['decision'].get('hypothesis_id')), None)
         if selected:
-            lines.append('One possible explanation is: ' + safe_prose(selected['statement'], 12000))
+            lines.append('One possible explanation is: ' + safe_prose(selected['statement'], 12000, allow_urls=True))
         else:
             lines.append('A proposed answer was requested, but no specific explanation was selected.')
         lines.append('The supporting source material was not included, so this explanation has not been independently verified.')
@@ -118,7 +118,7 @@ def _user_reply(report, intro):
     else:
         lines.append('The cause is not yet established. The next question or check is:')
     for step in report['next_steps']:
-        lines.append(safe_prose(step['text'], 12000))
+        lines.append(safe_prose(step['text'], 12000, allow_urls=True))
     if not report['next_steps'] and kind != 'escalate':
         lines.append('No concrete next step was supplied; the investigation needs review before further guidance can be given.')
     return '\n\n'.join(lines)

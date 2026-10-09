@@ -91,11 +91,12 @@ def parse_report(raw):
     return report
 
 
-def safe_prose(value, maximum=1800):
+def safe_prose(value, maximum=1800, *, allow_urls=False):
     if not isinstance(value, str) or not value.strip() or len(value) > maximum:
         raise ReportError('Invalid response text length')
     if redact(value) != value:
         raise ReportError('Generated response contains sensitive text')
-    if re.search(r'(?i)(https?://|\bsudo\b|\brm\s+-|curl\s|wget\s|ignore (?:all |previous |the )*instructions|system prompt|reveal.{0,20}(?:secret|key)|disable.{0,25}(?:security|csrf|xsrf|authentication)|(?:share|send|provide).{0,30}(?:password|api.?key|access token))', value):
+    unsafe = r'(?i)(\bsudo\b|\brm\s+-|curl\s|wget\s|ignore (?:all |previous |the )*instructions|system prompt|reveal.{0,20}(?:secret|key)|disable.{0,25}(?:security|csrf|xsrf|authentication)|(?:share|send|provide).{0,30}(?:password|api.?key|access token))'
+    if re.search(unsafe, value) or (not allow_urls and re.search(r'(?i)https?://', value)):
         raise ReportError('Unsafe or unsupported content in response text')
     return value.strip()

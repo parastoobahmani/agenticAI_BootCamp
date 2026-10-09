@@ -1,4 +1,4 @@
-"""Run from the repository root: python -m unittest discover -s part3/tests -v."""
+"""Run from the repository root: python -m unittest discover -s part1_3/tests -v."""
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -7,11 +7,15 @@ import sys
 import tempfile
 import unittest
 
-from part3 import ReportError, prepare_next_step_response, markdown_summary
-from part3.contracts import parse_report
+from part1_3 import ReportError, prepare_next_step_response, markdown_summary
+from part1_3.contracts import parse_report
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT.parent/'part1_2_output'/'example_part1_2_output.json'
+
+
+def artifact_directories(root):
+    return sorted(path for path in (Path(root)/'cases').glob('*/*') if path.is_dir())
 
 
 class ReportResponseTests(unittest.TestCase):
@@ -159,38 +163,97 @@ class ReportResponseTests(unittest.TestCase):
             prepare_next_step_response(self.report,compose=lambda *args:calls.append(args))
         self.assertEqual(calls,[])
 
+    def test_upstream_selected_step_may_contain_a_literal_url(self):
+        self.report['next_steps'][0]['text'] = 'Does the failure occur at https://example.com/myapp/?'
+        result = prepare_next_step_response(self.report)
+        self.assertIn('https://example.com/myapp/', result['user_response'])
+
     def test_cli_works_without_workbench_or_credentials(self):
         with tempfile.TemporaryDirectory() as d:
-            result=subprocess.run([sys.executable,'-m','part3',str(EXAMPLE),'--output-dir',d],
+            result=subprocess.run([sys.executable,'-m','part1_3',str(EXAMPLE),'--output-dir',d],
                                   cwd=ROOT.parent,capture_output=True,text=True)
             self.assertEqual(result.returncode,0,result.stderr)
-            self.assertTrue((Path(d)/'maintainer_summary.md').exists())
-            output=json.loads((Path(d)/'response.json').read_text())
+            artifact = artifact_directories(d)[0]
+            self.assertTrue((artifact/'maintainer_summary.md').exists())
+            self.assertTrue((artifact/'proposed_user_reply.txt').exists())
+            output=json.loads((artifact/'response.json').read_text())
             self.assertEqual(output['composition']['method'],'deterministic')
 
 
 class DefaultFolderTests(unittest.TestCase):
+    def test_live_cli_uses_provider_and_writes_separate_usage_record(self):
+        from unittest.mock import patch
+        from part1_3.__main__ import main
+
+        class FakeConfig:
+            max_calls = 30
+
+            def public(self):
+                return {'base_url':'https://provider.test/v1', 'model':'test-model'}
+
+        class FakeGateway:
+            def __init__(self, config):
+                self.last_usage = {'input_tokens':10, 'output_tokens':5,
+                                   'total_tokens':15, 'estimated_cost_usd':0.0001}
+                self.total_usage = dict(self.last_usage)
+
+            def complete(self, messages, schema):
+                return {
+                    'user_intro':'The reported behavior is understood, but its cause remains uncertain.',
+                    'case_summary':'The handoff reports that widget state resets after navigation.',
+                    'fact_ids':['F1'],
+                }
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            report = root/'report.json'
+            report.write_bytes(EXAMPLE.read_bytes())
+            env_file = root/'provider.env'
+            env_file.write_text('placeholder')
+            output = root/'output'
+            with patch('part1_3.__main__.GatewayConfig.from_env_file', return_value=FakeConfig()), \
+                 patch('part1_3.__main__.Gateway', FakeGateway):
+                main([str(report), '--output-dir', str(output), '--live', '--env-file', str(env_file)])
+            artifact = artifact_directories(output)[0]
+            response = json.loads((artifact/'response.json').read_text())
+            manifest = json.loads((artifact/'manifest.json').read_text())
+            run_files = list((output/'runs').glob('run_*.json'))
+            self.assertEqual(response['composition']['method'], 'model')
+            self.assertEqual(manifest['composition_mode'], 'model')
+            self.assertEqual(len(run_files), 1)
+            run = json.loads(run_files[0].read_text())
+            self.assertEqual(run['responses'][0]['response_id'], response['id'])
+            self.assertEqual(run['total_usage']['total_tokens'], 15)
+            self.assertEqual(run['provider']['model'], 'test-model')
+
+    def test_live_cli_requires_explicit_env_file(self):
+        from part1_3.__main__ import main
+        with self.assertRaises(SystemExit) as error:
+            main([str(EXAMPLE), '--live'])
+        self.assertEqual(error.exception.code, 2)
+
     def test_defaults_are_project_relative_and_skip_schema(self):
         from unittest.mock import patch
-        from part3.__main__ import main
+        from part1_3.__main__ import main
         with tempfile.TemporaryDirectory() as d:
             project = Path(d)
             incoming = project/'part1_2_output'
             incoming.mkdir()
             (incoming/'next_step_report.schema.json').write_bytes((ROOT/'part1_2_output_report.schema.json').read_bytes())
             (incoming/'case.json').write_bytes(EXAMPLE.read_bytes())
-            with patch('part3.__main__.PROJECT_ROOT', project):
+            with patch('part1_3.__main__.PROJECT_ROOT', project):
                 main([])
-            out = project/'part1_3_output'
-            response = json.loads((out/'response.json').read_text())
-            manifest = json.loads((out/'manifest.json').read_text())
+            artifact = artifact_directories(project/'part1_3_output')[0]
+            response = json.loads((artifact/'response.json').read_text())
+            manifest = json.loads((artifact/'manifest.json').read_text())
             self.assertEqual(manifest['artifact_kind'], 'part3_response')
             self.assertEqual(manifest['response_id'], response['id'])
             self.assertEqual(len(manifest['files']),3)
+            self.assertTrue(manifest['immutable'])
 
-    def test_multiple_inputs_require_selection_and_next_run_replaces_output(self):
+    def test_multiple_cases_and_revisions_are_preserved(self):
         from unittest.mock import patch
-        from part3.__main__ import main
+        from part1_3.__main__ import main
         with tempfile.TemporaryDirectory() as d:
             project = Path(d)
             incoming = project/'part1_2_output'
@@ -202,44 +265,83 @@ class DefaultFolderTests(unittest.TestCase):
             second = incoming/'second.json'
             second.write_text(json.dumps(raw))
             out = project/'part1_3_output'
-            with patch('part3.__main__.PROJECT_ROOT', project):
+            with patch('part1_3.__main__.PROJECT_ROOT', project):
+                main([])
+                first_artifacts = artifact_directories(out)
+                self.assertEqual(len(first_artifacts), 2)
+                snapshots = {path: {f.name: f.read_bytes() for f in path.iterdir()} for path in first_artifacts}
+                main([])  # Exact replay verifies existing immutable artifacts.
+                self.assertEqual(first_artifacts, artifact_directories(out))
+                for path, files in snapshots.items():
+                    self.assertEqual(files, {f.name: f.read_bytes() for f in path.iterdir()})
+                changed = json.loads(first.read_text())
+                changed['decision']['rationale'] = 'A revised rationale.'
+                first.write_text(json.dumps(changed))
                 main([str(first)])
-                before = {p.name: p.read_bytes() for p in out.iterdir()}
-                with self.assertRaises(SystemExit) as error:
-                    main([])
-                self.assertEqual(error.exception.code, 2)
-                self.assertEqual(before, {p.name: p.read_bytes() for p in out.iterdir()})
-                main([str(second)])
-            self.assertEqual(json.loads((out/'response.json').read_text())['case_id'], 'second-case')
-            self.assertEqual(json.loads((out/'manifest.json').read_text())['case_id'], 'second-case')
-            self.assertEqual(set(before), {p.name for p in out.iterdir()})
-            self.assertTrue(all(p.is_file() for p in out.iterdir()))
+            artifacts = artifact_directories(out)
+            self.assertEqual(len(artifacts), 3)
+            by_case = [json.loads((path/'response.json').read_text())['case_id'] for path in artifacts]
+            self.assertEqual(by_case.count('example-report-only'), 2)
+            self.assertEqual(by_case.count('second-case'), 1)
 
     def test_schema_only_does_not_fabricate_output(self):
         from unittest.mock import patch
-        from part3.__main__ import main
+        from part1_3.__main__ import main
         with tempfile.TemporaryDirectory() as d:
             project=Path(d)
             incoming=project/'part1_2_output'
             incoming.mkdir()
             (incoming/'next_step_report.schema.json').write_bytes((ROOT/'part1_2_output_report.schema.json').read_bytes())
             (incoming/'example_part1_2_output.json').write_bytes(EXAMPLE.read_bytes())
-            with patch('part3.__main__.PROJECT_ROOT', project):
+            with patch('part1_3.__main__.PROJECT_ROOT', project):
                 with self.assertRaises(SystemExit) as error:
                     main([])
             self.assertEqual(error.exception.code,2)
             self.assertFalse((project/'part1_3_output').exists())
 
+    def test_immutable_artifact_is_not_repaired_or_overwritten_silently(self):
+        from unittest.mock import patch
+        from part1_3.__main__ import main
+        with tempfile.TemporaryDirectory() as d:
+            project = Path(d)
+            report = project/'report.json'
+            report.write_bytes(EXAMPLE.read_bytes())
+            with patch('part1_3.__main__.PROJECT_ROOT', project):
+                main([str(report)])
+                artifact = artifact_directories(project/'part1_3_output')[0]
+                (artifact/'response.json').write_text('{"tampered": true}\n')
+                with self.assertRaises(SystemExit) as error:
+                    main([str(report)])
+            self.assertEqual(error.exception.code, 2)
+            self.assertEqual((artifact/'response.json').read_text(), '{"tampered": true}\n')
+
+    def test_case_id_cannot_escape_output_root(self):
+        from unittest.mock import patch
+        from part1_3.__main__ import main
+        with tempfile.TemporaryDirectory() as d:
+            project = Path(d)
+            raw = json.loads(EXAMPLE.read_text())
+            raw['case_id'] = '../outside'
+            report = project/'report.json'
+            report.write_text(json.dumps(raw))
+            with patch('part1_3.__main__.PROJECT_ROOT', project):
+                main([str(report)])
+            artifacts = artifact_directories(project/'part1_3_output')
+            self.assertEqual(len(artifacts), 1)
+            self.assertTrue(artifacts[0].parent.name.startswith('case-'))
+            self.assertFalse((project/'outside').exists())
+
     def test_demo_is_labelled_and_does_not_create_fake_part2_input(self):
         from unittest.mock import patch
-        from part3.__main__ import main
+        from part1_3.__main__ import main
         with tempfile.TemporaryDirectory() as d:
             project=Path(d)
-            with patch('part3.__main__.PROJECT_ROOT', project):
+            with patch('part1_3.__main__.PROJECT_ROOT', project):
                 main(['--demo'])
-            manifest=json.loads((project/'part1_3_output/manifest.json').read_text())
+            artifact=artifact_directories(project/'part1_3_output')[0]
+            manifest=json.loads((artifact/'manifest.json').read_text())
             self.assertEqual(manifest['artifact_kind'],'demonstration')
-            response=json.loads((project/'part1_3_output/response.json').read_text())
+            response=json.loads((artifact/'response.json').read_text())
             self.assertEqual(response['artifact_kind'],'demonstration')
             self.assertFalse((project/'part1_2_output').exists())
 
