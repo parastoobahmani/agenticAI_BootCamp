@@ -4,10 +4,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from support_agent.evidence import EvidenceStore
-from support_agent.interceptor import TicketInterceptor
-from support_agent.orchestrator import Orchestrator
-from support_agent.storage import Storage
+from problem2_parts1_2.evidence import EvidenceStore
+from problem2_parts1_2.interceptor import TicketInterceptor
+from problem2_parts1_2.orchestrator import Orchestrator
+from problem2_parts1_2.storage import Storage
 
 
 class HumanApprovalTests(unittest.TestCase):

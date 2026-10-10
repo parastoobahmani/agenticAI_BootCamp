@@ -1,6 +1,6 @@
 """Problem 2 Part 3: ten deterministic, inspectable multi-turn scenarios.
 
-The scenarios exercise the real ``support_agent`` memory, approval, execution,
+The scenarios exercise the real ``problem2_parts1_2`` memory, approval, execution,
 and local tracker boundaries from Parts 1 and 2. Designed follow-up messages and
 faults are labelled as test inputs; no API or real GitHub mutation is performed.
 """
@@ -12,11 +12,11 @@ from pathlib import Path
 import tempfile
 from typing import Callable
 
-from support_agent.config import VAR_DIR
-from support_agent.evidence import EvidenceStore
-from support_agent.interceptor import TicketInterceptor
-from support_agent.orchestrator import Orchestrator
-from support_agent.storage import Storage
+from problem2_parts1_2.config import VAR_DIR
+from problem2_parts1_2.evidence import EvidenceStore
+from problem2_parts1_2.interceptor import TicketInterceptor
+from problem2_parts1_2.orchestrator import Orchestrator
+from problem2_parts1_2.storage import Storage
 
 
 class FaultOnceInterceptor(TicketInterceptor):

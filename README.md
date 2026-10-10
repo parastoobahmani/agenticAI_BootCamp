@@ -29,7 +29,7 @@ GitHub issues, comments, docs and releases
              Part3Response
                   |
                   v
- adapters (problem1_to_problem2/) -> support_agent/
+ adapters (problem1_to_problem2/) -> problem2_parts1_2/
                   |
                   v
  persistent case state, human approval and local tracker action
@@ -38,7 +38,7 @@ GitHub issues, comments, docs and releases
    practical scenarios and checks (problem2_part3/)
 ```
 
-`support_agent/` implements Problem 2 Parts 1 and 2. `problem2_part3/`
+`problem2_parts1_2/` implements Problem 2 Parts 1 and 2. `problem2_part3/`
 contains only Part 3's ten multi-turn scenarios: five development scenarios and
 five test scenarios. All visible mutations require an approval bound to the
 exact case version, proposal and action hash. Tracker operations use durable
@@ -52,7 +52,7 @@ operation receipts so retry after a lost response does not publish twice.
 | Problem 1 Part 2 | `missing_info/` | `NextStepReport` |
 | Problem 1 Part 3 | `problem1_part3/` | proposed user reply and maintainer summary |
 | Stage adapters | `problem1_to_problem2/` | contract translations for Problem 2 |
-| Problem 2 Parts 1–2 | `support_agent/` | durable `CaseState`, approvals and actions |
+| Problem 2 Parts 1–2 | `problem2_parts1_2/` | durable `CaseState`, approvals and actions |
 | Problem 2 Part 3 | `problem2_part3/` | ten practical scenario results |
 | Final evaluation | `eval_pipeline/` and `data/eval/` | retrieval, decision and operational metrics |
 
@@ -106,7 +106,7 @@ python -m problem1_part3 problem1_part2_output/example_problem1_part2_output.jso
 Inspect the Problem 2 CLI and run all practical scenarios:
 
 ```bash
-python -m support_agent --help
+python -m problem2_parts1_2 --help
 python -m problem2_part3
 ```
 

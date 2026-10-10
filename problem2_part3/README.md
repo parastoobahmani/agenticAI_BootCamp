@@ -2,7 +2,7 @@
 
 This package owns the practical multi-turn scenario evaluation required by
 Problem 2 Part 3. It consumes the Problem 2 Parts 1–2 implementation from
-`support_agent/`; it does not duplicate that implementation.
+`problem2_parts1_2/`; it does not duplicate that implementation.
 
 Run it from the repository root:
 
