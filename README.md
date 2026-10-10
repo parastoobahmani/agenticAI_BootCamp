@@ -11,13 +11,13 @@ student's internal classes.
 GitHub issues, comments, docs and releases
                   |
                   v
-        evidence synthesis (source/)
+  evidence synthesis (problem1_part1/)
                   |
                   v
             AnalysisInput
                   |
                   v
- missing-information decision (missing_info/)
+ missing-information decision (problem1_part2/)
                   |
                   v
             NextStepReport
@@ -48,13 +48,13 @@ operation receipts so retry after a lost response does not publish twice.
 
 | Assignment area | Location | Primary output |
 |---|---|---|
-| Problem 1 Part 1 | `source/` and `data/raw/` | synthesized evidence |
-| Problem 1 Part 2 | `missing_info/` | `NextStepReport` |
+| Problem 1 Part 1 | `problem1_part1/` | collected snapshot and synthesized evidence |
+| Problem 1 Part 2 | `problem1_part2/` | `NextStepReport` |
 | Problem 1 Part 3 | `problem1_part3/` | proposed user reply and maintainer summary |
 | Stage adapters | `problem1_to_problem2/` | contract translations for Problem 2 |
 | Problem 2 Parts 1–2 | `problem2_parts1_2/` | durable `CaseState`, approvals and actions |
 | Problem 2 Part 3 | `problem2_part3/` | ten practical scenario results |
-| Final evaluation | `eval_pipeline/` and `data/eval/` | retrieval, decision and operational metrics |
+| Final evaluation | `project_evaluation/` | retrieval, decision and operational metrics |
 
 Generated Part 3 artifacts are written under
 `problem1_part3_output/cases/<case_id>/<response_id>/`. Immutable response revisions
@@ -79,16 +79,16 @@ commit provider keys. Use the provider template in
 Prepare the raw evidence snapshot:
 
 ```bash
-python source/collect_streamlit_issues.py
-python source/collect_streamlit_docs.py
-python source/collect_release_notes.py
-python source/evidence_synthesis_streamlit.py
+python -m problem1_part1.collection.collect_streamlit_issues
+python -m problem1_part1.collection.collect_streamlit_docs
+python -m problem1_part1.collection.collect_release_notes
+python -m problem1_part1.evidence_synthesis.evidence_synthesis_streamlit
 ```
 
 Run the missing-information decision component:
 
 ```bash
-missing-info analyze examples/stuck_loading_on_server.json --output report.json
+python -m problem1_part2 analyze problem1_part2/examples/stuck_loading_on_server.json --output report.json
 ```
 
 Compose all populated Part 2 reports offline:
@@ -114,21 +114,22 @@ python -m problem2_part3
 
 ```bash
 python -m pytest -q
-python -m unittest discover -v
-python -m unittest discover -s problem1_part3/tests -v
-python -m unittest discover -s problem1_to_problem2/tests -v
-python -m unittest discover -s problem2_part3/tests -v
+python -m pytest problem1_part2/tests -q
+python -m pytest problem1_part3/tests -q
+python -m pytest problem1_to_problem2/tests -q
+python -m pytest problem2_parts1_2/tests -q
+python -m pytest problem2_part3/tests -q
 ```
 
 The evaluation pipeline is run in order and the test split is used only after
 development choices are frozen:
 
 ```bash
-python eval_pipeline/step0_prepare_cases.py
-python eval_pipeline/step1_create_annotation_stubs.py
-python eval_pipeline/step2_run_evaluation.py --split dev
-python eval_pipeline/step3_compute_metrics.py --split dev
-python eval_pipeline/step4_failure_report.py
+python project_evaluation/pipeline/step0_prepare_cases.py
+python project_evaluation/pipeline/step1_create_annotation_stubs.py
+python project_evaluation/pipeline/step2_run_evaluation.py --split dev
+python project_evaluation/pipeline/step3_compute_metrics.py --split dev
+python project_evaluation/pipeline/step4_failure_report.py
 ```
 
 Annotations and evaluation cases stay separate from the retrieval corpus.
@@ -138,7 +139,10 @@ designed inputs rather than historical GitHub comments.
 ## Detailed guides
 
 - `problem1_part3/README.md`: Part 1 Part 3 interface, provider configuration and output contract.
+- `problem1_part1/README.md`: Problem 1 Part 1 collection, data and synthesis ownership.
+- `problem1_part2/README.md`: Problem 1 Part 2 implementation, examples, schemas and tests.
 - `problem1_to_problem2/README.md`: adapters between independently developed stages.
 - `problem1_part2_output/README.md`: expected input directory for Part 3.
 - `problem1_part3_output/README.md`: immutable response artifact layout.
 - `problem2_part3/README.md`: executable Problem 2 Part 3 scenario specification.
+- `project_evaluation/README.md`: project-wide evaluation pipeline and dataset.

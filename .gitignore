@@ -9,7 +9,7 @@ __pycache__/
 .pytest_cache/
 build/
 dist/
-var/
+problem2_parts1_2/runtime/
 *.sqlite3
 *.sqlite3-journal
-data/eval/runs/
+project_evaluation/data/runs/

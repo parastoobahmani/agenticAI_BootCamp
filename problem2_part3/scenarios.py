@@ -264,5 +264,11 @@ def main(output: str | Path | None = None) -> dict:
     return report
 
 
+def cli() -> int:
+    """Console-script adapter; keep ``main`` reusable for tests and callers."""
+    main()
+    return 0
+
+
 if __name__ == "__main__":
     main()
