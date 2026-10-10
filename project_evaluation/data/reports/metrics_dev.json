@@ -1,43 +1,213 @@
 {
   "split": "dev",
-  "n_cases": 15,
-  "evidence_quality": {
-    "recall@5": {
-      "mean": 0.0,
-      "n_labeled": 0
-    },
-    "recall@10": {
-      "mean": 0.0,
-      "n_labeled": 0
-    }
+  "corpus_policy": {
+    "evaluation_cases_excluded": true,
+    "issues": "created before cutoff; comments up to cutoff; bots, final state and labels removed",
+    "release_notes": "published before cutoff",
+    "documentation": "pinned snapshot d97e7bbfa275aca06c65c4e3ed0f51023460fbdd (not historical)"
   },
-  "decision_quality": {
-    "by_bucket": {
-      "ambiguous": {
-        "n": 6,
-        "accuracy": 1.0
+  "systems": {
+    "baseline": {
+      "n_cases": 15,
+      "n_errors": 0,
+      "errors": [],
+      "decision_quality": {
+        "overall_accuracy": 0.7333333333333333,
+        "n_scored": 15,
+        "by_bucket": {
+          "ambiguous": {
+            "rate": 1.0,
+            "n": 6
+          },
+          "answerable": {
+            "rate": 0.0,
+            "n": 4
+          },
+          "escalation": {
+            "rate": 1.0,
+            "n": 5
+          }
+        },
+        "actions_by_bucket": {
+          "ambiguous": {
+            "answer": 0,
+            "ask_clarification": 6,
+            "escalate": 0,
+            "error": 0
+          },
+          "answerable": {
+            "answer": 0,
+            "ask_clarification": 4,
+            "escalate": 0,
+            "error": 0
+          },
+          "escalation": {
+            "answer": 0,
+            "ask_clarification": 5,
+            "escalate": 0,
+            "error": 0
+          }
+        }
       },
-      "escalation": {
-        "n": 5,
-        "accuracy": 1.0
+      "evidence_quality": {
+        "recall@5": {
+          "mean": null,
+          "n_labeled": 0
+        },
+        "recall@10": {
+          "mean": null,
+          "n_labeled": 0
+        }
       },
-      "answerable": {
-        "n": 4,
-        "accuracy": 0.0
+      "next_step_quality": null,
+      "operational_success": null,
+      "cost_time": {
+        "mean_latency_sec": 0.043937533133430406,
+        "max_latency_sec": 0.05725729100231547,
+        "mean_setup_sec": 0.0,
+        "api_requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0,
+        "token_estimate_without_api": 13413
       }
     },
-    "overall_accuracy": 0.7333333333333333,
-    "n_scored": 15
+    "integrated": {
+      "n_cases": 15,
+      "n_errors": 0,
+      "errors": [],
+      "decision_quality": {
+        "overall_accuracy": 0.4,
+        "n_scored": 15,
+        "by_bucket": {
+          "ambiguous": {
+            "rate": 0.16666666666666666,
+            "n": 6
+          },
+          "answerable": {
+            "rate": 0.0,
+            "n": 4
+          },
+          "escalation": {
+            "rate": 1.0,
+            "n": 5
+          }
+        },
+        "actions_by_bucket": {
+          "ambiguous": {
+            "answer": 0,
+            "ask_clarification": 1,
+            "escalate": 5,
+            "error": 0
+          },
+          "answerable": {
+            "answer": 0,
+            "ask_clarification": 2,
+            "escalate": 2,
+            "error": 0
+          },
+          "escalation": {
+            "answer": 0,
+            "ask_clarification": 1,
+            "escalate": 4,
+            "error": 0
+          }
+        }
+      },
+      "evidence_quality": {
+        "recall@5": {
+          "mean": null,
+          "n_labeled": 0
+        },
+        "recall@10": {
+          "mean": null,
+          "n_labeled": 0
+        }
+      },
+      "next_step_quality": {
+        "re_asked_known_information": {
+          "rate": 0.0,
+          "n": 15
+        },
+        "first_step_from_information_gain": {
+          "rate": 0.26666666666666666,
+          "n": 15
+        },
+        "first_step_hits_labelled_missing_information": {
+          "rate": null,
+          "n": 0
+        }
+      },
+      "operational_success": {
+        "case_persisted": {
+          "rate": 1.0,
+          "n": 15
+        },
+        "one_pending_proposal": {
+          "rate": 1.0,
+          "n": 15
+        },
+        "nothing_executed_without_approval": {
+          "rate": 1.0,
+          "n": 15
+        },
+        "tracker_unchanged": {
+          "rate": 1.0,
+          "n": 15
+        },
+        "all_checks": {
+          "rate": 1.0,
+          "n": 15
+        }
+      },
+      "cost_time": {
+        "mean_latency_sec": 0.1337669723337361,
+        "max_latency_sec": 0.3801992090011481,
+        "mean_setup_sec": 0.06990439986693672,
+        "api_requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "estimated_cost_usd": 0.0,
+        "token_estimate_without_api": null
+      }
+    }
   },
-  "operational_success": {
-    "state_transition_accuracy": 0.4444444444444444,
-    "n_checked": 27
+  "problem2_scenarios": {
+    "source": "problem2_part3.scenarios (designed follow-ups, real stored state, no API calls)",
+    "passed": 5,
+    "total": 5,
+    "results": [
+      {
+        "scenario_id": "S01",
+        "name": "normal multi-turn path",
+        "passed": true,
+        "error": null
+      },
+      {
+        "scenario_id": "S02",
+        "name": "user correction invalidates old approval",
+        "passed": true,
+        "error": null
+      },
+      {
+        "scenario_id": "S03",
+        "name": "maintainer rejection",
+        "passed": true,
+        "error": null
+      },
+      {
+        "scenario_id": "S04",
+        "name": "maintainer edit binds exact action",
+        "passed": true,
+        "error": null
+      },
+      {
+        "scenario_id": "S05",
+        "name": "restart while waiting for approval",
+        "passed": true,
+        "error": null
+      }
+    ]
   },
-  "cost_time": {
-    "mean_latency_sec": 0.18477910668589176,
-    "mean_token_estimate": 1845.9333333333334,
-    "mean_steps": 1.8,
-    "total_token_estimate": 27689
-  },
-  "n_failures_logged": 4
+  "n_failures_logged": 13
 }

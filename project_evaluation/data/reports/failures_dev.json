@@ -1,42 +1,158 @@
 [
   {
+    "system": "baseline",
     "case_id": "issue-16538",
-    "turn": 0,
+    "bucket": "answerable",
     "action": "ask_clarification",
     "expected": [
       "answer"
     ],
-    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
-    "probable_cause": "decision_mismatch"
+    "probable_cause": "unnecessary_question",
+    "error": null,
+    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example."
   },
   {
+    "system": "baseline",
     "case_id": "issue-2975",
-    "turn": 0,
+    "bucket": "answerable",
     "action": "ask_clarification",
     "expected": [
       "answer"
     ],
-    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
-    "probable_cause": "decision_mismatch"
+    "probable_cause": "unnecessary_question",
+    "error": null,
+    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example."
   },
   {
+    "system": "baseline",
     "case_id": "issue-7426",
-    "turn": 0,
+    "bucket": "answerable",
     "action": "ask_clarification",
     "expected": [
       "answer"
     ],
-    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
-    "probable_cause": "decision_mismatch"
+    "probable_cause": "unnecessary_question",
+    "error": null,
+    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example."
   },
   {
+    "system": "baseline",
     "case_id": "issue-8838",
-    "turn": 0,
+    "bucket": "answerable",
     "action": "ask_clarification",
     "expected": [
       "answer"
     ],
-    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
-    "probable_cause": "decision_mismatch"
+    "probable_cause": "unnecessary_question",
+    "error": null,
+    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example."
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-10501",
+    "bucket": "ambiguous",
+    "action": "escalate",
+    "expected": [
+      "ask_clarification"
+    ],
+    "probable_cause": "over_escalation",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThis needs further review by a maintainer. A handoff has been prepared; it has not been sent.\n\nPlease paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.\n\nWhich Streamlit versi"
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-16538",
+    "bucket": "answerable",
+    "action": "ask_clarification",
+    "expected": [
+      "answer"
+    ],
+    "probable_cause": "unnecessary_question",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThe cause is not yet established. The next question or check is:\n\nIs the value lost only after a full browser reload, opening the app in a new tab or a reconnect, or also during normal interaction without reloading?"
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-16721",
+    "bucket": "ambiguous",
+    "action": "escalate",
+    "expected": [
+      "ask_clarification"
+    ],
+    "probable_cause": "over_escalation",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThis needs further review by a maintainer. A handoff has been prepared; it has not been sent.\n\nPlease paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.\n\nWhich Streamlit versi"
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-16827",
+    "bucket": "ambiguous",
+    "action": "escalate",
+    "expected": [
+      "ask_clarification"
+    ],
+    "probable_cause": "over_escalation",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThis needs further review by a maintainer. A handoff has been prepared; it has not been sent.\n\nPlease paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.\n\nWhich Streamlit versi"
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-17107",
+    "bucket": "ambiguous",
+    "action": "escalate",
+    "expected": [
+      "ask_clarification"
+    ],
+    "probable_cause": "over_escalation",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThis needs further review by a maintainer. A handoff has been prepared; it has not been sent.\n\nPlease paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.\n\nWhich Streamlit versi"
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-2975",
+    "bucket": "answerable",
+    "action": "escalate",
+    "expected": [
+      "answer"
+    ],
+    "probable_cause": "over_escalation",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThis needs further review by a maintainer. A handoff has been prepared; it has not been sent.\n\nPlease paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.\n\nWhich Streamlit versi"
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-7426",
+    "bucket": "answerable",
+    "action": "ask_clarification",
+    "expected": [
+      "answer"
+    ],
+    "probable_cause": "unnecessary_question",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThe cause is not yet established. The next question or check is:\n\nDoes the same code, with the same Streamlit version, show the problem when you run it on your own machine?"
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-8186",
+    "bucket": "ambiguous",
+    "action": "escalate",
+    "expected": [
+      "ask_clarification"
+    ],
+    "probable_cause": "over_escalation",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThis needs further review by a maintainer. A handoff has been prepared; it has not been sent.\n\nPlease paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.\n\nWhich Streamlit versi"
+  },
+  {
+    "system": "integrated",
+    "case_id": "issue-8838",
+    "bucket": "answerable",
+    "action": "escalate",
+    "expected": [
+      "answer"
+    ],
+    "probable_cause": "over_escalation",
+    "error": null,
+    "response_excerpt": "The available handoff does not establish a verified cause.\n\nThis needs further review by a maintainer. A handoff has been prepared; it has not been sent.\n\nPlease paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.\n\nWhich Streamlit versi"
   }
 ]
