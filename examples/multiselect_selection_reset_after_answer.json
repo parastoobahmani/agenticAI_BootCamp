@@ -1,0 +1,94 @@
+{
+  "case": {
+    "case_id": "example-multiselect-reset-turn2",
+    "title": "st.multiselect loses the selection when I click another button",
+    "body": "Every time I click any button, the items picked in my multiselect are cleared.\n\n```python\nimport streamlit as st\n\nitems = load_items()\npicked = st.multiselect(\"Items\", list(items))\nif st.button(\"Refresh\"):\n    st.write(picked)\n```\n\n- Streamlit version: 1.52.0\n- Python version: 3.12\n- Browser: Firefox",
+    "author": "reporter",
+    "comments": [
+      {
+        "id": "c1",
+        "author": "reporter",
+        "body": "No page reload, it happens on normal clicks. load_items() returns a set, so the options come in a different order each time."
+      }
+    ]
+  },
+  "evidence_bundle": {
+    "evidence": [
+      {
+        "evidence_id": "doc:widget-behavior#identity",
+        "source_type": "doc",
+        "title": "Understanding widget behavior",
+        "url": "https://docs.streamlit.io/develop/concepts/architecture/widget-behavior",
+        "section": "content/develop/concepts/architecture/widget-behavior.md",
+        "snippet": "A widget's identity depends on the arguments passed to the widget command. If no key is provided, changing a widget's label, min value, max value, default value, placeholder text, or help text will cause it to reset.",
+        "source_version": "d97e7bbfa275aca06c65c4e3ed0f51023460fbdd",
+        "relevance": 0.84,
+        "relation": "Explains why a widget without a key can reset when its parameters change between reruns.",
+        "claim_kind": "documented"
+      },
+      {
+        "evidence_id": "issue:17210",
+        "source_type": "issue",
+        "title": "st.multiselect without key drops the user's selection when options come in a different order on rerun",
+        "url": "https://github.com/streamlit/streamlit/issues/17210",
+        "section": "issue title",
+        "snippet": "st.multiselect without key drops the user's selection when options come in a different order on rerun",
+        "relevance": 0.78,
+        "relation": "Same widget and symptom (selection dropped on rerun); open, confirmed bug.",
+        "claim_kind": "reported_fact",
+        "author_association": "NONE"
+      },
+      {
+        "evidence_id": "doc:session-state#what-is-state",
+        "source_type": "doc",
+        "title": "Add statefulness to apps",
+        "url": "https://docs.streamlit.io/develop/concepts/architecture/session-state",
+        "section": "content/develop/concepts/architecture/session-state.md",
+        "snippet": "For each browser tab that connects to the Streamlit server, a new session is created.",
+        "source_version": "d97e7bbfa275aca06c65c4e3ed0f51023460fbdd",
+        "relevance": 0.52,
+        "relation": "State is per session; a reload or a new tab starts a new, empty session.",
+        "claim_kind": "documented"
+      },
+      {
+        "evidence_id": "doc:widget-behavior#cleanup",
+        "source_type": "doc",
+        "title": "Understanding widget behavior",
+        "url": "https://docs.streamlit.io/develop/concepts/architecture/widget-behavior",
+        "section": "content/develop/concepts/architecture/widget-behavior.md",
+        "snippet": "If you don't call a widget command in a script run, Streamlit will delete the widget's information, including its key-value pair in Session State.",
+        "source_version": "d97e7bbfa275aca06c65c4e3ed0f51023460fbdd",
+        "relevance": 0.45,
+        "relation": "A keyed widget that is skipped in one run loses its stored value.",
+        "claim_kind": "documented"
+      }
+    ],
+    "hypotheses": [
+      {
+        "hypothesis_id": "h_widget_identity",
+        "statement": "The multiselect has no key and its options come in a different order on each rerun, so it gets a new identity and resets.",
+        "confidence": 0.45,
+        "evidence_ids": [
+          "doc:widget-behavior#identity",
+          "issue:17210"
+        ]
+      },
+      {
+        "hypothesis_id": "h_new_session",
+        "statement": "The selection is lost because the page is reloaded or reopened, which starts a new session.",
+        "confidence": 0.25,
+        "evidence_ids": [
+          "doc:session-state#what-is-state"
+        ]
+      },
+      {
+        "hypothesis_id": "h_widget_cleanup",
+        "statement": "The keyed widget is not rendered in some script run, so its state is cleaned up.",
+        "confidence": 0.2,
+        "evidence_ids": [
+          "doc:widget-behavior#cleanup"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,373 @@
+{
+  "$defs": {
+    "Case": {
+      "additionalProperties": false,
+      "description": "The visible part of a support case at the time of analysis.",
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "body": {
+          "default": "",
+          "title": "Body",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        },
+        "author": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Author"
+        },
+        "created_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Created At"
+        },
+        "comments": {
+          "items": {
+            "$ref": "#/$defs/Comment"
+          },
+          "title": "Comments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "title"
+      ],
+      "title": "Case",
+      "type": "object"
+    },
+    "ClaimKind": {
+      "description": "Epistemic status of a piece of evidence (required by part 1).",
+      "enum": [
+        "reported_fact",
+        "documented",
+        "hypothesis"
+      ],
+      "title": "ClaimKind",
+      "type": "string"
+    },
+    "Comment": {
+      "additionalProperties": false,
+      "description": "One message of the case conversation, in chronological order.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "body": {
+          "title": "Body",
+          "type": "string"
+        },
+        "created_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Created At"
+        },
+        "author": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Author"
+        },
+        "author_association": {
+          "default": "NONE",
+          "title": "Author Association",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "body"
+      ],
+      "title": "Comment",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "description": "One retrieved source chunk, as produced by part 1.",
+      "properties": {
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "source_type": {
+          "$ref": "#/$defs/SourceType"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "section": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Section"
+        },
+        "snippet": {
+          "title": "Snippet",
+          "type": "string"
+        },
+        "source_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Version"
+        },
+        "relevance": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Relevance",
+          "type": "number"
+        },
+        "relation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Relation"
+        },
+        "claim_kind": {
+          "$ref": "#/$defs/ClaimKind",
+          "default": "documented"
+        },
+        "fixed_in_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fixed In Version"
+        },
+        "author_association": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Author Association"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "source_type",
+        "title",
+        "url",
+        "snippet",
+        "relevance"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "EvidenceBundle": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "hypotheses": {
+          "items": {
+            "$ref": "#/$defs/Hypothesis"
+          },
+          "title": "Hypotheses",
+          "type": "array"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        }
+      },
+      "title": "EvidenceBundle",
+      "type": "object"
+    },
+    "Expectation": {
+      "additionalProperties": false,
+      "description": "What a hypothesis predicts about one facet: a set of values OR a version range.",
+      "properties": {
+        "values": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Values"
+        },
+        "version_spec": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version Spec"
+        }
+      },
+      "title": "Expectation",
+      "type": "object"
+    },
+    "Hypothesis": {
+      "additionalProperties": false,
+      "description": "A candidate explanation proposed by part 1.",
+      "properties": {
+        "hypothesis_id": {
+          "title": "Hypothesis Id",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "expectations": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/$defs/Expectation"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expectations"
+        }
+      },
+      "required": [
+        "hypothesis_id",
+        "statement",
+        "confidence"
+      ],
+      "title": "Hypothesis",
+      "type": "object"
+    },
+    "SourceType": {
+      "enum": [
+        "doc",
+        "issue",
+        "release_note"
+      ],
+      "title": "SourceType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "case": {
+      "$ref": "#/$defs/Case"
+    },
+    "evidence_bundle": {
+      "$ref": "#/$defs/EvidenceBundle"
+    }
+  },
+  "required": [
+    "case"
+  ],
+  "title": "AnalysisInput",
+  "type": "object"
+}

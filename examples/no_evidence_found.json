@@ -1,0 +1,12 @@
+{
+  "case": {
+    "case_id": "example-no-evidence",
+    "title": "Charts look wrong after deploy",
+    "body": "After deploying, some charts render differently than on my laptop. Streamlit version: 1.38.0",
+    "author": "reporter"
+  },
+  "evidence_bundle": {
+    "evidence": [],
+    "hypotheses": []
+  }
+}

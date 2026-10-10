@@ -1,0 +1,274 @@
+{
+  "schema_version": "1.0",
+  "case_id": "example-stuck-loading",
+  "decision": {
+    "type": "request_information",
+    "rationale": "No explanation is clearly ahead (h_proxy_websocket, h_subpath, h_cors_xsrf, unlisted_cause remain plausible). The steps below are the ones whose answers best separate them per unit of user effort.",
+    "hypothesis_id": null
+  },
+  "known_facts": [
+    {
+      "facet": "deployment_target",
+      "value": "remote_server",
+      "status": "observed",
+      "origin": {
+        "location": "title",
+        "quote": "App stays on the loading screen when deployed on our server"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "reproduces_locally",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "The app opens on my own machine, but on the server it stays on the loading screen (\"Please wait...\") forever."
+      },
+      "superseded": []
+    },
+    {
+      "facet": "reinstall_resolves",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "Reinstalling did not help."
+      },
+      "superseded": []
+    }
+  ],
+  "missing_information": [
+    {
+      "facet": "reverse_proxy",
+      "description": "Whether a reverse proxy / load balancer sits in front of the app",
+      "relevant_hypotheses": [
+        "h_proxy_websocket"
+      ],
+      "expected_information_gain": 0.1021
+    },
+    {
+      "facet": "websocket_error_in_console",
+      "description": "Whether the browser reports a failed WebSocket connection",
+      "relevant_hypotheses": [
+        "h_proxy_websocket",
+        "h_cors_xsrf"
+      ],
+      "expected_information_gain": 0.1018
+    },
+    {
+      "facet": "health_endpoint_ok",
+      "description": "Whether the Streamlit server answers its health endpoint",
+      "relevant_hypotheses": [
+        "h_proxy_websocket",
+        "h_subpath",
+        "h_cors_xsrf",
+        "h_broken_env"
+      ],
+      "expected_information_gain": 0.0875
+    },
+    {
+      "facet": "served_under_subpath",
+      "description": "Whether the app is served under a URL sub-path",
+      "relevant_hypotheses": [
+        "h_subpath"
+      ],
+      "expected_information_gain": 0.0686
+    }
+  ],
+  "hypotheses": [
+    {
+      "hypothesis_id": "h_proxy_websocket",
+      "statement": "A reverse proxy in front of the server does not forward WebSocket upgrade headers, so the frontend never connects to /_stcore/stream.",
+      "prior": 0.3636,
+      "posterior": 0.4393,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:knowledge-base/deploy/remote-start#please-wait"
+      ],
+      "expectations": {
+        "reverse_proxy": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "websocket_error_in_console": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "health_endpoint_ok": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "reproduces_locally": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [
+        "reproduces_locally=no"
+      ],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h_subpath",
+      "statement": "The app is served under a sub-path without setting server.baseUrlPath, so frontend requests go to the wrong URL.",
+      "prior": 0.1818,
+      "posterior": 0.2196,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:develop/api-reference/configuration/config.toml#server.baseUrlPath"
+      ],
+      "expectations": {
+        "served_under_subpath": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "health_endpoint_ok": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "reproduces_locally": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [
+        "reproduces_locally=no"
+      ],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h_cors_xsrf",
+      "statement": "CORS/XSRF protection rejects the browser connection because the public origin differs from the server address.",
+      "prior": 0.1455,
+      "posterior": 0.1757,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:develop/api-reference/configuration/config.toml#server.enableXsrfProtection"
+      ],
+      "expectations": {
+        "websocket_error_in_console": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "health_endpoint_ok": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "reproduces_locally": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [
+        "reproduces_locally=no"
+      ],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "unlisted_cause",
+      "statement": "A cause that none of the retrieved evidence describes.",
+      "prior": 0.2,
+      "posterior": 0.1421,
+      "evidence_strength": "none",
+      "evidence_ids": [],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h_broken_env",
+      "statement": "The server's Python environment is broken (dependency conflict), so the app never finishes starting.",
+      "prior": 0.1091,
+      "posterior": 0.0233,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "issue:similar-report-env"
+      ],
+      "expectations": {
+        "health_endpoint_ok": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        },
+        "reinstall_resolves": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "bundle+rules",
+      "consistent_facts": [],
+      "conflicting_facts": [
+        "reinstall_resolves=no"
+      ]
+    }
+  ],
+  "next_steps": [
+    {
+      "facet": "reverse_proxy",
+      "kind": "question",
+      "basis": "information_gain",
+      "text": "Is the app served through a reverse proxy or load balancer (for example nginx, Apache, Traefik or a cloud load balancer)?",
+      "rationale": "'yes' favours h_proxy_websocket; 'no' favours h_subpath, h_cors_xsrf, h_broken_env, an unlisted cause",
+      "distinguishes": [
+        "h_proxy_websocket"
+      ],
+      "expected_information_gain": 0.1021,
+      "cost": 1,
+      "score": 0.1021
+    },
+    {
+      "facet": "served_under_subpath",
+      "kind": "question",
+      "basis": "information_gain",
+      "text": "Is the app opened under a URL sub-path (e.g. https://example.com/myapp/) rather than at the root of the domain?",
+      "rationale": "'yes' favours h_subpath; 'no' favours h_proxy_websocket, h_cors_xsrf, h_broken_env, an unlisted cause",
+      "distinguishes": [
+        "h_subpath"
+      ],
+      "expected_information_gain": 0.0686,
+      "cost": 1,
+      "score": 0.0686
+    }
+  ],
+  "skipped_probes": [
+    {
+      "facet": "reproduces_locally",
+      "reason": "already stated (body: \"The app opens on my own machine, but on the server it stays on the loading screen (\"Please wait...\") forever.\") -> reproduces_locally=no"
+    },
+    {
+      "facet": "reinstall_resolves",
+      "reason": "already performed (body: \"Reinstalling did not help.\") -> reinstall_resolves=no"
+    }
+  ],
+  "limitations": [
+    "h_broken_env conflicts with reported facts: reinstall_resolves=no."
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "case_id": "example-no-evidence",
+  "decision": {
+    "type": "escalate",
+    "rationale": "Part 1 produced no candidate explanation, so no answer can be defended. Collect the missing basics below and refer the case for manual investigation.",
+    "hypothesis_id": null
+  },
+  "known_facts": [
+    {
+      "facet": "streamlit_version",
+      "value": "1.38.0",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "Streamlit version: 1.38.0"
+      },
+      "superseded": []
+    }
+  ],
+  "missing_information": [],
+  "hypotheses": [
+    {
+      "hypothesis_id": "unlisted_cause",
+      "statement": "A cause that none of the retrieved evidence describes.",
+      "prior": 1.0,
+      "posterior": 1.0,
+      "evidence_strength": "none",
+      "evidence_ids": [],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    }
+  ],
+  "next_steps": [
+    {
+      "facet": "error_message",
+      "kind": "question",
+      "basis": "fallback",
+      "text": "Please paste the full error message or traceback, from the terminal running Streamlit and from the browser console if any.",
+      "rationale": "Not stated in the case; needed to continue the investigation (exact error message / traceback).",
+      "distinguishes": [],
+      "expected_information_gain": 0.0,
+      "cost": 1,
+      "score": 0.0
+    },
+    {
+      "facet": "deployment_target",
+      "kind": "question",
+      "basis": "fallback",
+      "text": "Where does the failing app run: your own machine, Streamlit Community Cloud, a Docker container, Kubernetes, a platform such as Heroku/Cloud Run, or your own server/VM?",
+      "rationale": "Not stated in the case; needed to continue the investigation (where the failing app runs).",
+      "distinguishes": [],
+      "expected_information_gain": 0.0,
+      "cost": 1,
+      "score": 0.0
+    }
+  ],
+  "skipped_probes": [],
+  "limitations": [
+    "No candidate explanation was found in the evidence base."
+  ]
+}

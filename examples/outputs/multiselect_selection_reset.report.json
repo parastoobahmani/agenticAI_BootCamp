@@ -1,0 +1,280 @@
+{
+  "schema_version": "1.0",
+  "case_id": "example-multiselect-reset",
+  "decision": {
+    "type": "request_information",
+    "rationale": "No explanation is clearly ahead (h_widget_identity, h_new_session, unlisted_cause remain plausible). The steps below are the ones whose answers best separate them per unit of user effort.",
+    "hypothesis_id": null
+  },
+  "known_facts": [
+    {
+      "facet": "streamlit_version",
+      "value": "1.52.0",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "- Streamlit version: 1.52.0"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "python_version",
+      "value": "3.12",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "- Python version: 3.12"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "browser",
+      "value": "firefox",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "- Browser: Firefox"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "code_snippet",
+      "value": "present",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "```python"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "uses_callback",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "inside_fragment",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "inside_dialog",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "inside_form",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "calls_st_rerun",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "multipage_app",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    },
+    {
+      "facet": "widget_has_key",
+      "value": "no",
+      "status": "observed",
+      "origin": {
+        "location": "body",
+        "quote": "(not used in the code shared in this message)"
+      },
+      "superseded": []
+    }
+  ],
+  "missing_information": [
+    {
+      "facet": "lost_after_page_reload",
+      "description": "Whether state is lost only after a browser reload / new tab / reconnect",
+      "relevant_hypotheses": [
+        "h_widget_identity",
+        "h_new_session",
+        "h_widget_cleanup"
+      ],
+      "expected_information_gain": 0.2523
+    },
+    {
+      "facet": "options_change_between_reruns",
+      "description": "Whether the widget's label, options, default or format_func output change between reruns",
+      "relevant_hypotheses": [
+        "h_widget_identity"
+      ],
+      "expected_information_gain": 0.1035
+    }
+  ],
+  "hypotheses": [
+    {
+      "hypothesis_id": "h_widget_identity",
+      "statement": "The multiselect has no key and its options come in a different order on each rerun, so it gets a new identity and resets.",
+      "prior": 0.4,
+      "posterior": 0.5885,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:widget-behavior#identity",
+        "issue:17210"
+      ],
+      "expectations": {
+        "widget_has_key": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        },
+        "options_change_between_reruns": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "lost_after_page_reload": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [
+        "widget_has_key=no"
+      ],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h_new_session",
+      "statement": "The selection is lost because the page is reloaded or reopened, which starts a new session.",
+      "prior": 0.2222,
+      "posterior": 0.1923,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:session-state#what-is-state"
+      ],
+      "expectations": {
+        "lost_after_page_reload": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "unlisted_cause",
+      "statement": "A cause that none of the retrieved evidence describes.",
+      "prior": 0.2,
+      "posterior": 0.1731,
+      "evidence_strength": "none",
+      "evidence_ids": [],
+      "expectations": {},
+      "expectation_source": "none",
+      "consistent_facts": [],
+      "conflicting_facts": []
+    },
+    {
+      "hypothesis_id": "h_widget_cleanup",
+      "statement": "The keyed widget is not rendered in some script run, so its state is cleaned up.",
+      "prior": 0.1778,
+      "posterior": 0.0462,
+      "evidence_strength": "strong",
+      "evidence_ids": [
+        "doc:widget-behavior#cleanup"
+      ],
+      "expectations": {
+        "widget_has_key": {
+          "values": [
+            "yes"
+          ],
+          "version_spec": null
+        },
+        "lost_after_page_reload": {
+          "values": [
+            "no"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "rules",
+      "consistent_facts": [],
+      "conflicting_facts": [
+        "widget_has_key=no"
+      ]
+    }
+  ],
+  "next_steps": [
+    {
+      "facet": "lost_after_page_reload",
+      "kind": "question",
+      "basis": "information_gain",
+      "text": "Is the value lost only after a full browser reload, opening the app in a new tab or a reconnect, or also during normal interaction without reloading?",
+      "rationale": "'yes' favours h_new_session, an unlisted cause; 'no' favours h_widget_identity, h_widget_cleanup",
+      "distinguishes": [
+        "h_widget_identity",
+        "h_new_session",
+        "h_widget_cleanup"
+      ],
+      "expected_information_gain": 0.2523,
+      "cost": 1,
+      "score": 0.2523
+    },
+    {
+      "facet": "options_change_between_reruns",
+      "kind": "question",
+      "basis": "information_gain",
+      "text": "Do the widget's label, options (or their order), default value or `format_func` output change from one rerun to the next?",
+      "rationale": "'yes' favours h_widget_identity; 'no' favours h_new_session, h_widget_cleanup, an unlisted cause",
+      "distinguishes": [
+        "h_widget_identity"
+      ],
+      "expected_information_gain": 0.1035,
+      "cost": 2,
+      "score": 0.0517
+    }
+  ],
+  "skipped_probes": [
+    {
+      "facet": "widget_has_key",
+      "reason": "already stated (body: \"(not used in the code shared in this message)\") -> widget_has_key=no"
+    }
+  ],
+  "limitations": [
+    "h_widget_cleanup conflicts with reported facts: widget_has_key=no."
+  ]
+}

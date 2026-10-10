@@ -1,0 +1,7 @@
+{
+  "case_id": "part1-demo-session-state",
+  "title": "Session state lost after widget interaction in 1.64",
+  "body": "After upgrading to 1.64.0, st.session_state values set inside a callback disappear on the next rerun. Minimal example:\n\n```python\nimport streamlit as st\nif 'count' not in st.session_state:\n    st.session_state.count = 0\nst.button('inc', on_click=lambda: st.session_state.count += 1)\nst.write(st.session_state.count)\n```\nEnvironment: Python 3.11, Streamlit 1.64.0, Chrome.",
+  "author": "reporter",
+  "comments": []
+}
