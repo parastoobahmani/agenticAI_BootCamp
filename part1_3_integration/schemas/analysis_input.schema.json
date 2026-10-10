@@ -250,6 +250,13 @@
           },
           "title": "Hypotheses",
           "type": "array"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
         }
       },
       "title": "EvidenceBundle",
