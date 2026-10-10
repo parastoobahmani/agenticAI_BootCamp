@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "case_id": "example-report-only",
+  "decision": {
+    "type": "request_information",
+    "rationale": "The supplied facts do not establish when the reset occurs.",
+    "hypothesis_id": "h1"
+  },
+  "known_facts": [
+    {
+      "facet": "symptom",
+      "value": "Selection resets after changing pages",
+      "status": "observed",
+      "origin": {
+        "location": "report.body",
+        "quote": "The selection resets after I change pages."
+      }
+    },
+    {
+      "facet": "streamlit_version",
+      "value": "1.41.0",
+      "status": "observed",
+      "origin": {
+        "location": "conversation.1",
+        "quote": "Correction: I am using 1.41.0."
+      },
+      "superseded": [
+        {
+          "facet": "streamlit_version",
+          "value": "1.40.0",
+          "status": "observed",
+          "origin": {
+            "location": "report.body",
+            "quote": "I use 1.40.0."
+          }
+        }
+      ]
+    },
+    {
+      "facet": "reinstall",
+      "value": null,
+      "status": "performed_outcome_unknown",
+      "origin": {
+        "location": "conversation.2",
+        "quote": "I reinstalled Streamlit."
+      }
+    }
+  ],
+  "missing_information": [
+    {
+      "facet": "widget_visibility",
+      "description": "Whether the widget remains rendered at the reset",
+      "relevant_hypotheses": [
+        "h1"
+      ],
+      "expected_information_gain": 0.3
+    }
+  ],
+  "hypotheses": [
+    {
+      "hypothesis_id": "h1",
+      "statement": "Widget lifecycle changes might be related to the reset.",
+      "prior": 0.5,
+      "posterior": 0.6,
+      "evidence_strength": "weak",
+      "evidence_ids": [
+        "doc-widget-17"
+      ],
+      "expectations": {
+        "widget_visibility": {
+          "values": [
+            "not_rendered"
+          ],
+          "version_spec": null
+        }
+      },
+      "expectation_source": "upstream_model",
+      "consistent_facts": [
+        "symptom"
+      ],
+      "conflicting_facts": []
+    }
+  ],
+  "next_steps": [
+    {
+      "facet": "widget_visibility",
+      "kind": "question",
+      "basis": "information_gain",
+      "text": "At the moment the selection resets, is the widget still visible?",
+      "rationale": "This distinguishes a reset while visible from one after removal.",
+      "distinguishes": [
+        "h1"
+      ],
+      "expected_information_gain": 0.3,
+      "cost": 1,
+      "score": 0.3
+    }
+  ],
+  "skipped_probes": [
+    {
+      "facet": "streamlit_version",
+      "reason": "A corrected version was already supplied."
+    }
+  ],
+  "limitations": [
+    "The available handoff does not establish the cause."
+  ]
+}

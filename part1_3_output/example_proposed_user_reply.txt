@@ -1,0 +1,5 @@
+The available handoff does not establish a verified cause.
+
+The cause is not yet established. The next question or check is:
+
+At the moment the selection resets, is the widget still visible?

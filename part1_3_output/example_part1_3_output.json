@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0",
+  "input_contract": "NextStepReport/1.0",
+  "case_id": "example-report-only",
+  "status": "draft",
+  "decision_type": "request_information",
+  "user_response": "The available handoff does not establish a verified cause.\n\nThe cause is not yet established. The next question or check is:\n\nAt the moment the selection resets, is the widget still visible?",
+  "technical_summary": {
+    "case_summary": "The handoff reports: symptom: Selection resets after changing pages; streamlit_version: 1.41.0; reinstall: performed; outcome not supplied.",
+    "summary_scope": "supplied_next_step_report_only",
+    "summary_method": "fact_list",
+    "original_report_available": false,
+    "evidence_content_available": false,
+    "decision": {
+      "type": "request_information",
+      "rationale": "The supplied facts do not establish when the reset occurs.",
+      "hypothesis_id": "h1"
+    },
+    "known_facts": [
+      {
+        "facet": "symptom",
+        "value": "Selection resets after changing pages",
+        "status": "observed",
+        "origin": {
+          "location": "report.body",
+          "quote": "The selection resets after I change pages."
+        }
+      },
+      {
+        "facet": "streamlit_version",
+        "value": "1.41.0",
+        "status": "observed",
+        "origin": {
+          "location": "conversation.1",
+          "quote": "Correction: I am using 1.41.0."
+        },
+        "superseded": [
+          {
+            "facet": "streamlit_version",
+            "value": "1.40.0",
+            "status": "observed",
+            "origin": {
+              "location": "report.body",
+              "quote": "I use 1.40.0."
+            }
+          }
+        ]
+      },
+      {
+        "facet": "reinstall",
+        "value": null,
+        "status": "performed_outcome_unknown",
+        "origin": {
+          "location": "conversation.2",
+          "quote": "I reinstalled Streamlit."
+        }
+      }
+    ],
+    "missing_information": [
+      {
+        "facet": "widget_visibility",
+        "description": "Whether the widget remains rendered at the reset",
+        "relevant_hypotheses": [
+          "h1"
+        ],
+        "expected_information_gain": 0.3
+      }
+    ],
+    "hypotheses": [
+      {
+        "hypothesis_id": "h1",
+        "statement": "Widget lifecycle changes might be related to the reset.",
+        "prior": 0.5,
+        "posterior": 0.6,
+        "evidence_strength": "weak",
+        "evidence_ids": [
+          "doc-widget-17"
+        ],
+        "expectations": {
+          "widget_visibility": {
+            "values": [
+              "not_rendered"
+            ],
+            "version_spec": null
+          }
+        },
+        "expectation_source": "upstream_model",
+        "consistent_facts": [
+          "symptom"
+        ],
+        "conflicting_facts": []
+      }
+    ],
+    "next_steps": [
+      {
+        "facet": "widget_visibility",
+        "kind": "question",
+        "basis": "information_gain",
+        "text": "At the moment the selection resets, is the widget still visible?",
+        "rationale": "This distinguishes a reset while visible from one after removal.",
+        "distinguishes": [
+          "h1"
+        ],
+        "expected_information_gain": 0.3,
+        "cost": 1,
+        "score": 0.3
+      }
+    ],
+    "skipped_probes": [
+      {
+        "facet": "streamlit_version",
+        "reason": "A corrected version was already supplied."
+      }
+    ],
+    "limitations": [
+      "The available handoff does not establish the cause."
+    ],
+    "unavailable_information": [
+      "Original report, title and conversation were not supplied.",
+      "Evidence text, URLs, sections and revisions were not supplied; evidence IDs remain unresolved.",
+      "Fact quotations and locations are upstream assertions and cannot be checked against the absent original report.",
+      "Hypothesis scores and information-gain scores are upstream estimates, not independently calibrated confidence."
+    ],
+    "unresolved_evidence_ids": [
+      "doc-widget-17"
+    ],
+    "resolution_confirmed": false,
+    "assumptions": [
+      "next_steps contains selected steps in presentation order; Part 3 does not re-rank candidates."
+    ]
+  },
+  "composition": {
+    "method": "deterministic",
+    "failure": null,
+    "version": "next-step-report-composer-v1",
+    "fact_ids": []
+  },
+  "input_fingerprint": "81685956d1d4d7c4e688d0996a68310ad074acfd33c39921b7bbe305bc2c2659",
+  "artifact_kind": "demonstration",
+  "id": "response_b6c0fda42d8982cc97ca3b73"
+}

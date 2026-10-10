@@ -1,0 +1,17 @@
+{
+  "status": "complete",
+  "artifact_kind": "demonstration",
+  "case_id": "example-report-only",
+  "input_filename": "example_part1_2_output.json",
+  "input_origin": "bundled_authored_example",
+  "response_file": "response.json",
+  "response_id": "response_b6c0fda42d8982cc97ca3b73",
+  "input_fingerprint": "81685956d1d4d7c4e688d0996a68310ad074acfd33c39921b7bbe305bc2c2659",
+  "immutable": true,
+  "composition_mode": "offline",
+  "files": {
+    "response.json": "a80480f2322d24299ba5e4c38ba383b6ba1072441abb0c1ac8eb0d6de1f7a49b",
+    "proposed_user_reply.txt": "537f43556ec3890cc9ede79e3cd0a510fc239f77e50b31792d353b72b45fda85",
+    "maintainer_summary.md": "5b253190c4725c9e06c9382551d34d957141a299ada8ee5c3ca7d398d4767589"
+  }
+}
