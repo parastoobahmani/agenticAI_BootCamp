@@ -38,4 +38,4 @@ problem2_parts1_2 = ["assets/*.json"]
 project_app = ["examples/*.json"]
 
 [tool.pytest.ini_options]
-testpaths = ["problem1_part2/tests", "problem1_part3/tests", "problem1_to_problem2/tests", "problem2_parts1_2/tests", "problem2_part3/tests", "project_app/tests"]
+testpaths = ["problem1_part2/tests", "problem1_part3/tests", "problem1_to_problem2/tests", "problem2_parts1_2/tests", "problem2_part3/tests", "project_app/tests", "project_evaluation/tests"]
