@@ -1,9 +1,11 @@
 """
 Step 0: Load raw data, select ≥30 diverse cases, split into 15 DEV + 15 TEST
 at the whole-case level, and write case cards (no gold answers yet).
+The split is frozen once written: re-running refuses to overwrite it unless --force.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import random
 from collections import defaultdict
@@ -22,7 +24,6 @@ from config import (
     N_DEV,
     N_TEST,
     N_TOTAL,
-    N_MULTI_TURN,
     SPLIT_SEED,
     MIN_BODY_LEN,
 )
@@ -58,6 +59,12 @@ def stratify_label(issue: Dict) -> str:
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force", action="store_true", help="overwrite the frozen split and case cards")
+    args = parser.parse_args()
+    if SPLIT_PATH.exists() and not args.force:
+        raise SystemExit(f"{SPLIT_PATH} already exists and is frozen; pass --force to rebuild it.")
+
     EVAL.mkdir(parents=True, exist_ok=True)
     CASES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -65,10 +72,6 @@ def main():
     comments = load_jsonl(COMMENTS_PATH)
     docs = load_jsonl(DOCS_PATH)
     releases = load_jsonl(RELEASES_PATH)
-
-    comments_by_issue = defaultdict(list)
-    for c in comments:
-        comments_by_issue[c["issue_number"]].append(c)
 
     # Filter usable issues
     candidates = []
@@ -109,18 +112,9 @@ def main():
     dev = selected[:N_DEV]
     test = selected[N_DEV:N_TOTAL]
 
-    # Mark multi-turn candidates (issues with ≥2 comments)
-    multi_ids = []
-    for iss in selected:
-        if len(comments_by_issue.get(iss["number"], [])) >= 2:
-            multi_ids.append(f"issue-{iss['number']}")
-    rng.shuffle(multi_ids)
-    multi_ids = multi_ids[: max(N_MULTI_TURN, 10)]
-
     split = {
         "dev_case_ids": [f"issue-{i['number']}" for i in dev],
         "test_case_ids": [f"issue-{i['number']}" for i in test],
-        "multi_turn_case_ids": multi_ids,
         "split_seed": SPLIT_SEED,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "n_dev": N_DEV,
@@ -149,7 +143,6 @@ def main():
             "labels": iss.get("labels", []),
             "state": iss.get("state"),
             "stratum_auto": stratify_label(iss),
-            "is_multi_turn": cid in multi_ids,
             "split": "dev" if cid in split["dev_case_ids"] else "test",
             # filled in step1
             "visible_input": {
@@ -172,7 +165,6 @@ def main():
     print(f"  Cases written → {CASES_DIR} ({len(selected)} files)")
     print(f"  DEV:  {len(split['dev_case_ids'])}")
     print(f"  TEST: {len(split['test_case_ids'])}")
-    print(f"  Multi-turn marked: {len(multi_ids)}")
 
 
 if __name__ == "__main__":

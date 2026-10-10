@@ -18,7 +18,6 @@ DOCS_META_PATH = RAW / "docs_meta.json"
 
 CASES_DIR = EVAL / "cases"
 ANNOT_DIR = EVAL / "annotations"
-MULTI_DIR = EVAL / "multi_turn"
 RUNS_DIR = EVAL / "runs"
 REPORTS_DIR = EVAL / "reports"
 
@@ -28,7 +27,6 @@ SPLIT_PATH = EVAL / "case_split.json"
 N_DEV = 15
 N_TEST = 15
 N_TOTAL = N_DEV + N_TEST
-N_MULTI_TURN = 10
 RECALL_KS = [5, 10]
 SPLIT_SEED = 42
 
