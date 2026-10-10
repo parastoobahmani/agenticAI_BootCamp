@@ -1,0 +1,98 @@
+[
+  {
+    "doc_id": "DOC-001",
+    "kind": "docs",
+    "ref": "docs/streamlit/deploy/cloud",
+    "title": "Deploy on Streamlit Community Cloud",
+    "text": "Streamlit Community Cloud builds the app from your repository. If the app stays on the loading screen, check the build log first. A missing dependency in requirements.txt or an import error during the build leaves the app in a permanent loading state. Rebooting the app from the menu reruns the build.",
+    "tags": ["deployment", "loading", "cloud", "requirements"]
+  },
+  {
+    "doc_id": "DOC-002",
+    "kind": "docs",
+    "ref": "docs/streamlit/deploy/docker",
+    "title": "Run Streamlit in Docker",
+    "text": "Streamlit must bind to 0.0.0.0 inside a container. The default server.address is localhost, which is unreachable from outside the container and makes the app appear to hang on the loading screen. Use streamlit run app.py --server.address 0.0.0.0 and expose the matching port.",
+    "tags": ["deployment", "docker", "loading", "server", "address"]
+  },
+  {
+    "doc_id": "DOC-003",
+    "kind": "docs",
+    "ref": "docs/streamlit/deploy/kubernetes",
+    "title": "Deploy Streamlit with Kubernetes",
+    "text": "In Kubernetes the readiness probe should point at /_stcore/health. Pointing it at the app root can mark the pod unhealthy while the app is still starting. Set the server.port and the container port to the same value, and allow websocket upgrades on the ingress.",
+    "tags": ["deployment", "kubernetes", "health", "websocket", "loading"]
+  },
+  {
+    "doc_id": "DOC-004",
+    "kind": "docs",
+    "ref": "docs/streamlit/session_state",
+    "title": "Session State",
+    "text": "Session state is per user session. A widget with a key that already exists in session state raises a DuplicateWidgetID error. Data stored in session state is lost when the browser tab disconnects. Widgets created with the same key across reruns keep their value only while the session is alive.",
+    "tags": ["session_state", "widgets", "duplicate", "state"]
+  },
+  {
+    "doc_id": "DOC-005",
+    "kind": "docs",
+    "ref": "docs/streamlit/widgets/keys",
+    "title": "Widget keys and identity",
+    "text": "Every widget is identified by its key or, when no key is given, by its parameters and position. Adding another widget with the same label changes the inferred identity and can reset values. Assign an explicit key to any widget whose state must survive a rerun.",
+    "tags": ["widgets", "session_state", "key", "identity"]
+  },
+  {
+    "doc_id": "DOC-006",
+    "kind": "docs",
+    "ref": "docs/streamlit/caching",
+    "title": "Caching",
+    "text": "st.cache_data caches the return value and is preferred for data frames and plain data. st.cache_resource caches the object itself and is used for connections and models. A cached function that takes an unhashable argument falls back to a slower path but still runs.",
+    "tags": ["caching", "cache_data", "cache_resource", "performance"]
+  },
+  {
+    "doc_id": "REL-100",
+    "kind": "release",
+    "ref": "release:1.31.0",
+    "title": "Streamlit 1.31.0 release notes",
+    "text": "Fixes a loading screen hang when st.file_uploader was used together with a custom theme. Adds server.enableXsrfProtection default. Raises a clearer error for a duplicated widget key instead of silently resetting.",
+    "tags": ["release", "1.31.0", "loading", "widgets", "uploader"]
+  },
+  {
+    "doc_id": "REL-101",
+    "kind": "release",
+    "ref": "release:1.35.0",
+    "title": "Streamlit 1.35.0 release notes",
+    "text": "Adds st.connection. Fixes an issue where an app behind a reverse proxy stayed on the loading screen because websocket upgrades were stripped. Updates the default CORS and XSRF settings for proxied deployments.",
+    "tags": ["release", "1.35.0", "loading", "proxy", "websocket", "deployment"]
+  },
+  {
+    "doc_id": "ISS-2001",
+    "kind": "issue",
+    "ref": "streamlit/streamlit#8123",
+    "title": "App stuck on loading screen behind nginx reverse proxy",
+    "text": "Resolution: the proxy did not forward the Upgrade and Connection headers, so the websocket handshake failed and the client never left the loading skeleton. Fixed by enabling websocket upgrade in the nginx location block. Applies to 1.24 and later.",
+    "tags": ["loading", "proxy", "nginx", "websocket", "deployment"]
+  },
+  {
+    "doc_id": "ISS-2002",
+    "kind": "issue",
+    "ref": "streamlit/streamlit#8455",
+    "title": "DuplicateWidgetID after adding a second slider",
+    "text": "Resolution: two widgets produced the same inferred key. Giving each widget an explicit key resolved the duplicate id error. Session state values assigned to the key must be set before the widget is created.",
+    "tags": ["widgets", "session_state", "duplicate", "key"]
+  },
+  {
+    "doc_id": "ISS-2003",
+    "kind": "issue",
+    "ref": "streamlit/streamlit#9012",
+    "title": "Blank page on Streamlit Cloud but works locally",
+    "text": "Resolution: the app imported a package that was not listed in requirements.txt. The build succeeded, the runtime import failed, and the app stayed blank. Pinning the package version in requirements.txt fixed it.",
+    "tags": ["deployment", "cloud", "loading", "requirements", "import"]
+  },
+  {
+    "doc_id": "ISS-2004",
+    "kind": "issue",
+    "ref": "streamlit/streamlit#7544",
+    "title": "st.cache_resource holds a stale database connection",
+    "text": "Resolution: st.cache_resource keeps the connection for the lifetime of the server, so a dropped connection stays cached. Moving to st.connection or adding a health check that clears the cache fixed it. Closing the case did not mean the underlying limitation was removed.",
+    "tags": ["caching", "cache_resource", "connection", "session_state"]
+  }
+]
