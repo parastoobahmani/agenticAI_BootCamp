@@ -87,6 +87,16 @@ python -m project_app run project_app/examples/example_case.json
 See `project_app/README.md` for live Part 3 composition, artifact layout, and
 revision behavior.
 
+Run the local web application with separate user and maintainer views:
+
+```bash
+python -m project_app serve --live --env-file personal.env
+```
+
+The user can submit follow-ups after any review outcome. The maintainer can
+inspect stage artifacts, edit the proposed reply, reject it, or approve and
+publish it to the local ticket interceptor.
+
 Prepare the raw evidence snapshot:
 
 ```bash

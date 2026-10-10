@@ -44,6 +44,10 @@ The provider file uses the same interchangeable names documented in
 
 ## Stage artifacts
 
+Each run writes an immutable directory identified by both the Part 3 response
+ID and the normalized case-input fingerprint. This preserves separate user
+turns even when two inputs produce the same response text.
+
 Each run writes:
 
 | File | Producer / meaning |
@@ -60,3 +64,47 @@ Each run writes:
 Re-running the same deterministic response reuses its Problem 2 proposal. A new
 response revision is rejected while an older proposal is pending; the
 maintainer must first approve or reject the old proposal.
+
+## Web application
+
+Start the local server in offline mode:
+
+```bash
+python -m project_app serve
+```
+
+Or enable live Part 3 composition:
+
+```bash
+python -m project_app serve --live --env-file personal.env
+```
+
+Open `http://127.0.0.1:8765/`. The server provides two views:
+
+- **User:** submit a case, see replies that were actually published, and add a
+  correction, test result, or new symptom.
+- **Maintainer:** inspect the evidence synthesis and `NextStepReport`, edit the
+  exact proposed reply, reject it with a review note, or approve and publish it
+  to the local ticket interceptor.
+
+The state transitions preserve the team boundaries:
+
+```text
+user input -> ProjectPipeline -> pending Problem 2 proposal
+                                      |
+                         maintainer approve / edit / reject
+                                      |
+                         local ticket publication or wait
+                                      |
+                          later user input -> new revision
+```
+
+A user follow-up supersedes any unreviewed proposal, retains it as rejected
+audit history, reruns Problems 1.1–1.3 with the complete conversation, merges
+the new revision into Problem 2 memory, and creates a new pending proposal.
+After an approval or rejection, the next user message resumes from the stored
+case instead of creating a disconnected case.
+
+The server intentionally binds only to loopback addresses because the project
+does not include an identity provider. Deploying it beyond one machine requires
+real user and maintainer authentication plus TLS at the hosting layer.

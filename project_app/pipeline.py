@@ -31,7 +31,7 @@ from problem1_to_problem2 import (
 )
 from problem2_parts1_2.interceptor import TicketInterceptor
 from problem2_parts1_2.memory import CaseMemory
-from problem2_parts1_2.models import CaseState, Proposal
+from problem2_parts1_2.models import CaseState, Check, Fact, Proposal, Source, Unknown
 from problem2_parts1_2.storage import Storage
 
 
@@ -155,6 +155,8 @@ class ProjectPipeline:
         compose: Callable[[list[dict], dict], dict] | None = None,
         provider_metadata: dict[str, Any] | None = None,
         provider_usage: Callable[[], dict[str, Any]] | None = None,
+        supersede_pending: bool = False,
+        force_new_proposal: bool = False,
     ) -> RunResult:
         normalized = self._validate_case(case)
 
@@ -174,7 +176,7 @@ class ProjectPipeline:
         handoff = markdown_summary(response)
 
         response_id = response["id"]
-        final_dir = self._artifact_dir(normalized["case_id"], response_id)
+        final_dir = self._artifact_dir(normalized["case_id"], response_id, normalized)
         artifacts = {
             "input_case.json": normalized,
             "problem1_part1_synthesis.json": synthesis,
@@ -183,9 +185,14 @@ class ProjectPipeline:
             "part3_response.json": response,
             "maintainer_summary.md": handoff,
         }
-        stage_dir = self._stage_artifacts(final_dir, artifacts)
+        stage_dir = self._stage_artifacts(final_dir, response_id, artifacts)
         try:
-            imported = self._import_problem2(response, analysis_payload)
+            imported = self._import_problem2(
+                response,
+                analysis_payload,
+                supersede_pending=supersede_pending,
+                force_new_proposal=force_new_proposal,
+            )
             usage = provider_usage() if provider_usage is not None else None
             import_record = {
                 "case_id": normalized["case_id"],
@@ -239,18 +246,34 @@ class ProjectPipeline:
         except Exception as exc:
             raise IntegrationError("case does not match the Part 2 Case contract") from exc
 
-    def _artifact_dir(self, case_id: str, response_id: str) -> Path:
+    def _artifact_dir(
+        self,
+        case_id: str,
+        response_id: str,
+        input_case: dict[str, Any] | None = None,
+    ) -> Path:
         safe_prefix = re.sub(r"[^A-Za-z0-9._-]+", "_", case_id).strip("._")[:60] or "case"
         case_hash = hashlib.sha256(case_id.encode("utf-8")).hexdigest()[:10]
-        return self.runs_dir / f"{safe_prefix}_{case_hash}" / response_id
+        case_dir = self.runs_dir / f"{safe_prefix}_{case_hash}"
+        if input_case is not None:
+            canonical = json.dumps(input_case, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+            input_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:12]
+            return case_dir / f"{response_id}--input_{input_hash}"
+        legacy = case_dir / response_id
+        candidates = ([legacy] if legacy.exists() else [])
+        if case_dir.exists():
+            candidates.extend(case_dir.glob(f"{response_id}--input_*"))
+        return max(candidates, key=lambda path: path.stat().st_mtime_ns) if candidates else legacy
 
-    def _stage_artifacts(self, final_dir: Path, artifacts: dict[str, Any]) -> Path:
+    def _stage_artifacts(
+        self, final_dir: Path, response_id: str, artifacts: dict[str, Any]
+    ) -> Path:
         final_dir.parent.mkdir(parents=True, exist_ok=True)
         if final_dir.exists():
             expected = final_dir / "part3_response.json"
             if expected.exists():
                 current = json.loads(expected.read_text(encoding="utf-8"))
-                if current.get("id") != final_dir.name:
+                if current.get("id") != response_id:
                     raise IntegrationError("existing artifact directory has different content")
             else:
                 raise IntegrationError("existing artifact directory is incomplete")
@@ -294,7 +317,14 @@ class ProjectPipeline:
             return
         stage_dir.replace(final_dir)
 
-    def _import_problem2(self, response: dict, analysis_input: dict) -> dict[str, str]:
+    def _import_problem2(
+        self,
+        response: dict,
+        analysis_input: dict,
+        *,
+        supersede_pending: bool = False,
+        force_new_proposal: bool = False,
+    ) -> dict[str, str]:
         case_id = response["case_id"]
         storage = Storage(self.db_path)
         try:
@@ -302,14 +332,22 @@ class ProjectPipeline:
             state = storage.load_case(case_id)
             if state is not None:
                 existing = self._proposal_for_response(state, response["id"])
-                if existing is not None:
+                if existing is not None and not force_new_proposal:
                     self._ensure_ticket(case_id, state.title)
                     return self._import_result(existing, "reused")
                 pending = state.pending_proposals()
                 if pending:
-                    raise PendingProposalError(
-                        f"case {case_id!r} already has an unresolved proposal; approve or reject it before importing a new response revision"
-                    )
+                    if not supersede_pending:
+                        raise PendingProposalError(
+                            f"case {case_id!r} already has an unresolved proposal; approve or reject it before importing a new response revision"
+                        )
+                    for proposal in pending:
+                        memory.set_proposal_decision(
+                            case_id, proposal.proposal_id, "reject", "system:user_update"
+                        )
+                    state = memory.require_case(case_id)
+                seed = part3_response_to_human_approval_v2_seed(response, analysis_input)
+                state = self._merge_seed(memory, state, seed)
                 request = part3_response_to_action_request(response)
                 state = memory.create_proposal(
                     request["case_id"], request["action"], request["payload"], request["rationale"]
@@ -330,13 +368,89 @@ class ProjectPipeline:
         finally:
             storage.close()
 
+    @staticmethod
+    def _merge_seed(memory: CaseMemory, state: CaseState, seed: dict[str, Any]) -> CaseState:
+        """Merge a new Problem 1 revision into existing Problem 2 memory once."""
+        changed = False
+        for name in ("title", "body"):
+            value = str(seed.get(name, ""))
+            if value and getattr(state, name) != value:
+                setattr(state, name, value)
+                changed = True
+
+        facts = {item.name: item for item in state.known}
+        for row in seed.get("known", []):
+            current = facts.get(row["name"])
+            if current is None:
+                current = Fact(**row)
+                state.known.append(current)
+                facts[current.name] = current
+                changed = True
+            elif current.value != row["value"] or current.source != row.get("source", "user"):
+                current.value = row["value"]
+                current.source = row.get("source", "user")
+                changed = True
+        known_names = set(facts)
+        filtered_unknown = [item for item in state.unknown if item.name not in known_names]
+        if len(filtered_unknown) != len(state.unknown):
+            state.unknown = filtered_unknown
+            changed = True
+
+        unknown = {item.name: item for item in state.unknown}
+        for row in seed.get("unknown", []):
+            if row["name"] in known_names:
+                continue
+            current = unknown.get(row["name"])
+            if current is None:
+                current = Unknown(**row)
+                state.unknown.append(current)
+                unknown[current.name] = current
+                changed = True
+            elif current.reason != row.get("reason", ""):
+                current.reason = row.get("reason", "")
+                changed = True
+
+        checks = {item.name: item for item in state.checks}
+        for row in seed.get("checks", []):
+            current = checks.get(row["name"])
+            if current is None:
+                current = Check(**row)
+                state.checks.append(current)
+                checks[current.name] = current
+                changed = True
+            elif current.status != row.get("status", "pending") or current.result != row.get("result", ""):
+                current.status = row.get("status", "pending")
+                current.result = row.get("result", "")
+                changed = True
+
+        sources = {(item.kind, item.ref): item for item in state.sources}
+        for row in seed.get("sources", []):
+            key = (row["kind"], row["ref"])
+            current = sources.get(key)
+            if current is None:
+                current = Source(**row)
+                state.sources.append(current)
+                sources[key] = current
+                changed = True
+            else:
+                values = (row.get("title", ""), row.get("snippet", ""), float(row.get("score", 0.0)))
+                if (current.title, current.snippet, current.score) != values:
+                    current.title, current.snippet, current.score = values
+                    changed = True
+
+        turn = int(seed.get("turn", state.turn))
+        if turn > state.turn:
+            state.turn = turn
+            changed = True
+        return memory.save(state) if changed else state
+
     def _ensure_ticket(self, case_id: str, title: str) -> None:
         TicketInterceptor(self.tracker_path).ensure(case_id, title=title)
 
     @staticmethod
     def _proposal_for_response(state: CaseState, response_id: str) -> Proposal | None:
         marker = f"response_id={response_id};"
-        return next((proposal for proposal in state.proposals if marker in proposal.rationale), None)
+        return next((proposal for proposal in reversed(state.proposals) if marker in proposal.rationale), None)
 
     @staticmethod
     def _import_result(proposal: Proposal, mode: str) -> dict[str, str]:

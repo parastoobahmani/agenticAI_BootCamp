@@ -2,12 +2,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import threading
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 import pytest
 
 from problem1_part1.evidence_synthesis.evidence_core import SourceDocument
 from problem2_parts1_2.storage import Storage
 from project_app import PendingProposalError, ProjectPipeline
+from project_app.web_server import make_server
+from project_app.web_service import ProjectWebService
+from project_app.web_store import WebStore
 
 
 def documents() -> list[SourceDocument]:
@@ -52,6 +58,10 @@ def pipeline(tmp_path: Path) -> ProjectPipeline:
         tracker_path=tmp_path / "tracker.json",
         top_k=2,
     )
+
+
+def web_service(tmp_path: Path) -> ProjectWebService:
+    return ProjectWebService(pipeline(tmp_path), WebStore(tmp_path / "web.sqlite3"))
 
 
 def test_offline_run_persists_contracts_and_pending_proposal(tmp_path: Path):
@@ -119,3 +129,88 @@ def test_new_revision_waits_for_existing_human_decision(tmp_path: Path):
 
     assert first.artifact_dir.exists()
     assert not list(first.artifact_dir.parent.glob(".*"))
+
+
+def test_user_follow_up_supersedes_pending_draft_and_resumes(tmp_path: Path):
+    service = web_service(tmp_path)
+    first = service.submit_case("case-42", "App stays on loading", "Streamlit 1.30.0 on Linux behind nginx.")
+
+    second = service.add_user_message("case-42", "The browser console reports a WebSocket 403 error.")
+
+    detail = service.case_detail("case-42")
+    proposals = detail["state"]["proposals"]
+    assert proposals[0]["proposal_id"] == first.proposal_id
+    assert proposals[0]["status"] == "rejected"
+    assert proposals[0]["decided_by"] == "system:user_update"
+    assert proposals[-1]["proposal_id"] == second.proposal_id
+    assert proposals[-1]["status"] == "pending"
+    assert detail["case"]["comments"][-1]["body"].startswith("The browser console")
+    assert first.artifact_dir != second.artifact_dir
+
+
+def test_maintainer_can_edit_approve_publish_and_later_resume(tmp_path: Path):
+    service = web_service(tmp_path)
+    first = service.submit_case("case-42", "App stays on loading", "Streamlit 1.30.0 on Linux behind nginx.")
+
+    execution = service.approve_and_publish(
+        "case-42", first.proposal_id, "Please send the browser WebSocket status code."
+    )
+
+    assert execution["ok"] is True
+    detail = service.case_detail("case-42")
+    assert detail["ticket"]["comments"][-1]["body"] == "Please send the browser WebSocket status code."
+    assert detail["state"]["proposals"][0]["status"] == "approved"
+
+    resumed = service.add_user_message("case-42", "The WebSocket request returns 403.")
+    assert resumed.proposal_status == "pending"
+    assert service.case_detail("case-42")["pending_count"] == 1
+
+
+def test_rejected_case_resumes_when_user_adds_information(tmp_path: Path):
+    service = web_service(tmp_path)
+    first = service.submit_case("case-42", "App stays on loading", "Streamlit 1.30.0 on Linux behind nginx.")
+    service.reject("case-42", first.proposal_id, "Ask for the browser status first.")
+
+    resumed = service.add_user_message("case-42", "The browser status is HTTP 403.")
+
+    assert resumed.proposal_status == "pending"
+    events = service.case_detail("case-42")["events"]
+    assert any(event["kind"] == "proposal_rejected" for event in events)
+
+
+def test_web_server_exposes_health_and_role_pages(tmp_path: Path):
+    try:
+        server = make_server(web_service(tmp_path), "127.0.0.1", 0)
+    except PermissionError:
+        pytest.skip("the test sandbox does not permit binding a localhost socket")
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        base = f"http://127.0.0.1:{server.server_port}"
+        with urlopen(base + "/healthz") as response:
+            assert json.load(response) == {"ok": True}
+        with urlopen(base + "/user") as response:
+            assert b"User portal" in response.read()
+        with urlopen(base + "/maintainer") as response:
+            assert b"Maintainer console" in response.read()
+        form = urlencode({
+            "csrf": server.RequestHandlerClass.csrf_token,
+            "case_id": "web-case-1",
+            "title": "App stays on loading",
+            "body": "Streamlit 1.30.0 on Linux behind nginx.",
+        }).encode()
+        request = Request(
+            base + "/user/cases",
+            data=form,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        with urlopen(request) as response:
+            page = response.read()
+            assert b"App stays on loading" in page
+            assert b"Maintainer review in progress" in page
+        with urlopen(base + "/maintainer/cases/web-case-1") as response:
+            assert b"Approve and publish" in response.read()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
