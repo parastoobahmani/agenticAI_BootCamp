@@ -132,8 +132,9 @@ python -m pytest problem2_parts1_2/tests -q
 python -m pytest problem2_part3/tests -q
 ```
 
-The evaluation pipeline is run in order and the test split is used only after
-development choices are frozen:
+The evaluation compares the integrated pipeline with the original baseline stub
+on the same cases. It is run in order, and the test split is used only after
+development choices are frozen (step 2 requires `--allow-test` for it):
 
 ```bash
 python project_evaluation/pipeline/step0_prepare_cases.py
@@ -143,8 +144,10 @@ python project_evaluation/pipeline/step3_compute_metrics.py --split dev
 python project_evaluation/pipeline/step4_failure_report.py
 ```
 
-Annotations and evaluation cases stay separate from the retrieval corpus.
-Follow-up messages designed for multi-turn evaluation must remain labelled as
+Annotations and evaluation cases stay separate from the retrieval corpus: every
+evaluation case is removed from it, and past issues, comments and release notes
+are cut off at each case's creation time. Multi-turn behaviour is evaluated by
+the Problem 2 Part 3 scenarios, whose follow-up messages are labelled as
 designed inputs rather than historical GitHub comments.
 
 ## Detailed guides
