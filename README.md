@@ -78,6 +78,10 @@ Therefore approval of one action cannot authorize a modified action.
 
 Successful executions are recorded using the case, proposal and action hash. Repeating the same approved execution returns the stored result instead of changing the ticket twice.
 
+The local tracker also persists a receipt under that stable operation key in the
+same atomic file replacement as the visible mutation. If the tracker commits but
+its response is lost, retrying finds the receipt instead of publishing twice.
+
 ### 5. Case isolation
 
 Idempotency records are searched only inside the requested case. Approval tokens contain the case ID, so a token from another case is rejected.
@@ -98,7 +102,7 @@ Raw user messages are not written to the event log. Tool failures record an erro
 
 The old standalone root files `data_model.py`, `validation.py` and `executer.py` are intentionally not used. Keeping a second implementation would create two sources of truth. Your contribution now lives inside the team's existing `support_agent` architecture.
 
-## Safety scenarios
+## Problem 2 Part 3 — practical scenarios
 
 Run:
 
@@ -106,27 +110,33 @@ Run:
 python -m support_agent scenarios
 ```
 
-The scenarios cover:
+The scenario runner uses the real Part 1/2 implementation, makes no API calls,
+and writes a machine-readable report to `var/problem2_part3_scenarios.json`.
+Designed follow-up turns and injected failures are labelled as test inputs. The
+first five scenarios are the development split and the last five are the test
+split:
 
-1. approve → execute
-2. reject → no execution
-3. repeated execution → idempotent result
-4. waiting for approval → no second proposal
-5. case changed after approval → stale approval rejected
-6. token from another case → rejected
-7. missing case/tool failure → structured error
-8. two cases → isolated state and actions
+1. Initial report, requested information, user reply, approval and one comment
+2. User correction invalidates the old approval and produces a revised response
+3. Maintainer rejection produces no tracker mutation
+4. Maintainer edit binds approval to the exact edited action
+5. Restart while waiting preserves the proposal without automatic execution
+6. Repeated execution returns one durable result and one comment
+7. A case change before execution makes the approval stale
+8. Failure before tracker commit is safe to retry
+9. Two cases cannot share approval tokens or actions
+10. A lost response after tracker commit is recovered from its durable receipt
 
 Run the automated tests:
 
 ```powershell
-python -m unittest -v tests.py
+python -m unittest discover -v
 ```
 
 Expected result:
 
 ```text
-Ran 6 tests ...
+Ran 8 tests ...
 OK
 ```
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import tempfile
 
 from .config import ALLOWED_TICKET_STATES
 from .models import now_iso
@@ -24,14 +25,22 @@ class TicketInterceptor:
         self.path = Path(path)
         self.seed = seed
         if not self.path.exists():
-            self._write({"seed": seed, "updated_at": now_iso(), "tickets": {}})
+            self._write({"seed": seed, "updated_at": now_iso(), "tickets": {}, "receipts": {}})
 
     def _read(self) -> dict:
         return json.loads(self.path.read_text(encoding="utf-8"))
 
     def _write(self, data: dict) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=self.path.parent, delete=False
+        ) as handle:
+            temporary = Path(handle.name)
+            json.dump(data, handle, indent=2, ensure_ascii=False)
+        try:
+            temporary.replace(self.path)
+        finally:
+            temporary.unlink(missing_ok=True)
 
     def ensure(self, number: str, title: str = "", state: str = "open") -> dict:
         data = self._read()
@@ -56,6 +65,50 @@ class TicketInterceptor:
 
     def snapshot(self) -> dict:
         return self._read()
+
+    def apply(self, number: str, operation_key: str, action: str, payload: dict) -> dict:
+        """Apply one visible mutation and persist its receipt in the same file write.
+
+        A retry with the same operation key returns the durable receipt. This is
+        the local tracker's idempotency boundary when a response is lost after
+        the mutation has committed.
+        """
+        data = self._read()
+        ticket = data.get("tickets", {}).get(number)
+        if ticket is None:
+            raise InterceptorError("ticket_not_found", f"no intercepted ticket {number!r}")
+        receipts = data.setdefault("receipts", {})
+        if operation_key in receipts:
+            return {**receipts[operation_key], "tracker_duplicate": True}
+        if action == "comment":
+            body = payload.get("body", "")
+            if not isinstance(body, str) or not body.strip():
+                raise InterceptorError("bad_comment", "comment body must be non-empty")
+            comment = {"author": "support-agent", "body": body, "created_at": now_iso()}
+            ticket["comments"].append(comment)
+            result = {"action": "comment", "comment": comment}
+        elif action == "labels":
+            labels = payload.get("labels", [])
+            if not isinstance(labels, list) or not all(isinstance(label, str) for label in labels):
+                raise InterceptorError("bad_labels", "labels must be a list of strings")
+            for label in labels:
+                if label not in ticket["labels"]:
+                    ticket["labels"].append(label)
+            result = {"action": "labels", "labels": list(ticket["labels"])}
+        elif action == "state":
+            state = payload.get("state", "open")
+            if state not in ALLOWED_TICKET_STATES:
+                raise InterceptorError("bad_state", f"state must be one of {ALLOWED_TICKET_STATES}")
+            ticket["state"] = state
+            result = {"action": "state", "state": state}
+        else:
+            raise InterceptorError("unsupported_action", f"cannot execute {action!r}")
+        ticket["updated_at"] = now_iso()
+        receipt = {**result, "operation_key": operation_key}
+        receipts[operation_key] = receipt
+        data["updated_at"] = now_iso()
+        self._write(data)
+        return {**receipt, "tracker_duplicate": False}
 
     def add_comment(self, number: str, body: str, author: str = "support-agent") -> dict:
         data = self._read()
@@ -87,4 +140,4 @@ class TicketInterceptor:
         return state
 
     def reset(self) -> None:
-        self._write({"seed": self.seed, "updated_at": now_iso(), "tickets": {}})
+        self._write({"seed": self.seed, "updated_at": now_iso(), "tickets": {}, "receipts": {}})

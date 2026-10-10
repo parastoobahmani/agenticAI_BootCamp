@@ -212,8 +212,10 @@ class CaseMemory:
         state.actions.append(ActionRecord(action_id=new_id("ACT"), tool=tool,
                                           args=dict(args), ok=ok, result=result))
         self.storage.log(case_id, "action_recorded", {"tool": tool, "ok": ok})
-        # A successful observable action changes the persisted case state.
-        return self._save(state)
+        # A failed attempt is audit history, not a case-content revision. Keeping
+        # the version stable allows an explicitly retried approved operation to
+        # recover safely through the tracker's durable operation receipt.
+        return self._save(state, changed=ok)
 
     def find_successful_action(self, case_id: str, tool: str, args: dict) -> ActionRecord | None:
         state = self.require_case(case_id)

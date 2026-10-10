@@ -108,6 +108,15 @@ class Orchestrator:
             code = getattr(error, "code", "tool_error")
             self.storage.log(args.get("case_id"), "tool_error", {"tool": name, "error": code})
             return {"ok": False, "error": code, "message": str(error)}
+        except Exception as error:
+            # Tool boundaries return a stable category and keep exception text
+            # out of user-visible output and audit logs.
+            self.storage.log(args.get("case_id"), "tool_error", {
+                "tool": name, "error": "tool_execution_failed",
+                "error_type": type(error).__name__,
+            })
+            return {"ok": False, "error": "tool_execution_failed",
+                    "message": "the tool failed before returning a result"}
         return {"ok": True, "result": result}
 
     def _tool_read_ticket(self, case_id: str) -> dict:
@@ -131,17 +140,10 @@ class Orchestrator:
             raise ToolError(error.code, str(error)) from error
 
     def _dispatch_action(self, case_id: str, proposal) -> dict:
-        number = case_id
-        if proposal.action == "comment":
-            comment = self.interceptor.add_comment(number, proposal.payload.get("body", ""))
-            return {"action": "comment", "comment": comment}
-        if proposal.action == "labels":
-            labels = self.interceptor.add_labels(number, proposal.payload.get("labels", []))
-            return {"action": "labels", "labels": labels}
-        if proposal.action == "state":
-            state = self.interceptor.set_state(number, proposal.payload.get("state", "open"))
-            return {"action": "state", "state": state}
-        raise ToolError("unsupported_action", f"cannot execute {proposal.action!r}")
+        operation_key = f"{case_id}:{proposal.proposal_id}:{proposal.action_hash}"
+        return self.interceptor.apply(
+            case_id, operation_key, proposal.action, proposal.payload
+        )
 
     # -- case lifecycle ------------------------------------------------------
     def open_case(self, case_id: str, title: str = "", body: str = "") -> CaseState:
