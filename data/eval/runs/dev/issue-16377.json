@@ -1,0 +1,104 @@
+{
+  "case_id": "issue-16377",
+  "split": "dev",
+  "bucket": "escalation",
+  "n_allowed_docs": 305,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": false,
+      "expected_actions": [
+        "escalate",
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": true,
+        "status": "escalated"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "92a9dee5ba6f",
+        "7a7c9235bfc3",
+        "8d491339ccf1",
+        "69f4c656d475",
+        "ed786b3284b3",
+        "d83f6ea47d2b",
+        "98d7e4facb4e",
+        "ca1ec71bd81c",
+        "a412185e1d3d",
+        "322e451635f1"
+      ],
+      "latency_sec": 0.11882370011880994,
+      "token_estimate": 635,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Grid layout",
+          "citation": "[past_report] Grid layout (chunk 92a9dee5ba6f)",
+          "source_id": "issue-11101"
+        },
+        {
+          "claim": "Title: Background color for `st.container`",
+          "citation": "[past_report] Background color for `st.container` (chunk 7a7c9235bfc3)",
+          "source_id": "issue-10531"
+        },
+        {
+          "claim": "Title: Ability to set background of st.container (or perhaps support for cards)",
+          "citation": "[past_report] Ability to set background of st.container (or perhaps support for cards) (chunk 8d491339ccf1)",
+          "source_id": "issue-12418"
+        },
+        {
+          "claim": "Title: Change the background color of dataframe cells",
+          "citation": "[past_report] Change the background color of dataframe cells (chunk 69f4c656d475)",
+          "source_id": "issue-11014"
+        },
+        {
+          "claim": "Title: Low rendering performance of st.data_editor and st.dataframe for formatted columns (via pandas styler)",
+          "citation": "[past_report] Low rendering performance of st.data_editor and st.dataframe for formatted columns (via pandas styler) (chunk ed786b3284b3)",
+          "source_id": "issue-10952"
+        },
+        {
+          "claim": "Title: add a 12 hr format option to time_input",
+          "citation": "[past_report] add a 12 hr format option to time_input (chunk d83f6ea47d2b)",
+          "source_id": "issue-8234"
+        },
+        {
+          "claim": "Title: Allow duplicates in st.multiselect",
+          "citation": "[past_report] Allow duplicates in st.multiselect (chunk 98d7e4facb4e)",
+          "source_id": "issue-14068"
+        },
+        {
+          "claim": "Title: Allow using custom images for `icon` parameters",
+          "citation": "[past_report] Allow using custom images for `icon` parameters (chunk ca1ec71bd81c)",
+          "source_id": "issue-9770"
+        },
+        {
+          "claim": "Title: Server-side validation of client-side widget constraints",
+          "citation": "[past_report] Server-side validation of client-side widget constraints (chunk a412185e1d3d)",
+          "source_id": "issue-16203"
+        },
+        {
+          "claim": "Title: Add support for alpha channel in `st.image`'s `channels` argument",
+          "citation": "[past_report] Add support for alpha channel in `st.image`'s `channels` argument (chunk 322e451635f1)",
+          "source_id": "issue-8586"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.11882370011880994,
+  "total_token_estimate": 635,
+  "n_turns": 1,
+  "ran_at": "2026-10-08T11:23:23.513593+00:00"
+}

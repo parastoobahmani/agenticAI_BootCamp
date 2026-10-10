@@ -1,0 +1,31 @@
+{
+  "case_id": "issue-16827",
+  "seed_issue_number": 16827,
+  "seed_created_at": "2026-09-04T13:26:53Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/16827",
+  "title": "Function st.sandbox() to embed AI generated Streamlit Code",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nI would like to propose a new st.sandbox() function that can be used to execute AI-generated Streamlit code for visualization purposes without introducing security risks. This could give users the possibility to create their own dashboards using a chat function.\n\n### Why?\n\nI tried to add different visualizations in a Chatbot within Streamlit. As my Chatbot gives the user the opportunity to chat with our database, I would like to visualize the result received from my agent. I added some functions that offer different visualizations like plotly diagrams and maps, but this procedure is static and not flexible.\nI also tried to create html code and embed it with st.html(), but the result was not consistent with the theming and looked awful. I checked also other existing python packages for this purpose but I had the impression they are not reliable. Maybe the limitation on streamlit functions (and limited additional packages) might be easier also from security perspective.\n\n### How?\n\nSomething like the following code would maybe be nice:\n\n```\nimport streamlit as st\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"month\": [\"Jan\", \"Feb\", \"Mar\"],\n    \"sales\": [120, 150, 180]\n    })\n\nllm_code = \"\"\"\nimport plotly.express as px\nfig = px.bar(df, x=\"month\", y=\"sales\")\nst.plotly_chart(fig)\n\"\"\"\n\nresult = st.sandbox(\n    dataframe=df,\n    code=llm_code,\n    allowed_packages=[\n        \"streamlit\",\n        \"pandas\",\n        \"plotly\"\n    ])\n\nif result.status == \"success\":\n    st.success(\"Code executed successfully\")\n\nelif result.status == \"error\":\n    st.warning(result.error_message)\n\nelif result.status == \"security_violation\":\n    st.error(result.error_message)\n```\n\n### Additional Context\n\n_No response_",
+  "labels": [
+    "type:enhancement",
+    "area:security",
+    "area:execution-model",
+    "feature:runtime",
+    "area:ai"
+  ],
+  "state": "open",
+  "stratum_auto": "ambiguous",
+  "is_multi_turn": false,
+  "split": "dev",
+  "visible_input": {
+    "title": "Function st.sandbox() to embed AI generated Streamlit Code",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nI would like to propose a new st.sandbox() function that can be used to execute AI-generated Streamlit code for visualization purposes without introducing security risks. This could give users the possibility to create their own dashboards using a chat function.\n\n### Why?\n\nI tried to add different visualizations in a Chatbot within Streamlit. As my Chatbot gives the user the opportunity to chat with our database, I would like to visualize the result received from my agent. I added some functions that offer different visualizations like plotly diagrams and maps, but this procedure is static and not flexible.\nI also tried to create html code and embed it with st.html(), but the result was not consistent with the theming and looked awful. I checked also other existing python packages for this purpose but I had the impression they are not reliable. Maybe the limitation on streamlit functions (and limited additional packages) might be easier also from security perspective.\n\n### How?\n\nSomething like the following code would maybe be nice:\n\n```\nimport streamlit as st\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"month\": [\"Jan\", \"Feb\", \"Mar\"],\n    \"sales\": [120, 150, 180]\n    })\n\nllm_code = \"\"\"\nimport plotly.express as px\nfig = px.bar(df, x=\"month\", y=\"sales\")\nst.plotly_chart(fig)\n\"\"\"\n\nresult = st.sandbox(\n    dataframe=df,\n    code=llm_code,\n    allowed_packages=[\n        \"streamlit\",\n        \"pandas\",\n        \"plotly\"\n    ])\n\nif result.status == \"success\":\n    st.success(\"Code executed successfully\")\n\nelif result.status == \"error\":\n    st.warning(result.error_message)\n\nelif result.status == \"security_violation\":\n    st.error(result.error_message)\n```\n\n### Additional Context\n\n_No response_",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2026-09-04T13:26:53Z",
+  "forbidden_source_ids": [
+    "issue-16827"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

@@ -1,0 +1,289 @@
+{
+  "case_id": "issue-8186",
+  "split": "dev",
+  "bucket": "ambiguous",
+  "n_allowed_docs": 77,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": true,
+      "expected_actions": [
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": true,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "98f5c53fb2b2",
+        "68ed47e8ba49",
+        "4f12502946b7",
+        "6105331bee9a",
+        "f7957fbfa0c5",
+        "aa8c162d13f0",
+        "bed7c661362a",
+        "cfe302e184ba",
+        "1bf64c012153",
+        "ba3cbbf7ebfa"
+      ],
+      "latency_sec": 0.03763930010609329,
+      "token_estimate": 902,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Add a \"position\" parameter/property to st.sidebar in order to be able to display the sidbar at LEFT, TOP, RIGHT of the screen",
+          "citation": "[past_report] Add a \"position\" parameter/property to st.sidebar in order to be able to display the sidbar at LEFT, TOP, RIGHT of the screen (chunk 98f5c53fb2b2)",
+          "source_id": "issue-7311"
+        },
+        {
+          "claim": "Title: Ability to clear a `date_input`",
+          "citation": "[past_report] Ability to clear a `date_input` (chunk 68ed47e8ba49)",
+          "source_id": "issue-8059"
+        },
+        {
+          "claim": "Title: Expose all Streamlit Types, I.E UploadedFile from file_uploader input",
+          "citation": "[past_report] Expose all Streamlit Types, I.E UploadedFile from file_uploader input (chunk 4f12502946b7)",
+          "source_id": "issue-7801"
+        },
+        {
+          "claim": "Title: Add form validation to make form fields required",
+          "citation": "[past_report] Add form validation to make form fields required (chunk 6105331bee9a)",
+          "source_id": "issue-7165"
+        },
+        {
+          "claim": "Title: Typeahead/autocomplete (async) st.selectbox / st.text_input widget",
+          "citation": "[past_report] Typeahead/autocomplete (async) st.selectbox / st.text_input widget (chunk f7957fbfa0c5)",
+          "source_id": "issue-7807"
+        },
+        {
+          "claim": "Title: Support Markdown in the options of `st.selectbox` and `st.multiselect`",
+          "citation": "[past_report] Support Markdown in the options of `st.selectbox` and `st.multiselect` (chunk aa8c162d13f0)",
+          "source_id": "issue-7466"
+        },
+        {
+          "claim": "NONE @ 2024-12-01T21:36:28Z]",
+          "citation": "[past_report] 2nd Sidebar (on right side) (chunk bed7c661362a)",
+          "source_id": "issue-1980"
+        },
+        {
+          "claim": "Title: Toasts are not preserved when page is rerun",
+          "citation": "[past_report] Toasts are not preserved when page is rerun (chunk cfe302e184ba)",
+          "source_id": "issue-7740"
+        },
+        {
+          "claim": "Title: I would like to be able to select a language in the date_input component",
+          "citation": "[past_report] I would like to be able to select a language in the date_input component (chunk 1bf64c012153)",
+          "source_id": "issue-7865"
+        },
+        {
+          "claim": "Title: Allow developer to limit the max number of results to show in the st.selectbox dropdown to improve widget performance",
+          "citation": "[past_report] Allow developer to limit the max number of results to show in the st.selectbox dropdown to improve widget performance (chunk ba3cbbf7ebfa)",
+          "source_id": "issue-7104"
+        }
+      ]
+    },
+    {
+      "turn_index": 1,
+      "action": "answer",
+      "decision_ok": true,
+      "state_ok": true,
+      "expected_actions": [
+        "answer",
+        "ask_clarification",
+        "escalate"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": false,
+        "escalated": false,
+        "last_action": "answer"
+      },
+      "response_text": "lp Streamlit prioritize this feature, react with a 👍 (thumbs up emoji) to the initial post.**\nSource: [past_report] Add a \"position\" parameter/property to st.sidebar in order to be able to display the sidbar at LEFT, TOP, RIGHT of the screen (chunk 7367e2d8ed66)",
+      "retrieved_chunk_ids": [
+        "4f12502946b7",
+        "8fa2a238213c",
+        "849fc3ac46e1",
+        "7367e2d8ed66",
+        "0a7d83b5e8d1",
+        "1101faf5b0ed",
+        "162a92582a91",
+        "45c7537b3289",
+        "d24a1489ff29",
+        "98f5c53fb2b2"
+      ],
+      "latency_sec": 0.03543279995210469,
+      "token_estimate": 1007,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Expose all Streamlit Types, I.E UploadedFile from file_uploader input",
+          "citation": "[past_report] Expose all Streamlit Types, I.E UploadedFile from file_uploader input (chunk 4f12502946b7)",
+          "source_id": "issue-7801"
+        },
+        {
+          "claim": "Title: Select all for a CheckboxColumn in data_editor",
+          "citation": "[past_report] Select all for a CheckboxColumn in data_editor (chunk 8fa2a238213c)",
+          "source_id": "issue-7633"
+        },
+        {
+          "claim": "Title: Make Streamlit more friendly to multi-threading",
+          "citation": "[past_report] Make Streamlit more friendly to multi-threading (chunk 849fc3ac46e1)",
+          "source_id": "issue-7851"
+        },
+        {
+          "claim": "lp Streamlit prioritize this feature, react with a 👍 (thumbs up emoji) to the initial post.**",
+          "citation": "[past_report] Add a \"position\" parameter/property to st.sidebar in order to be able to display the sidbar at LEFT, TOP, RIGHT of the screen (chunk 7367e2d8ed66)",
+          "source_id": "issue-7311"
+        },
+        {
+          "claim": "ssage in the text_input which will show a small beautiful message below the input.",
+          "citation": "[past_report] It would be great to add error texts into the text_input (chunk 0a7d83b5e8d1)",
+          "source_id": "issue-7348"
+        },
+        {
+          "claim": "amework that I’ve ever worked with (I do recognise that Streamlit probably does not aim to become an all-purpose web framework but still), and in my humble opinion, make it difficu",
+          "citation": "[past_report] Add form validation to make form fields required (chunk 1101faf5b0ed)",
+          "source_id": "issue-7165"
+        },
+        {
+          "claim": "on for that in place, I don't really think this feature I'm asking for is feasible.\r",
+          "citation": "[past_report] Typeahead/autocomplete (async) st.selectbox / st.text_input widget (chunk 162a92582a91)",
+          "source_id": "issue-7807"
+        },
+        {
+          "claim": "feature, react with a 👍 (thumbs up emoji) to the initial post.**",
+          "citation": "[past_report] copy and paste values from excel in to st.data_editor (chunk 45c7537b3289)",
+          "source_id": "issue-7866"
+        },
+        {
+          "claim": "Title: Selection and click events for `st.image`",
+          "citation": "[past_report] Selection and click events for `st.image` (chunk d24a1489ff29)",
+          "source_id": "issue-298"
+        },
+        {
+          "claim": "Title: Add a \"position\" parameter/property to st.sidebar in order to be able to display the sidbar at LEFT, TOP, RIGHT of the screen",
+          "citation": "[past_report] Add a \"position\" parameter/property to st.sidebar in order to be able to display the sidbar at LEFT, TOP, RIGHT of the screen (chunk 98f5c53fb2b2)",
+          "source_id": "issue-7311"
+        }
+      ]
+    },
+    {
+      "turn_index": 2,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": false,
+      "expected_actions": [
+        "answer",
+        "ask_clarification",
+        "escalate"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "7367e2d8ed66",
+        "4f12502946b7",
+        "849fc3ac46e1",
+        "8fa2a238213c",
+        "162a92582a91",
+        "733be68ecd7b",
+        "0a7d83b5e8d1",
+        "1be942afa701",
+        "45c7537b3289",
+        "fc366cc2d13b"
+      ],
+      "latency_sec": 0.03571600001305342,
+      "token_estimate": 1142,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "lp Streamlit prioritize this feature, react with a 👍 (thumbs up emoji) to the initial post.**",
+          "citation": "[past_report] Add a \"position\" parameter/property to st.sidebar in order to be able to display the sidbar at LEFT, TOP, RIGHT of the screen (chunk 7367e2d8ed66)",
+          "source_id": "issue-7311"
+        },
+        {
+          "claim": "Title: Expose all Streamlit Types, I.E UploadedFile from file_uploader input",
+          "citation": "[past_report] Expose all Streamlit Types, I.E UploadedFile from file_uploader input (chunk 4f12502946b7)",
+          "source_id": "issue-7801"
+        },
+        {
+          "claim": "Title: Make Streamlit more friendly to multi-threading",
+          "citation": "[past_report] Make Streamlit more friendly to multi-threading (chunk 849fc3ac46e1)",
+          "source_id": "issue-7851"
+        },
+        {
+          "claim": "Title: Select all for a CheckboxColumn in data_editor",
+          "citation": "[past_report] Select all for a CheckboxColumn in data_editor (chunk 8fa2a238213c)",
+          "source_id": "issue-7633"
+        },
+        {
+          "claim": "on for that in place, I don't really think this feature I'm asking for is feasible.\r",
+          "citation": "[past_report] Typeahead/autocomplete (async) st.selectbox / st.text_input widget (chunk 162a92582a91)",
+          "source_id": "issue-7807"
+        },
+        {
+          "claim": "d = st.selectbox('Select appropiate data', options=['data\\n\\n**element 1**: description *important*', 'data\\n\\n**element 2**: other option'])\r",
+          "citation": "[past_report] Support Markdown in the options of `st.selectbox` and `st.multiselect` (chunk 733be68ecd7b)",
+          "source_id": "issue-7466"
+        },
+        {
+          "claim": "ssage in the text_input which will show a small beautiful message below the input.",
+          "citation": "[past_report] It would be great to add error texts into the text_input (chunk 0a7d83b5e8d1)",
+          "source_id": "issue-7348"
+        },
+        {
+          "claim": "it comes to the UI. As much as I dislike Excel – you can get a lot of control on a single screen there. I have seem similar arguments when it comes to pitching Streamlit + Altair a",
+          "citation": "[past_report] Compact layout and compact widgets to get the most from the available screen space (chunk 1be942afa701)",
+          "source_id": "issue-6867"
+        },
+        {
+          "claim": "feature, react with a 👍 (thumbs up emoji) to the initial post.**",
+          "citation": "[past_report] copy and paste values from excel in to st.data_editor (chunk 45c7537b3289)",
+          "source_id": "issue-7866"
+        },
+        {
+          "claim": "slightly nicer IMHO than having a function for every selectbox.",
+          "citation": "[past_report] Pass state as parameter to `on_change` callback (chunk fc366cc2d13b)",
+          "source_id": "issue-5305"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.10878810007125139,
+  "total_token_estimate": 3051,
+  "n_turns": 3,
+  "ran_at": "2026-10-08T11:23:22.318330+00:00"
+}

@@ -1,0 +1,103 @@
+{
+  "case_id": "issue-16448",
+  "split": "dev",
+  "bucket": "escalation",
+  "n_allowed_docs": 321,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": false,
+      "expected_actions": [
+        "escalate",
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": true,
+        "status": "escalated"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "108fdaf33cc0",
+        "79f138a89aa9",
+        "dd37ad924921",
+        "cfe302e184ba",
+        "c665f0e33c98",
+        "68981aed61f1",
+        "66e66113e38f",
+        "a4af008f33c9",
+        "bd8f9ad59f8e",
+        "87b031544581"
+      ],
+      "latency_sec": 0.12477389979176223,
+      "token_estimate": 608,
+      "gaps": [
+        "No matching release note found."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Popover is truncated when app is oembedded",
+          "citation": "[past_report] Popover is truncated when app is oembedded (chunk 108fdaf33cc0)",
+          "source_id": "issue-9340"
+        },
+        {
+          "claim": "Title: --server.port does not change, always defaults to 8501",
+          "citation": "[past_report] --server.port does not change, always defaults to 8501 (chunk 79f138a89aa9)",
+          "source_id": "issue-7426"
+        },
+        {
+          "claim": "Title: time_input does not keep the entered value when tabbing out of it",
+          "citation": "[past_report] time_input does not keep the entered value when tabbing out of it (chunk dd37ad924921)",
+          "source_id": "issue-10959"
+        },
+        {
+          "claim": "Title: Toasts are not preserved when page is rerun",
+          "citation": "[past_report] Toasts are not preserved when page is rerun (chunk cfe302e184ba)",
+          "source_id": "issue-7740"
+        },
+        {
+          "claim": "Title: Reduced number of supported options in selectbox while in Popover",
+          "citation": "[past_report] Reduced number of supported options in selectbox while in Popover (chunk c665f0e33c98)",
+          "source_id": "issue-16069"
+        },
+        {
+          "claim": "Title: Stale output from a long-running computation erroneously shows as not stale when app rerun",
+          "citation": "[past_report] Stale output from a long-running computation erroneously shows as not stale when app rerun (chunk 68981aed61f1)",
+          "source_id": "issue-9904"
+        },
+        {
+          "claim": "Title: Dialog is re-executed if `st.rerun` is triggered in an `if` statement that uses the return val from an `st.button`.",
+          "citation": "[past_report] Dialog is re-executed if `st.rerun` is triggered in an `if` statement that uses the return val from an `st.button`. (chunk 66e66113e38f)",
+          "source_id": "issue-13009"
+        },
+        {
+          "claim": "Title: server.enableCORS=false warning incorrectly says the value is overridden to true",
+          "citation": "[past_report] server.enableCORS=false warning incorrectly says the value is overridden to true (chunk a4af008f33c9)",
+          "source_id": "issue-16390"
+        },
+        {
+          "claim": "Title: ValueError: blake2b blocked on FIPS systems since 1.57.0",
+          "citation": "[past_report] ValueError: blake2b blocked on FIPS systems since 1.57.0 (chunk bd8f9ad59f8e)",
+          "source_id": "issue-15148"
+        },
+        {
+          "claim": "65, in _call_connection_lost",
+          "citation": "[past_report] Running Streamlit with Starlette in Corporate Network (chunk 87b031544581)",
+          "source_id": "issue-15378"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.12477389979176223,
+  "total_token_estimate": 608,
+  "n_turns": 1,
+  "ran_at": "2026-10-08T11:23:23.642513+00:00"
+}

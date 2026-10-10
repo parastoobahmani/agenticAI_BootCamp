@@ -1,0 +1,102 @@
+{
+  "case_id": "issue-2975",
+  "split": "dev",
+  "bucket": "answerable",
+  "n_allowed_docs": 13,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": false,
+      "state_ok": false,
+      "expected_actions": [
+        "answer"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "5fb5ef73ee5f",
+        "2ce4fccdeca8",
+        "9beb4d6b7e9c",
+        "b1e766fcecb1",
+        "172ce290db08",
+        "096b56e35fa5",
+        "798c94bdf15c",
+        "8c56efb4b27a",
+        "39eb9cb3e870",
+        "6332252e48a6"
+      ],
+      "latency_sec": 0.007690099999308586,
+      "token_estimate": 417,
+      "gaps": [
+        "No matching release note found."
+      ],
+      "citations": [
+        {
+          "claim": "xpected behavior:\r",
+          "citation": "[past_report] pydeck_chart not showing different pydeck Views types (chunk 5fb5ef73ee5f)",
+          "source_id": "issue-2302"
+        },
+        {
+          "claim": "d it, this solution [#744 (comment)](https://github.com/streamlit/streamlit/issues/744#issuecomment-1483874287) was posted by the maintainer of ib_insync\r",
+          "citation": "[past_report] RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio (chunk 2ce4fccdeca8)",
+          "source_id": "issue-744"
+        },
+        {
+          "claim": "_event_loop() as loop:\r",
+          "citation": "[past_report] RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio (chunk 9beb4d6b7e9c)",
+          "source_id": "issue-744"
+        },
+        {
+          "claim": "Title: RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio",
+          "citation": "[past_report] RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio (chunk b1e766fcecb1)",
+          "source_id": "issue-744"
+        },
+        {
+          "claim": "e original source here!\r",
+          "citation": "[past_report] RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio (chunk 172ce290db08)",
+          "source_id": "issue-744"
+        },
+        {
+          "claim": "ne 39, in render_data\r",
+          "citation": "[past_report] RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio (chunk 096b56e35fa5)",
+          "source_id": "issue-744"
+        },
+        {
+          "claim": "mit the number of applications that can use streamlit, surely?",
+          "citation": "[past_report] RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio (chunk 798c94bdf15c)",
+          "source_id": "issue-744"
+        },
+        {
+          "claim": "Streamlit's `ScriptRunner` creates a dedicated thread (`ScriptRunner.scriptThread`) to execute user scripts, but this thread does not have an asyncio event loop associated with it.",
+          "citation": "[past_report] RuntimeError: There is no current event loop in thread error with Streamlit and Asyncio (chunk 8c56efb4b27a)",
+          "source_id": "issue-744"
+        },
+        {
+          "claim": "Title: Add option to limit st.cache size by memory footprint rather than total number of entries",
+          "citation": "[past_report] Add option to limit st.cache size by memory footprint rather than total number of entries (chunk 39eb9cb3e870)",
+          "source_id": "issue-2911"
+        },
+        {
+          "claim": "43062719/110243821-fd836200-7f96-11eb-85ac-e323b3c02432.png)",
+          "citation": "[past_report] Altair mark_geo chart not rendered (chunk 6332252e48a6)",
+          "source_id": "issue-2910"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.007690099999308586,
+  "total_token_estimate": 417,
+  "n_turns": 1,
+  "ran_at": "2026-10-08T11:23:22.445253+00:00"
+}

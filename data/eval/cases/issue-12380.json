@@ -1,0 +1,28 @@
+{
+  "case_id": "issue-12380",
+  "seed_issue_number": 12380,
+  "seed_created_at": "2025-08-29T22:13:50Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/12380",
+  "title": "Update error dialogs to be more helpful",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nWe have some error states that will require manual page reloads. In its current state, it's not very obvious for the user what to do, e.g.:\n\n<img width=\"374\" height=\"118\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/7b3f1ffb-1660-42e9-a6a7-60c363642240\" />\n\nThis should probably be updated to something like:\n\n> Connection timed out. Please try reloading the app to re-establish the connection. If the problem persists, please contact the app builder.\n\nSame for other error dialogs.\n\n### Why?\n\n_No response_\n\n### How?\n\n_No response_\n\n### Additional Context\n\n_No response_",
+  "labels": [
+    "type:enhancement",
+    "area:frontend"
+  ],
+  "state": "open",
+  "stratum_auto": "ambiguous",
+  "is_multi_turn": true,
+  "split": "test",
+  "visible_input": {
+    "title": "Update error dialogs to be more helpful",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nWe have some error states that will require manual page reloads. In its current state, it's not very obvious for the user what to do, e.g.:\n\n<img width=\"374\" height=\"118\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/7b3f1ffb-1660-42e9-a6a7-60c363642240\" />\n\nThis should probably be updated to something like:\n\n> Connection timed out. Please try reloading the app to re-establish the connection. If the problem persists, please contact the app builder.\n\nSame for other error dialogs.\n\n### Why?\n\n_No response_\n\n### How?\n\n_No response_\n\n### Additional Context\n\n_No response_",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2025-08-29T22:13:50Z",
+  "forbidden_source_ids": [
+    "issue-12380"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

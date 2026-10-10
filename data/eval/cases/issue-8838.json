@@ -1,0 +1,30 @@
+{
+  "case_id": "issue-8838",
+  "seed_issue_number": 8838,
+  "seed_created_at": "2024-06-05T21:34:40Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/8838",
+  "title": "st.code modifies text when copied.",
+  "body": "### Checklist\r\n\r\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\r\n- [X] I added a very descriptive title to this issue.\r\n- [X] I have provided sufficient information below to help reproduce this issue.\r\n\r\n### Summary\r\n\r\nThe st.code function modifies the text that is placed in it.  It appears to only be trailing text.  The issue is that I have a use case that has code/text that is CRC verified so it is not OK to delete things, even if they are white space.\r\n\r\n### Reproducible Code Example\r\n\r\n```Python\r\nimport streamlit as st\r\n\r\nfoo = \"hello world   \"  # <--- trailing space in string\r\nst.code(foo)\r\n```\r\n\r\n\r\n### Steps To Reproduce\r\n\r\nRun the above code.\r\nPress the copy button in the top right of the code widget.\r\n\r\n### Expected Behavior\r\n\r\nThe clipboard should have the text\r\n`hello world    `\r\n\r\n### Current Behavior\r\n\r\nThe clipboard has the text\r\n`hello world`\r\n\r\n### Is this a regression?\r\n\r\n- [ ] Yes, this used to work in a previous version.\r\n\r\n### Debug info\r\n\r\n\r\nVersion 1.33\r\nPython 3.10\r\nOS= Windows\r\nBrowser Chrome\r\n\r\n### Additional Information\r\n\r\nI would like an extra keyword parameter called something like \"frozen,\" which could be set to true and make the passed-in immutable. It should default False to keep the current behavior.",
+  "labels": [
+    "type:bug",
+    "status:confirmed",
+    "priority:P4",
+    "feature:st.code"
+  ],
+  "state": "open",
+  "stratum_auto": "answerable",
+  "is_multi_turn": false,
+  "split": "dev",
+  "visible_input": {
+    "title": "st.code modifies text when copied.",
+    "body": "### Checklist\r\n\r\n- [X] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar issues.\r\n- [X] I added a very descriptive title to this issue.\r\n- [X] I have provided sufficient information below to help reproduce this issue.\r\n\r\n### Summary\r\n\r\nThe st.code function modifies the text that is placed in it.  It appears to only be trailing text.  The issue is that I have a use case that has code/text that is CRC verified so it is not OK to delete things, even if they are white space.\r\n\r\n### Reproducible Code Example\r\n\r\n```Python\r\nimport streamlit as st\r\n\r\nfoo = \"hello world   \"  # <--- trailing space in string\r\nst.code(foo)\r\n```\r\n\r\n\r\n### Steps To Reproduce\r\n\r\nRun the above code.\r\nPress the copy button in the top right of the code widget.\r\n\r\n### Expected Behavior\r\n\r\nThe clipboard should have the text\r\n`hello world    `\r\n\r\n### Current Behavior\r\n\r\nThe clipboard has the text\r\n`hello world`\r\n\r\n### Is this a regression?\r\n\r\n- [ ] Yes, this used to work in a previous version.\r\n\r\n### Debug info\r\n\r\n\r\nVersion 1.33\r\nPython 3.10\r\nOS= Windows\r\nBrowser Chrome\r\n\r\n### Additional Information\r\n\r\nI would like an extra keyword parameter called something like \"frozen,\" which could be set to true and make the passed-in immutable. It should default False to keep the current behavior.",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2024-06-05T21:34:40Z",
+  "forbidden_source_ids": [
+    "issue-8838"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

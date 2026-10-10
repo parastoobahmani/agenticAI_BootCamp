@@ -1,0 +1,28 @@
+{
+  "case_id": "issue-12302",
+  "seed_issue_number": 12302,
+  "seed_created_at": "2025-08-24T12:49:29Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/12302",
+  "title": "Support Apache ECharts natively",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nThe [streamlit-echarts](https://github.com/andfanilo/streamlit-echarts) custom component is quite popular and echarts provides a [huge number of chart types](https://echarts.apache.org/examples/en/index.html) complementing plotly & vega charts. Unfortunately, [streamlit-echarts](https://github.com/andfanilo/streamlit-echarts) isn't maintained anymore. Maybe we should add echarts support natively as `st.echarts_chart`?\n\n### Why?\n\n_No response_\n\n### How?\n\n_No response_\n\n### Additional Context\n\n- There is also a popular python API for creating echarts: https://github.com/pyecharts/pyecharts",
+  "labels": [
+    "type:enhancement",
+    "feature:charts"
+  ],
+  "state": "closed",
+  "stratum_auto": "escalation",
+  "is_multi_turn": false,
+  "split": "test",
+  "visible_input": {
+    "title": "Support Apache ECharts natively",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nThe [streamlit-echarts](https://github.com/andfanilo/streamlit-echarts) custom component is quite popular and echarts provides a [huge number of chart types](https://echarts.apache.org/examples/en/index.html) complementing plotly & vega charts. Unfortunately, [streamlit-echarts](https://github.com/andfanilo/streamlit-echarts) isn't maintained anymore. Maybe we should add echarts support natively as `st.echarts_chart`?\n\n### Why?\n\n_No response_\n\n### How?\n\n_No response_\n\n### Additional Context\n\n- There is also a popular python API for creating echarts: https://github.com/pyecharts/pyecharts",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2025-08-24T12:49:29Z",
+  "forbidden_source_ids": [
+    "issue-12302"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

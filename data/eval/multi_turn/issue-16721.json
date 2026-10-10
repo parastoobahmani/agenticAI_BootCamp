@@ -1,0 +1,60 @@
+{
+  "case_id": "issue-16721",
+  "turns": [
+    {
+      "role": "user",
+      "visible": true,
+      "text": "Minimize `StreamlitDuplicateElementId` errors\n\n### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nReduce how often developers hit `StreamlitDuplicateElementId` (duplicate widget/element ID) errors by making element ID generation smarter about the surrounding container context — so that identical widgets placed in different containers (chat messages, fragments, columns, etc.) don't collide without the developer having to manually craft unique `key`s everywhere.\n\n### Why?\n\nIt's increasingly common to have repeating identical widgets across different chat messages, fragment calls, or columns. Today the developer must manage and track a unique `key` for each, which adds a lot of boilerplate and complexity. This is especially painful in chat/LLM apps (in-chat interactive widgets, code-eval \"run\" buttons, generated suggestion buttons) — and for LLM-generated code it can be nearly impossible to solve, since the model may emit duplicate widgets across messages. `st.form` already avoids this within forms (the `form_id` is part of the ID), which shows the approach can work more broadly.\n\nThis is a high-impact papercut: `StreamlitDuplicateElementId` is the **No. 3 most thrown uncaught exception type**, occurring in ~**0.5% of all apps**.\n\nA related pain point: some elements raise `StreamlitDuplicateElementId` and tell you to add a `key`, but **don't actually support a `key` argument**, leaving no clean fix. Examples:\n- #11424 — showing the same `st.plotly_chart` multiple times raises `StreamlitDuplicateElementId`.\n- #11360 — multiple `st.audio` calls with the same parameters and `autoplay=True` raise a duplicate error that prompts you to add a key, but `st.audio` has no `key`.\n\n### How?\n\nIncorporate more of the container context into an element's ID computation, focusing on **stable, explicit signals** (not user-facing text). Ideas:\n\n- **Wrapping container keys:** automatically include the `key` of wrapping containers / `st.fragment` / `st.form` (those that support keys) in the child element's ID computation. Only for containers that have an explicit key set.\n  - If we do this, it strengthens the case for **adding `key` to more containers and elements** — see #9580 and the concrete cases #11424 (`st.plotly_chart`) and #11360 (`st.audio`), plus #6152.\n- **Re-evaluate key namespaces and parent-key reuse:** regular element keys, form IDs, and fragment definition keys are currently tracked in separate registries. `st.form` already contributes its `form_id` to the auto-generated IDs of unkeyed children; fragment keys identify fragment definitions but are not currently part of regular child element ID computation. Consider both:\n  - Reusing explicit form / fragment / keyed-container keys as stable parent context for **unkeyed** descendants.\n  - Whether form and fragment keys should participate in the same duplicate-key checks as regular element keys, or remain separate namespaces that only contribute parent context.\n\n  Treat registry unification as a compatibility decision: the same string can currently be reused between some form / fragment and regular-element keys, and one keyed fragment definition can intentionally run from multiple call sites. Preserve the rule that an explicit child `key` is authoritative and independent of its container.\n- **Column index in `st.columns`:** include the column number in the ID computation so the same widget in different columns of the same `st.columns` call doesn't collide.\n- **Parent container types:** include the parent container type(s) as part of the ID computation.\n\n**Important caution — be conservative about what goes into ID generation.** Adding container context to the ID changes element identity, which has a subtle downside: a widget that **dynamically moves between containers** (e.g. its wrapping container changes across reruns) would get a new ID and thus lose its identity and state. This is the main risk to weigh (more so than existing widget state resetting on upgrade), and it can be fixed by explicitly setting a `key` on that element so its identity no longer depends on the container context. In particular:\n- **Do not** include user-facing **labels/titles** of wrapping containers (e.g. expander label, dialog title, popover label, tab name) in the ID — these change often and would be fragile/surprising. Prefer **explicitly set keys** for disambiguation instead.\n- Auto-added context must apply **only to widgets without an explicit `key`**. When a user sets an explicit `key=\"x\"`, the ID must **not** include the added container context — an explicit key should always behave predictably and stay stable regardless of the surrounding containers. Think through backwards compatibility / migration carefully.\n\n### Additional Context\n\n- Add `key` to more elements/containers: #9580, and concrete duplicate-ID cases where no `key` is available today: #11424 (`st.plotly_chart`), #11360 (`st.audio`).\n- Related: #6152 (composable/reusable component API for larger apps).\n- `st.form` already includes `form_id` in widget ID generation — a useful precedent.\n- There is an older internal product spec exploring options (implicit container key-prefix, adding `key`/`key_prefix` to containers, best-practice docs, or fixing duplicate IDs via enumeration). This issue intentionally leans toward the conservative, explicit-key-based approaches from that discussion.\n"
+    },
+    {
+      "role": "assistant",
+      "ideal_action": "ask_clarification",
+      "acceptable": [
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": true,
+        "escalated": false,
+        "status": "open"
+      }
+    },
+    {
+      "role": "user",
+      "visible": false,
+      "text": "**To help Streamlit prioritize this feature, react with a 👍 (thumbs up emoji) to the initial post.**\n\nYour vote helps us identify which enhancements matter most to our users.\n\n![Views](https://api.views-badge.org/badge/st-issue-16721)\n"
+    },
+    {
+      "role": "assistant",
+      "ideal_action": "answer",
+      "acceptable": [
+        "answer",
+        "ask_clarification",
+        "escalate"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      }
+    },
+    {
+      "role": "user",
+      "visible": false,
+      "text": "This is an enhancement to make auto-generated element IDs container-aware so identical unkeyed widgets in different chat messages, fragments, columns, or keyed containers no longer collide. Today `compute_and_register_element_id` hashes element type, parameters, page hash, `form_id`, and main vs sidebar — but not wrapping-container keys, column index, or parent block types. That matches the reported `StreamlitDuplicateElementId` rate (~0.5% of apps). The proposed approach is conservative: only mix in stable explicit signals (keyed parents, column index), never labels/titles, and never when the user set an explicit `key`. Main risk is identity/state loss if an unkeyed widget moves between containers across reruns. Note: `st.chat_message`, `st.columns`, and `@st.fragment` still have no `key`; `st.container` keys are CSS-only and are not folded into child IDs. `st.audio`/`st.video` still compute IDs with `user_key=None` (only when `autoplay=True`) and cannot take a `key`. `st.plotly_chart` now accepts `key`, so that cited gap is partly closed.\n\n### Related Issues\n\n- [#11424](https://github.com/streamlit/streamlit/issues/11424) — Same `StreamlitDuplicateElementId` when rendering the same Plotly figure twice without a unique auto-ID. Closely related concrete case; `st.plotly_chart` now has a `key`, but unkeyed duplicates still collide.\n- [#11360](https://github.com/streamlit/streamlit/issues/11360) — Same error for multiple `st.audio(..., autoplay=True)` calls. The error tells use"
+    },
+    {
+      "role": "assistant",
+      "ideal_action": "answer",
+      "acceptable": [
+        "answer",
+        "ask_clarification",
+        "escalate"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      }
+    }
+  ]
+}

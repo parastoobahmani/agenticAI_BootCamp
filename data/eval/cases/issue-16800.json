@@ -1,0 +1,29 @@
+{
+  "case_id": "issue-16800",
+  "seed_issue_number": 16800,
+  "seed_created_at": "2026-09-03T11:26:49Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/16800",
+  "title": "Support background refresh for async cached functions",
+  "body": "### Checklist\n\n- [x] I searched the existing issues for similar feature requests.\n- [x] I added a descriptive title and summary.\n\n### Summary\n\nSupport `refresh_mode=\"background\"` when `st.cache_data` or `st.cache_resource` decorates an async function.\n\nPR #16168 adds foreground caching for async functions but intentionally rejects this combination:\n\n```python\n@st.cache_data(ttl=\"10m\", refresh_mode=\"background\")\nasync def fetch_data():\n    return await load_data()\n```\n\nBackground refresh is useful for async data fetching because apps can continue serving a cached value while a potentially slow network request refreshes it.\n\n### Why?\n\nAsync functions commonly perform latency-sensitive API, database, and cloud requests. Serving stale data while refreshing asynchronously would prevent these operations from blocking an app rerun after the TTL expires.\n\nThe existing background-refresh worker invokes cached functions synchronously. Supporting coroutine functions requires explicit behavior for:\n\n- executing the refresh coroutine;\n- event-loop ownership;\n- cancellation and errors;\n- same-key refresh deduplication;\n- cache clearing while a refresh is running;\n- discarding late results after cache or session invalidation.\n\n### How?\n\nThis issue is intended to collect interest and concrete use cases before choosing an execution and lifecycle design. A future implementation could share internal execution primitives with Streamlit background tasks while keeping cache-refresh behavior separate from the public background-task API.\n\nFor foreground cached calls, the caller should continue to drive the coroutine. Streamlit-owned task infrastructure could drive refresh coroutines independently in background mode.\n\nUntil this is supported, async cached functions should use `refresh_mode=\"foreground\"`.\n\n### Additional context\n\n- Async cache support: #8308\n- Foreground async cache implementation: #16168",
+  "labels": [
+    "type:enhancement",
+    "feature:cache",
+    "area:threading/processing"
+  ],
+  "state": "open",
+  "stratum_auto": "ambiguous",
+  "is_multi_turn": false,
+  "split": "test",
+  "visible_input": {
+    "title": "Support background refresh for async cached functions",
+    "body": "### Checklist\n\n- [x] I searched the existing issues for similar feature requests.\n- [x] I added a descriptive title and summary.\n\n### Summary\n\nSupport `refresh_mode=\"background\"` when `st.cache_data` or `st.cache_resource` decorates an async function.\n\nPR #16168 adds foreground caching for async functions but intentionally rejects this combination:\n\n```python\n@st.cache_data(ttl=\"10m\", refresh_mode=\"background\")\nasync def fetch_data():\n    return await load_data()\n```\n\nBackground refresh is useful for async data fetching because apps can continue serving a cached value while a potentially slow network request refreshes it.\n\n### Why?\n\nAsync functions commonly perform latency-sensitive API, database, and cloud requests. Serving stale data while refreshing asynchronously would prevent these operations from blocking an app rerun after the TTL expires.\n\nThe existing background-refresh worker invokes cached functions synchronously. Supporting coroutine functions requires explicit behavior for:\n\n- executing the refresh coroutine;\n- event-loop ownership;\n- cancellation and errors;\n- same-key refresh deduplication;\n- cache clearing while a refresh is running;\n- discarding late results after cache or session invalidation.\n\n### How?\n\nThis issue is intended to collect interest and concrete use cases before choosing an execution and lifecycle design. A future implementation could share internal execution primitives with Streamlit background tasks while keeping cache-refresh behavior separate from the public background-task API.\n\nFor foreground cached calls, the caller should continue to drive the coroutine. Streamlit-owned task infrastructure could drive refresh coroutines independently in background mode.\n\nUntil this is supported, async cached functions should use `refresh_mode=\"foreground\"`.\n\n### Additional context\n\n- Async cache support: #8308\n- Foreground async cache implementation: #16168",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2026-09-03T11:26:49Z",
+  "forbidden_source_ids": [
+    "issue-16800"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}

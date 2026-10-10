@@ -1,0 +1,290 @@
+{
+  "case_id": "issue-16481",
+  "split": "dev",
+  "bucket": "escalation",
+  "n_allowed_docs": 327,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": false,
+      "expected_actions": [
+        "escalate",
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": true,
+        "status": "escalated"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "bf096906c391",
+        "79b1ab60f371",
+        "7fff08d6cbc6",
+        "d9d9064d322c",
+        "b6b5d6e3aba2",
+        "7a7c9235bfc3",
+        "d83f6ea47d2b",
+        "ddfb00c08d76",
+        "aa8c162d13f0",
+        "2ae278bdbbd4"
+      ],
+      "latency_sec": 0.12465129978954792,
+      "token_estimate": 484,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Add a stateful button",
+          "citation": "[past_report] Add a stateful button (chunk bf096906c391)",
+          "source_id": "issue-16240"
+        },
+        {
+          "claim": "Title: Allow prepending/appending text (prefix/suffix addons) to `st.text_input`",
+          "citation": "[past_report] Allow prepending/appending text (prefix/suffix addons) to `st.text_input` (chunk 79b1ab60f371)",
+          "source_id": "issue-16310"
+        },
+        {
+          "claim": "Title: Add a `st.card` layout container",
+          "citation": "[past_report] Add a `st.card` layout container (chunk 7fff08d6cbc6)",
+          "source_id": "issue-16379"
+        },
+        {
+          "claim": "Title: `st.avatar` to show a standalone avatar image",
+          "citation": "[past_report] `st.avatar` to show a standalone avatar image (chunk d9d9064d322c)",
+          "source_id": "issue-12475"
+        },
+        {
+          "claim": "Title: Add `st.sidebar.bottom` container to pin elements to the bottom of the sidebar",
+          "citation": "[past_report] Add `st.sidebar.bottom` container to pin elements to the bottom of the sidebar (chunk b6b5d6e3aba2)",
+          "source_id": "issue-16373"
+        },
+        {
+          "claim": "Title: Background color for `st.container`",
+          "citation": "[past_report] Background color for `st.container` (chunk 7a7c9235bfc3)",
+          "source_id": "issue-10531"
+        },
+        {
+          "claim": "Title: add a 12 hr format option to time_input",
+          "citation": "[past_report] add a 12 hr format option to time_input (chunk d83f6ea47d2b)",
+          "source_id": "issue-8234"
+        },
+        {
+          "claim": "Title: New component: `st.drawer` as a dismissable container",
+          "citation": "[past_report] New component: `st.drawer` as a dismissable container (chunk ddfb00c08d76)",
+          "source_id": "issue-8186"
+        },
+        {
+          "claim": "Title: Support Markdown in the options of `st.selectbox` and `st.multiselect`",
+          "citation": "[past_report] Support Markdown in the options of `st.selectbox` and `st.multiselect` (chunk aa8c162d13f0)",
+          "source_id": "issue-7466"
+        },
+        {
+          "claim": "Title: Add a \"progress\" chart type to `st.metric`",
+          "citation": "[past_report] Add a \"progress\" chart type to `st.metric` (chunk 2ae278bdbbd4)",
+          "source_id": "issue-16435"
+        }
+      ]
+    },
+    {
+      "turn_index": 1,
+      "action": "answer",
+      "decision_ok": true,
+      "state_ok": true,
+      "expected_actions": [
+        "answer",
+        "ask_clarification",
+        "escalate"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": false,
+        "escalated": false,
+        "last_action": "answer"
+      },
+      "response_text": "Title: Add argument `key` to more elements\nSource: [past_report] Add argument `key` to more elements (chunk 285d711e014e)",
+      "retrieved_chunk_ids": [
+        "c70c24b8b108",
+        "08f658143247",
+        "285d711e014e",
+        "849fc3ac46e1",
+        "58dea4a50c69",
+        "4f12502946b7",
+        "1919d9554287",
+        "d5761aefb91a",
+        "8fa2a238213c",
+        "ce23829d29ef"
+      ],
+      "latency_sec": 0.13108720001764596,
+      "token_estimate": 553,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Selectbox column accept new item and multiselect column support max and minmum item that can be selected",
+          "citation": "[past_report] Selectbox column accept new item and multiselect column support max and minmum item that can be selected (chunk c70c24b8b108)",
+          "source_id": "issue-16411"
+        },
+        {
+          "claim": "Title: Horizontal scroll for st.popover",
+          "citation": "[past_report] Horizontal scroll for st.popover (chunk 08f658143247)",
+          "source_id": "issue-10762"
+        },
+        {
+          "claim": "Title: Add argument `key` to more elements",
+          "citation": "[past_report] Add argument `key` to more elements (chunk 285d711e014e)",
+          "source_id": "issue-9580"
+        },
+        {
+          "claim": "Title: Make Streamlit more friendly to multi-threading",
+          "citation": "[past_report] Make Streamlit more friendly to multi-threading (chunk 849fc3ac46e1)",
+          "source_id": "issue-7851"
+        },
+        {
+          "claim": "Title: Turn `st.Page` into a proper class",
+          "citation": "[past_report] Turn `st.Page` into a proper class (chunk 58dea4a50c69)",
+          "source_id": "issue-12953"
+        },
+        {
+          "claim": "Title: Expose all Streamlit Types, I.E UploadedFile from file_uploader input",
+          "citation": "[past_report] Expose all Streamlit Types, I.E UploadedFile from file_uploader input (chunk 4f12502946b7)",
+          "source_id": "issue-7801"
+        },
+        {
+          "claim": "make sense",
+          "citation": "[past_report] Customize quick select ranges/visibility in `st.date_input` (chunk 1919d9554287)",
+          "source_id": "issue-12331"
+        },
+        {
+          "claim": "Title: Add icon to st.header and st.subheader (and st.markdown?)",
+          "citation": "[past_report] Add icon to st.header and st.subheader (and st.markdown?) (chunk d5761aefb91a)",
+          "source_id": "issue-11752"
+        },
+        {
+          "claim": "Title: Select all for a CheckboxColumn in data_editor",
+          "citation": "[past_report] Select all for a CheckboxColumn in data_editor (chunk 8fa2a238213c)",
+          "source_id": "issue-7633"
+        },
+        {
+          "claim": "Title: Support 50 steps for font weight theming options",
+          "citation": "[past_report] Support 50 steps for font weight theming options (chunk ce23829d29ef)",
+          "source_id": "issue-16354"
+        }
+      ]
+    },
+    {
+      "turn_index": 2,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": false,
+      "expected_actions": [
+        "answer",
+        "ask_clarification",
+        "escalate"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "285d711e014e",
+        "58dea4a50c69",
+        "c70c24b8b108",
+        "08f658143247",
+        "849fc3ac46e1",
+        "4f12502946b7",
+        "1919d9554287",
+        "92a9dee5ba6f",
+        "ce23829d29ef",
+        "d5761aefb91a"
+      ],
+      "latency_sec": 0.16011030017398298,
+      "token_estimate": 899,
+      "gaps": [
+        "No matching release note found.",
+        "User did not specify product version."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Add argument `key` to more elements",
+          "citation": "[past_report] Add argument `key` to more elements (chunk 285d711e014e)",
+          "source_id": "issue-9580"
+        },
+        {
+          "claim": "Title: Turn `st.Page` into a proper class",
+          "citation": "[past_report] Turn `st.Page` into a proper class (chunk 58dea4a50c69)",
+          "source_id": "issue-12953"
+        },
+        {
+          "claim": "Title: Selectbox column accept new item and multiselect column support max and minmum item that can be selected",
+          "citation": "[past_report] Selectbox column accept new item and multiselect column support max and minmum item that can be selected (chunk c70c24b8b108)",
+          "source_id": "issue-16411"
+        },
+        {
+          "claim": "Title: Horizontal scroll for st.popover",
+          "citation": "[past_report] Horizontal scroll for st.popover (chunk 08f658143247)",
+          "source_id": "issue-10762"
+        },
+        {
+          "claim": "Title: Make Streamlit more friendly to multi-threading",
+          "citation": "[past_report] Make Streamlit more friendly to multi-threading (chunk 849fc3ac46e1)",
+          "source_id": "issue-7851"
+        },
+        {
+          "claim": "Title: Expose all Streamlit Types, I.E UploadedFile from file_uploader input",
+          "citation": "[past_report] Expose all Streamlit Types, I.E UploadedFile from file_uploader input (chunk 4f12502946b7)",
+          "source_id": "issue-7801"
+        },
+        {
+          "claim": "make sense",
+          "citation": "[past_report] Customize quick select ranges/visibility in `st.date_input` (chunk 1919d9554287)",
+          "source_id": "issue-12331"
+        },
+        {
+          "claim": "Title: Grid layout",
+          "citation": "[past_report] Grid layout (chunk 92a9dee5ba6f)",
+          "source_id": "issue-11101"
+        },
+        {
+          "claim": "Title: Support 50 steps for font weight theming options",
+          "citation": "[past_report] Support 50 steps for font weight theming options (chunk ce23829d29ef)",
+          "source_id": "issue-16354"
+        },
+        {
+          "claim": "Title: Add icon to st.header and st.subheader (and st.markdown?)",
+          "citation": "[past_report] Add icon to st.header and st.subheader (and st.markdown?) (chunk d5761aefb91a)",
+          "source_id": "issue-11752"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.41584879998117685,
+  "total_token_estimate": 1936,
+  "n_turns": 3,
+  "ran_at": "2026-10-08T11:23:24.063254+00:00"
+}

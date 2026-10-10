@@ -1,0 +1,287 @@
+{
+  "case_id": "issue-16148",
+  "split": "dev",
+  "bucket": "escalation",
+  "n_allowed_docs": 272,
+  "turns": [
+    {
+      "turn_index": 0,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": false,
+      "expected_actions": [
+        "escalate",
+        "ask_clarification"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": true,
+        "status": "escalated"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "108fdaf33cc0",
+        "a39d380a6ed8",
+        "16bb43b57097",
+        "182a3445af05",
+        "05080ae13c60",
+        "808ab8ec9874",
+        "89077314f198",
+        "c2200710e55a",
+        "50b38eb679f9",
+        "66e66113e38f"
+      ],
+      "latency_sec": 0.10962950019165874,
+      "token_estimate": 2277,
+      "gaps": [
+        "No matching release note found."
+      ],
+      "citations": [
+        {
+          "claim": "Title: Popover is truncated when app is oembedded",
+          "citation": "[past_report] Popover is truncated when app is oembedded (chunk 108fdaf33cc0)",
+          "source_id": "issue-9340"
+        },
+        {
+          "claim": "Title: Screen reader does not announce the list information on the 'Tools Menu' combo box list item in windows.",
+          "citation": "[past_report] Screen reader does not announce the list information on the 'Tools Menu' combo box list item in windows. (chunk a39d380a6ed8)",
+          "source_id": "issue-15829"
+        },
+        {
+          "claim": "t.markdown(\"## Toast Notification\")",
+          "citation": "[past_report] Bug st.toast breaks the app when executed from a callback (chunk 16bb43b57097)",
+          "source_id": "issue-11367"
+        },
+        {
+          "claim": "Title: Inconsistent display of 'help' in st.markdown",
+          "citation": "[past_report] Inconsistent display of 'help' in st.markdown (chunk 182a3445af05)",
+          "source_id": "issue-7371"
+        },
+        {
+          "claim": "Title: Back button changes URL query params but not `st.query_params` until user leaves page and comes back",
+          "citation": "[past_report] Back button changes URL query params but not `st.query_params` until user leaves page and comes back (chunk 05080ae13c60)",
+          "source_id": "issue-13963"
+        },
+        {
+          "claim": "the sidebar goes blank and then disappears without animation",
+          "citation": "[past_report] Sidebar remains open when navigating through pages with `initial_sidebar_state=\"collapsed\"` (chunk 808ab8ec9874)",
+          "source_id": "issue-12065"
+        },
+        {
+          "claim": "name of the list item.",
+          "citation": "[past_report] Screen reader does not announce the list information on the 'Tools Menu' combo box list item in windows. (chunk 89077314f198)",
+          "source_id": "issue-15829"
+        },
+        {
+          "claim": "avoids the issue. These three conditions are necessary to reproduce the issue.",
+          "citation": "[past_report] Fragments within container disappearing on rerender (chunk c2200710e55a)",
+          "source_id": "issue-12514"
+        },
+        {
+          "claim": "Title: Update error dialogs to be more helpful",
+          "citation": "[past_report] Update error dialogs to be more helpful (chunk 50b38eb679f9)",
+          "source_id": "issue-12380"
+        },
+        {
+          "claim": "Title: Dialog is re-executed if `st.rerun` is triggered in an `if` statement that uses the return val from an `st.button`.",
+          "citation": "[past_report] Dialog is re-executed if `st.rerun` is triggered in an `if` statement that uses the return val from an `st.button`. (chunk 66e66113e38f)",
+          "source_id": "issue-13009"
+        }
+      ]
+    },
+    {
+      "turn_index": 1,
+      "action": "answer",
+      "decision_ok": true,
+      "state_ok": true,
+      "expected_actions": [
+        "answer",
+        "ask_clarification",
+        "escalate"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": false,
+        "escalated": false,
+        "last_action": "answer"
+      },
+      "response_text": "if st.button(\"make some toasts and rerun\"):\r\nSource: [past_report] Toasts are not preserved when page is rerun (chunk 4b97c86e45d4)",
+      "retrieved_chunk_ids": [
+        "4b97c86e45d4",
+        "89077314f198",
+        "4eed06865367",
+        "6d67599b0ac5",
+        "285d711e014e",
+        "ed6d4e5364a5",
+        "ee481067ff0f",
+        "108fdaf33cc0",
+        "16bb43b57097",
+        "101bb0496f68"
+      ],
+      "latency_sec": 0.1098189998883754,
+      "token_estimate": 2349,
+      "gaps": [
+        "No matching release note found."
+      ],
+      "citations": [
+        {
+          "claim": "if st.button(\"make some toasts and rerun\"):\r",
+          "citation": "[past_report] Toasts are not preserved when page is rerun (chunk 4b97c86e45d4)",
+          "source_id": "issue-7740"
+        },
+        {
+          "claim": "name of the list item.",
+          "citation": "[past_report] Screen reader does not announce the list information on the 'Tools Menu' combo box list item in windows. (chunk 89077314f198)",
+          "source_id": "issue-15829"
+        },
+        {
+          "claim": "n locate the hover stacked in HTML code of page when inspect",
+          "citation": "[past_report] Stucked Hover in streamlit-bokeh charts (chunk 4eed06865367)",
+          "source_id": "issue-15549"
+        },
+        {
+          "claim": "oblem was solved.\r",
+          "citation": "[past_report] \"ImportError: cannot import name 'runtime_version' from 'google.protobuf'\" when developing on MacOS (chunk 6d67599b0ac5)",
+          "source_id": "issue-8965"
+        },
+        {
+          "claim": "Title: Add argument `key` to more elements",
+          "citation": "[past_report] Add argument `key` to more elements (chunk 285d711e014e)",
+          "source_id": "issue-9580"
+        },
+        {
+          "claim": "st.popover(\"\").selectbox(label=\"Label\", options=range(10000))",
+          "citation": "[past_report] Reduced number of supported options in selectbox while in Popover (chunk ed6d4e5364a5)",
+          "source_id": "issue-16069"
+        },
+        {
+          "claim": "or provide more details anytime.",
+          "citation": "[past_report] Regression in `st.login()` / `st.logout()` Behavior Since Streamlit 1.53 (chunk ee481067ff0f)",
+          "source_id": "issue-14290"
+        },
+        {
+          "claim": "Title: Popover is truncated when app is oembedded",
+          "citation": "[past_report] Popover is truncated when app is oembedded (chunk 108fdaf33cc0)",
+          "source_id": "issue-9340"
+        },
+        {
+          "claim": "t.markdown(\"## Toast Notification\")",
+          "citation": "[past_report] Bug st.toast breaks the app when executed from a callback (chunk 16bb43b57097)",
+          "source_id": "issue-11367"
+        },
+        {
+          "claim": "ven the code example, I expect only the on_change of the checkbox that I clicked to be triggered.\r",
+          "citation": "[past_report] on_change callback is triggered without user-interaction on in-script delays (chunk 101bb0496f68)",
+          "source_id": "issue-10102"
+        }
+      ]
+    },
+    {
+      "turn_index": 2,
+      "action": "ask_clarification",
+      "decision_ok": true,
+      "state_ok": false,
+      "expected_actions": [
+        "answer",
+        "ask_clarification",
+        "escalate"
+      ],
+      "expected_state": {
+        "waiting_for_user": false,
+        "escalated": false,
+        "status": "open"
+      },
+      "actual_state": {
+        "status": "open",
+        "waiting_for_user": true,
+        "escalated": false,
+        "last_action": "ask_clarification"
+      },
+      "response_text": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+      "retrieved_chunk_ids": [
+        "4b97c86e45d4",
+        "89077314f198",
+        "4eed06865367",
+        "285d711e014e",
+        "6d67599b0ac5",
+        "58dea4a50c69",
+        "d2ab4143a470",
+        "ee481067ff0f",
+        "b1179966dfb7",
+        "4f12502946b7"
+      ],
+      "latency_sec": 0.10958370007574558,
+      "token_estimate": 2711,
+      "gaps": [
+        "No matching release note found."
+      ],
+      "citations": [
+        {
+          "claim": "if st.button(\"make some toasts and rerun\"):\r",
+          "citation": "[past_report] Toasts are not preserved when page is rerun (chunk 4b97c86e45d4)",
+          "source_id": "issue-7740"
+        },
+        {
+          "claim": "name of the list item.",
+          "citation": "[past_report] Screen reader does not announce the list information on the 'Tools Menu' combo box list item in windows. (chunk 89077314f198)",
+          "source_id": "issue-15829"
+        },
+        {
+          "claim": "n locate the hover stacked in HTML code of page when inspect",
+          "citation": "[past_report] Stucked Hover in streamlit-bokeh charts (chunk 4eed06865367)",
+          "source_id": "issue-15549"
+        },
+        {
+          "claim": "Title: Add argument `key` to more elements",
+          "citation": "[past_report] Add argument `key` to more elements (chunk 285d711e014e)",
+          "source_id": "issue-9580"
+        },
+        {
+          "claim": "oblem was solved.\r",
+          "citation": "[past_report] \"ImportError: cannot import name 'runtime_version' from 'google.protobuf'\" when developing on MacOS (chunk 6d67599b0ac5)",
+          "source_id": "issue-8965"
+        },
+        {
+          "claim": "Title: Turn `st.Page` into a proper class",
+          "citation": "[past_report] Turn `st.Page` into a proper class (chunk 58dea4a50c69)",
+          "source_id": "issue-12953"
+        },
+        {
+          "claim": "lts in the following: AttributeError: st.session_state has no attribute \"unit\". Did you forget to initialize it?",
+          "citation": "[past_report] session_state not preserved when using st.switch_page (chunk d2ab4143a470)",
+          "source_id": "issue-11115"
+        },
+        {
+          "claim": "or provide more details anytime.",
+          "citation": "[past_report] Regression in `st.login()` / `st.logout()` Behavior Since Streamlit 1.53 (chunk ee481067ff0f)",
+          "source_id": "issue-14290"
+        },
+        {
+          "claim": ", file name, maybe file size) and let the user download the file when clicking. ",
+          "citation": "[past_report] File chip element (e.g. for `st.chat_message` or `st.markdown`) (chunk b1179966dfb7)",
+          "source_id": "issue-11990"
+        },
+        {
+          "claim": "Title: Expose all Streamlit Types, I.E UploadedFile from file_uploader input",
+          "citation": "[past_report] Expose all Streamlit Types, I.E UploadedFile from file_uploader input (chunk 4f12502946b7)",
+          "source_id": "issue-7801"
+        }
+      ]
+    }
+  ],
+  "total_latency_sec": 0.3290322001557797,
+  "total_token_estimate": 7337,
+  "n_turns": 3,
+  "ran_at": "2026-10-08T11:23:24.991678+00:00"
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "case_id": "issue-16538",
+    "turn": 0,
+    "action": "ask_clarification",
+    "expected": [
+      "answer"
+    ],
+    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+    "probable_cause": "decision_mismatch"
+  },
+  {
+    "case_id": "issue-2975",
+    "turn": 0,
+    "action": "ask_clarification",
+    "expected": [
+      "answer"
+    ],
+    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+    "probable_cause": "decision_mismatch"
+  },
+  {
+    "case_id": "issue-7426",
+    "turn": 0,
+    "action": "ask_clarification",
+    "expected": [
+      "answer"
+    ],
+    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+    "probable_cause": "decision_mismatch"
+  },
+  {
+    "case_id": "issue-8838",
+    "turn": 0,
+    "action": "ask_clarification",
+    "expected": [
+      "answer"
+    ],
+    "response_excerpt": "Ask the user for the exact Streamlit version and a minimal reproducible example.",
+    "probable_cause": "decision_mismatch"
+  }
+]

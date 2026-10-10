@@ -1,0 +1,30 @@
+{
+  "case_id": "issue-16377",
+  "seed_issue_number": 16377,
+  "seed_created_at": "2026-08-06T10:30:20Z",
+  "seed_html_url": "https://github.com/streamlit/streamlit/issues/16377",
+  "title": "Add a data viewer element to render dataset rows in different layouts (list, gallery, board, timeline)",
+  "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nAdd a way to render the rows of a dataset (dataframe or any data structure supported by `st.dataframe`) using **different layouts** — e.g. list, gallery/cards, board (kanban), and timeline — similar to how Notion can display the same database as a table, gallery, list, board, or timeline. Today `st.dataframe` only offers the interactive table layout.\n\n### Why?\n\nThe interactive table is great for tabular data, but many datasets are better presented as cards/galleries (e.g. products, images, profiles), lists, kanban boards (grouped by a status column), or timelines (by a date column). Building these today requires a lot of manual layout work with columns/containers/HTML. A first-class element would make rich, non-tabular data presentations a one-liner and reuse the existing dataframe data handling and column config.\n\n### How?\n\n**Preferred — a single `st.data_viewer` command with a `layout` option:**\n\n```python\nst.data_viewer(df, layout=\"gallery\" | \"list\" | \"board\" | \"timeline\" | \"table\")\n```\n\nThis keeps everything in one element (one command to learn, one place for shared params) without overloading `st.dataframe`, while still exposing all layouts via a single `layout` argument.\n\nOther API ideas that were considered (from internal specs):\n\n**Option A — a `layout` parameter on `st.dataframe`:**\n\n```python\nst.dataframe(df, layout=\"table\" | \"list\" | \"gallery\" | \"board\" | \"timeline\")\n```\n\n**Option B — dedicated commands per layout:**\n\n```python\nst.data_gallery(df)   # card/gallery view\nst.data_list(df)      # list view\nst.data_board(df)     # kanban board (grouped by a column)\n```\n\nNotes:\n- Reuse the same data inputs and `column_config` as `st.dataframe` (e.g. which columns act as the image, title, subtitle, group-by / status, or date field).\n- Overlaps with the \"image cards\" idea and could share infrastructure.\n\n### Additional Context\n\n- Inspired by Notion's table/gallery/list/board/timeline layouts and Retool's [list view](https://docs.retool.com/apps/reference/components/list-view) / [grid view](https://docs.retool.com/apps/reference/components/grid-view).\n- Related: #6133 (image gallery), #11101 (grid layout).",
+  "labels": [
+    "type:enhancement",
+    "area:layout",
+    "feature:st.dataframe",
+    "feature:st.column_config"
+  ],
+  "state": "open",
+  "stratum_auto": "escalation",
+  "is_multi_turn": false,
+  "split": "dev",
+  "visible_input": {
+    "title": "Add a data viewer element to render dataset rows in different layouts (list, gallery, board, timeline)",
+    "body": "### Checklist\n\n- [x] I have searched the [existing issues](https://github.com/streamlit/streamlit/issues) for similar feature requests.\n- [x] I added a descriptive title and summary to this issue.\n\n### Summary\n\nAdd a way to render the rows of a dataset (dataframe or any data structure supported by `st.dataframe`) using **different layouts** — e.g. list, gallery/cards, board (kanban), and timeline — similar to how Notion can display the same database as a table, gallery, list, board, or timeline. Today `st.dataframe` only offers the interactive table layout.\n\n### Why?\n\nThe interactive table is great for tabular data, but many datasets are better presented as cards/galleries (e.g. products, images, profiles), lists, kanban boards (grouped by a status column), or timelines (by a date column). Building these today requires a lot of manual layout work with columns/containers/HTML. A first-class element would make rich, non-tabular data presentations a one-liner and reuse the existing dataframe data handling and column config.\n\n### How?\n\n**Preferred — a single `st.data_viewer` command with a `layout` option:**\n\n```python\nst.data_viewer(df, layout=\"gallery\" | \"list\" | \"board\" | \"timeline\" | \"table\")\n```\n\nThis keeps everything in one element (one command to learn, one place for shared params) without overloading `st.dataframe`, while still exposing all layouts via a single `layout` argument.\n\nOther API ideas that were considered (from internal specs):\n\n**Option A — a `layout` parameter on `st.dataframe`:**\n\n```python\nst.dataframe(df, layout=\"table\" | \"list\" | \"gallery\" | \"board\" | \"timeline\")\n```\n\n**Option B — dedicated commands per layout:**\n\n```python\nst.data_gallery(df)   # card/gallery view\nst.data_list(df)      # list view\nst.data_board(df)     # kanban board (grouped by a column)\n```\n\nNotes:\n- Reuse the same data inputs and `column_config` as `st.dataframe` (e.g. which columns act as the image, title, subtitle, group-by / status, or date field).\n- Overlaps with the \"image cards\" idea and could share infrastructure.\n\n### Additional Context\n\n- Inspired by Notion's table/gallery/list/board/timeline layouts and Retool's [list view](https://docs.retool.com/apps/reference/components/list-view) / [grid view](https://docs.retool.com/apps/reference/components/grid-view).\n- Related: #6133 (image gallery), #11101 (grid layout).",
+    "conversation_so_far": []
+  },
+  "acceptable_source_cutoff": "2026-08-06T10:30:20Z",
+  "forbidden_source_ids": [
+    "issue-16377"
+  ],
+  "missing_information": [],
+  "defensible_outcomes": [],
+  "recurring_issue_numbers": []
+}
