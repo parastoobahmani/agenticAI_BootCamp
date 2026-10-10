@@ -10,6 +10,7 @@ __pycache__/
 build/
 dist/
 problem2_parts1_2/runtime/
+project_app/runtime/
 *.sqlite3
 *.sqlite3-journal
 project_evaluation/data/runs/

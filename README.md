@@ -76,6 +76,17 @@ commit provider keys. Use the provider template in
 
 ## Main commands
 
+Run the complete application from one case JSON through the pending human
+approval boundary. This uses the committed evidence snapshot and does not fetch
+GitHub data:
+
+```bash
+python -m project_app run project_app/examples/example_case.json
+```
+
+See `project_app/README.md` for live Part 3 composition, artifact layout, and
+revision behavior.
+
 Prepare the raw evidence snapshot:
 
 ```bash
@@ -146,3 +157,4 @@ designed inputs rather than historical GitHub comments.
 - `problem1_part3_output/README.md`: immutable response artifact layout.
 - `problem2_part3/README.md`: executable Problem 2 Part 3 scenario specification.
 - `project_evaluation/README.md`: project-wide evaluation pipeline and dataset.
+- `project_app/README.md`: complete application command and cross-part artifact flow.

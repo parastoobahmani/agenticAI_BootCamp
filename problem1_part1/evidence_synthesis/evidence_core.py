@@ -20,7 +20,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field, asdict
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -34,7 +34,6 @@ try:
     HAS_EMBEDDINGS = True
 except ImportError:
     HAS_EMBEDDINGS = False
-    print("Warning: sentence-transformers / numpy not installed. Running in keyword-only demo mode.")
 
 try:
     from rank_bm25 import BM25Okapi
@@ -98,7 +97,7 @@ class SynthesisResult:
     evidence_used: List[EvidenceItem]
     remaining_gaps: List[str]
     recommended_next_action: str
-    generated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+    generated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"))
 
 
 # ---------------------------------------------------------------------------

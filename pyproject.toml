@@ -10,8 +10,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "jsonschema>=4.25,<5",
+    "numpy>=1.26,<3",
     "packaging>=23",
     "pydantic>=2.5,<3",
+    "rank-bm25>=0.2.2,<0.3",
     "requests>=2.31,<3",
 ]
 
@@ -23,15 +25,17 @@ dev = ["pytest>=8"]
 problem1-part2 = "problem1_part2.implementation.cli:main"
 problem2-agent = "problem2_parts1_2.cli:main"
 problem2-scenarios = "problem2_part3.scenarios:cli"
+project-app = "project_app.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["problem1_part1*", "problem1_part2*", "problem1_part3*", "problem1_to_problem2*", "problem2_part3*", "problem2_parts1_2*"]
+include = ["problem1_part1*", "problem1_part2*", "problem1_part3*", "problem1_to_problem2*", "problem2_part3*", "problem2_parts1_2*", "project_app*"]
 namespaces = false
 
 [tool.setuptools.package-data]
 problem1_part3 = ["*.json", "*.example"]
 problem1_to_problem2 = ["schemas/*.json"]
 problem2_parts1_2 = ["assets/*.json"]
+project_app = ["examples/*.json"]
 
 [tool.pytest.ini_options]
-testpaths = ["problem1_part2/tests", "problem1_part3/tests", "problem1_to_problem2/tests", "problem2_parts1_2/tests", "problem2_part3/tests"]
+testpaths = ["problem1_part2/tests", "problem1_part3/tests", "problem1_to_problem2/tests", "problem2_parts1_2/tests", "problem2_part3/tests", "project_app/tests"]

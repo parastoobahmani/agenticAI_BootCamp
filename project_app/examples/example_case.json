@@ -1,0 +1,7 @@
+{
+  "case_id": "demo-loading-001",
+  "title": "Streamlit app stays on the loading screen behind nginx",
+  "body": "The app works locally but stays on Please wait when deployed behind nginx. We use Streamlit 1.30.0 on Python 3.11 and Linux. Reinstalling did not help.",
+  "author": "reporter",
+  "comments": []
+}
