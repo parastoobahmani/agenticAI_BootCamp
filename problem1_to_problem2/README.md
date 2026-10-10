@@ -1,4 +1,4 @@
-# Part 1.3 integration contracts
+# Problem 1 to Problem 2 integration contracts
 
 The team components keep their existing native contracts. This folder supplies
 deterministic adapters at the boundaries:
@@ -18,7 +18,7 @@ human_approval_v2
 ```
 
 `schemas/analysis_input.schema.json` is copied unchanged from `ali-moghadasi`.
-`part1_2_output/next_step_report.schema.json` is the unchanged Part 2 to Part 3
+`problem1_part2_output/next_step_report.schema.json` is the unchanged Part 2 to Part 3
 contract. The adapters use dictionaries and JSON, so no branch has to import
 another branch's Python classes.
 
@@ -54,5 +54,5 @@ response revision, so maintainers see one current draft awaiting review.
 Run the compatibility tests from the repository root:
 
 ```bash
-python -m unittest discover -s part1_3_integration/tests -v
+python -m unittest discover -s problem1_to_problem2/tests -v
 ```

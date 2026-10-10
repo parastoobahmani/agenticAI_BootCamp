@@ -7,9 +7,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from part1_3 import ReportError
-from part1_3.configuration import GatewayConfig
-from part1_3.provider import Gateway
+from problem1_part3 import ReportError
+from problem1_part3.configuration import GatewayConfig
+from problem1_part3.provider import Gateway
 
 
 class FakeCompletions:

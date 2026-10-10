@@ -21,9 +21,10 @@ dev = ["pytest>=8"]
 [project.scripts]
 missing-info = "missing_info.cli:main"
 support-agent = "support_agent.cli:main"
+problem2-scenarios = "problem2_part3.scenarios:main"
 
 [tool.setuptools.packages.find]
-include = ["missing_info*", "part1_3*", "part1_3_integration*", "support_agent*"]
+include = ["missing_info*", "problem1_part3*", "problem1_to_problem2*", "problem2_part3*", "support_agent*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "part1_3/tests", "part1_3_integration/tests"]
+testpaths = ["tests", "problem1_part3/tests", "problem1_to_problem2/tests", "problem2_part3/tests"]

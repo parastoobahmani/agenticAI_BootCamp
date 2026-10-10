@@ -12,11 +12,11 @@ from pathlib import Path
 import tempfile
 from typing import Callable
 
-from .config import VAR_DIR
-from .evidence import EvidenceStore
-from .interceptor import TicketInterceptor
-from .orchestrator import Orchestrator
-from .storage import Storage
+from support_agent.config import VAR_DIR
+from support_agent.evidence import EvidenceStore
+from support_agent.interceptor import TicketInterceptor
+from support_agent.orchestrator import Orchestrator
+from support_agent.storage import Storage
 
 
 class FaultOnceInterceptor(TicketInterceptor):

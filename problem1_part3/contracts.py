@@ -48,7 +48,7 @@ def _clean(value, depth=0):
 
 @lru_cache(maxsize=1)
 def report_validator():
-    schema = json.loads(Path(__file__).with_name('part1_2_output_report.schema.json').read_text())
+    schema = json.loads(Path(__file__).with_name('problem1_part2_output_report.schema.json').read_text())
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 

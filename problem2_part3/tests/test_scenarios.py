@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 import unittest
 
-from support_agent.scenarios import main, run_all
+from problem2_part3.scenarios import main, run_all
 
 
 class PracticalScenarioTests(unittest.TestCase):

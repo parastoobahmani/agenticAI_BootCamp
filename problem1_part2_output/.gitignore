@@ -1,0 +1,4 @@
+*.json
+!*.schema.json
+!example_problem1_part2_output.json
+*.tmp

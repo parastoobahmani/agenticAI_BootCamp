@@ -2,7 +2,7 @@
   "status": "complete",
   "artifact_kind": "demonstration",
   "case_id": "example-report-only",
-  "input_filename": "example_part1_2_output.json",
+  "input_filename": "example_problem1_part2_output.json",
   "input_origin": "bundled_authored_example",
   "response_file": "response.json",
   "response_id": "response_b6c0fda42d8982cc97ca3b73",

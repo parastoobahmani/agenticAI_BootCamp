@@ -1,4 +1,0 @@
-*.json
-!*.schema.json
-!example_part1_2_output.json
-*.tmp

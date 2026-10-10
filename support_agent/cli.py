@@ -113,7 +113,7 @@ def main(argv=None) -> int:
                               "proposal_id": pending[0].proposal_id if pending else ""})
         show({"seeded": [row["case_id"] for row in rows], "proposals": proposals})
     elif args.command == "scenarios":
-        from . import scenarios
+        from problem2_part3 import scenarios
         scenarios.main()
     elif args.command == "reset":
         app.memory.reset_cases()

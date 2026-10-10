@@ -15,7 +15,7 @@ from .contracts import fingerprint
 from .provider import Gateway
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-BUNDLED_DEMO_REPORT = PROJECT_ROOT/'part1_2_output'/'example_part1_2_output.json'
+BUNDLED_DEMO_REPORT = PROJECT_ROOT/'problem1_part2_output'/'example_problem1_part2_output.json'
 
 
 def _write(path, text):
@@ -66,9 +66,9 @@ def _publish_immutable(output, files):
 def main(argv=None):
     parser = argparse.ArgumentParser(description='Compose from Part 2 JSON reports; schemas are not case reports')
     parser.add_argument('report', nargs='?', type=Path, help='Optional report file; otherwise scan the default input folder')
-    parser.add_argument('--input-dir', type=Path, default=PROJECT_ROOT/'part1_2_output')
+    parser.add_argument('--input-dir', type=Path, default=PROJECT_ROOT/'problem1_part2_output')
     parser.add_argument('--output-dir', type=Path,
-                        help='Artifact root; defaults to project-root part1_3_output')
+                        help='Artifact root; defaults to project-root problem1_part3_output')
     parser.add_argument('--demo', action='store_true', help='Use the bundled authored example; never treated as real Part 2 output')
     parser.add_argument('--live', action='store_true', help='Use one bounded OpenAI-compatible composition call per report')
     parser.add_argument('--env-file', type=Path, help='Provider settings file; required with --live')
@@ -110,7 +110,7 @@ def main(argv=None):
             result = prepare_next_step_response(raw, compose=gateway.complete) if gateway else offline_result
             usage = dict(gateway.last_usage) if gateway else None
             reports.append((path, result, usage))
-        output_root = args.output_dir or PROJECT_ROOT/'part1_3_output'
+        output_root = args.output_dir or PROJECT_ROOT/'problem1_part3_output'
         run_items = []
         for path, result, usage in reports:
             result['artifact_kind'] = 'demonstration' if args.demo else 'part3_response'

@@ -1,29 +1,29 @@
 # Problem 1 — Part 3 contribution
 
-This folder is the standalone team contribution. It prepares a user reply and a technical maintainer handoff from **only a `NextStepReport` JSON instance**, using the supplied schema stored locally as `part1_2_output_report.schema.json`. It does not import Part 1, Part 2, a corpus, the original case, a database or a personal API configuration.
+This folder is the standalone team contribution. It prepares a user reply and a technical maintainer handoff from **only a `NextStepReport` JSON instance**, using the supplied schema stored locally as `problem1_part2_output_report.schema.json`. It does not import Part 1, Part 2, a corpus, the original case, a database or a personal API configuration.
 
-Team-level adapters in `part1_3_integration/` connect the evidence-synthesis output to
+Team-level adapters in `problem1_to_problem2/` connect the evidence-synthesis output to
 Part 2 and convert this part's response into the current Problem 2 memory and
 human-approval proposal formats.
 
-The schema describes the format; pass a populated report, not the schema itself. `part1_2_output/example_part1_2_output.json` is an **authored example of Part 2 output**, not a real GitHub case, a teammate-produced result or ground truth. `doc-widget-17` is a fictional evidence ID used to exercise unresolved references.
+The schema describes the format; pass a populated report, not the schema itself. `problem1_part2_output/example_problem1_part2_output.json` is an **authored example of Part 2 output**, not a real GitHub case, a teammate-produced result or ground truth. `doc-widget-17` is a fictional evidence ID used to exercise unresolved references.
 
 ## Install and run
 
-Run from the shared repository root containing the `part1_3/` directory. Requires Python 3.12 or 3.13.
+Run from the shared repository root containing the `problem1_part3/` directory. Requires Python 3.12 or 3.13.
 
 ```bash
-python -m pip install -r part1_3/requirements.txt
-python -m part1_3 --demo
+python -m pip install -r problem1_part3/requirements.txt
+python -m problem1_part3 --demo
 # Once actual Part 2 reports are present:
-python -m part1_3
-python -m unittest discover -s part1_3/tests -v
+python -m problem1_part3
+python -m unittest discover -s problem1_part3/tests -v
 ```
 
-Defaults are anchored to the project root (the directory containing `part1_3/`), not the current working directory:
+Defaults are anchored to the project root (the directory containing `problem1_part3/`), not the current working directory:
 
-- Input: `part1_2_output/*.json`; schema documents and files prefixed `example_` are skipped during normal runs.
-- Output: `part1_3_output/cases/<case_id>/<response_id>/` containing `response.json`, `proposed_user_reply.txt`, `maintainer_summary.md`, and `manifest.json`.
+- Input: `problem1_part2_output/*.json`; schema documents and files prefixed `example_` are skipped during normal runs.
+- Output: `problem1_part3_output/cases/<case_id>/<response_id>/` containing `response.json`, `proposed_user_reply.txt`, `maintainer_summary.md`, and `manifest.json`.
 
 `--demo` uses only the bundled authored example and marks both its response JSON and manifest `artifact_kind="demonstration"`. It does not write fake Part 2 input. A normal run with only the schema fails clearly because no populated report exists. Explicit input files, `--input-dir` and `--output-dir` remain supported. A normal folder run processes every populated report after validating the whole batch and rejects duplicate `case_id` values.
 
@@ -35,7 +35,7 @@ The offline command never reads credentials or makes API calls. Consumers should
 
 Part 3 owns the model-assisted composition of the user introduction and maintainer synopsis. The canonical selected hypothesis and next steps still come from Part 2 and are inserted by validated code. Live mode makes at most one provider call per report; offline mode remains the default.
 
-Create a private environment file from `part1_3/provider.env.example`. For the current OpenAI test setup, the important fields are:
+Create a private environment file from `problem1_part3/provider.env.example`. For the current OpenAI test setup, the important fields are:
 
 ```dotenv
 API_KEY=<private key>
@@ -49,19 +49,19 @@ API_TOKEN_PARAMETER=max_completion_tokens
 Run one populated Part 2 report with live composition:
 
 ```bash
-python -m part1_3 part1_2_output/case.json --live --env-file ../final_project/personal.env
+python -m problem1_part3 problem1_part2_output/case.json --live --env-file ../final_project/personal.env
 ```
 
 For course delivery, keep the variable names and change only the private file's values to the assigned Metis key, base URL, model and allowed host. If the Metis endpoint supports JSON mode but not strict JSON Schema, set `API_STRUCTURED_OUTPUTS=false`. If it expects the older OpenAI-compatible token argument, set `API_TOKEN_PARAMETER=max_tokens`. No Python source change is required.
 
-The command never prints or stores `API_KEY`. Each live invocation writes a separate `part1_3_output/runs/run_<id>.json` record containing the public provider settings, per-response token usage, aggregate token usage and estimated cost. Run records are operational audit data and are separate from immutable response revisions.
+The command never prints or stores `API_KEY`. Each live invocation writes a separate `problem1_part3_output/runs/run_<id>.json` record containing the public provider settings, per-response token usage, aggregate token usage and estimated cost. Run records are operational audit data and are separate from immutable response revisions.
 
 `API_INPUT_USD_PER_MILLION` and `API_OUTPUT_USD_PER_MILLION` only calculate the `estimated_cost_usd` field in that run record. They do not set provider prices, change billing, select a model or enforce a monetary limit. Set them to the current provider/model prices when cost estimates matter; leave them at zero when unknown. `API_MAX_CALLS` is the actual local request-count bound.
 
 ## Public interface
 
 ```python
-from part1_3 import prepare_next_step_response, markdown_summary
+from problem1_part3 import prepare_next_step_response, markdown_summary
 
 response = prepare_next_step_response(next_step_report)
 user_reply = response["user_response"]
@@ -73,8 +73,8 @@ maintainer_handoff = markdown_summary(response)
 For programmatic live prose composition, inject the provided gateway:
 
 ```python
-from part1_3.configuration import GatewayConfig
-from part1_3.provider import Gateway
+from problem1_part3.configuration import GatewayConfig
+from problem1_part3.provider import Gateway
 
 config = GatewayConfig.from_env_file("../final_project/personal.env")
 gateway = Gateway(config)
@@ -131,4 +131,4 @@ Tests use authored data and fake model callbacks. They verify schema rejection, 
 
 ## Files to submit
 
-Submit `part1_3/` plus the agreed `part1_2_output/` and `part1_3_output/` scaffolding (schema, README and ignore files). Generated case outputs and private environment files remain ignored; run `python -m part1_3 --demo` to reproduce the example. Commit `part1_3/provider.env.example`, but never commit `personal.env` or a real key. The contribution contains the implementation, provider-neutral configuration, OpenAI-compatible gateway, schema, dependency declaration, example and tests. It needs none of the personal workspace's `support_workbench/`, corpus, evaluation outputs, runtime database, private environment files or virtual environment.
+Submit `problem1_part3/` plus the agreed `problem1_part2_output/` and `problem1_part3_output/` scaffolding (schema, README and ignore files). Generated case outputs and private environment files remain ignored; run `python -m problem1_part3 --demo` to reproduce the example. Commit `problem1_part3/provider.env.example`, but never commit `personal.env` or a real key. The contribution contains the implementation, provider-neutral configuration, OpenAI-compatible gateway, schema, dependency declaration, example and tests. It needs none of the personal workspace's `support_workbench/`, corpus, evaluation outputs, runtime database, private environment files or virtual environment.
